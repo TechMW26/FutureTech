@@ -1,0 +1,73 @@
+/* ==========================================================
+   HONEYCOMB
+
+   The composition is the design's 527 × 319 frame (see
+   WorkHero.css / Hex.css), scaled by `--f` — a LENGTH equal to one
+   design pixel.
+
+   `.works-visual` centres that frame vertically in the hero so the
+   complete composition — including the small outer cells, which
+   extend past the logo cluster — is always fully visible.
+
+   `.honeycomb` is the frame itself; every child is positioned with
+   the Figma export's own coordinates, so no wrapper maths is applied
+   on top of the source geometry.
+========================================================== */
+
+.works-visual {
+  position: absolute;
+
+  right: 5%;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  /* Sized to the design frame. */
+  width: calc(527 * var(--f));
+  height: calc(319 * var(--f));
+
+  overflow: visible;
+}
+
+/* The frame is the positioning context for every cell: each `.hex`
+   is absolutely placed by its centre (see Hex.css), so the cluster
+   sits exactly where the export puts it. */
+.honeycomb {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  overflow: visible;
+}
+
+/* Lifts the four brand tiles clear of the decorative cells so the
+   icons always read on top, matching the export's paint order. */
+.honeycomb .hex-logo {
+  z-index: 5;
+}
+
+/* ==========================================================
+   LAYERING
+   Shape hexagons sit below the brand logos so no decorative cell
+   can ever cover a logo, and a hovered/selected tile is lifted
+   above everything.
+========================================================== */
+
+.hex-shape {
+  z-index: 1;
+}
+
+.hex-logo {
+  z-index: 5;
+}
+
+.honeycomb .hex-shape:hover {
+  /* Shape hexagons are decorative — no hover lift. */
+  transform: scale(1);
+  z-index: 1;
+}
+
+.honeycomb .hex-shape:hover img {
+  filter: none;
+}

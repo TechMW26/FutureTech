@@ -1,13 +1,13 @@
 import { lazy, Suspense } from 'react'
 import OffMenuGallery from '../components/OffMenuGallery'
 
-const WorkFigmaHero = lazy(() => import('../components/WorkFigmaHero'))
+const WorkHero = lazy(() => import('../components/WorkHero'))
 
 export default function WorkPage() {
   return (
     <>
       <Suspense fallback={null}>
-        <WorkFigmaHero />
+        <WorkHero />
       </Suspense>
       <OffMenuGallery
         introEyebrow="Selected Work"

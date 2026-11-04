@@ -1,0 +1,367 @@
+/* ==========================================================
+   OUR WORKS — HERO
+   Reconstructed from the Figma Make export.
+
+   ------------------------------------------------------------------
+   SCALE
+   ------------------------------------------------------------------
+   The design is a 527 × 319 frame. `--f` is a LENGTH equal to one
+   design pixel, chosen so the frame's HEIGHT fits the viewport —
+   that is what guarantees the complete hero (including the small
+   outer hexagon cells) is visible without scrolling:
+
+       --f = min(100vw / 527, 100vh / 319)
+
+   At a 1600 × 900 viewport that gives 1600/527 = 3.036, so the frame
+   renders 1600 × 969 — taller than the viewport. The `100vh / 319`
+   term clamps it, so the frame resolves to 1483 × 900 and the whole
+   composition fits exactly.
+
+   Every size is `calc(N * var(--f))` — a number times a length.
+   `calc(Npx * var(--f))` would be length × length, which is invalid
+   CSS and silently drops the declaration.
+
+   ------------------------------------------------------------------
+   HEIGHT — no "navbar + 100vh" overflow
+   ------------------------------------------------------------------
+   `.site-header` is POSITION: FIXED and is rendered by App.jsx
+   OUTSIDE this section, so it contributes ZERO document height. The
+   hero therefore never stacks on top of it.
+
+   Measured at 1600 × 900 before this change:
+     .site-header   position fixed, top 24   (overlay, 0 height)
+     .works-hero    top 0 → bottom 900
+     next section   starts at y 900
+
+   `height: 100vh` (not `min-height`) plus `box-sizing: border-box`
+   on every descendant means the hero occupies exactly the first
+   viewport and can never grow past it.
+
+   ------------------------------------------------------------------
+   DESIGN VALUES AT --f = 1  (multiply by 3.036 at 1600 × 900)
+   ------------------------------------------------------------------
+     title    Inter 900  64px / 71.51%  ls -3.84px   at (27, 78)  231 × 175
+     desc     Inter 300   8px / .865    ls -0.48px   at (34, 202) 205 × 67
+     button   88 × 20  radius 13  black  white 8px label at (34, 233)
+     fox      (361, 86) 43 × 43   box-shadow 0 1px 8.6px #5ba9e9
+========================================================== */
+
+.works-hero {
+  /* 1 design pixel — clamped on both axes so the frame always fits. */
+  --f: min(calc(100vw / 527), calc(100vh / 319));
+
+  position: relative;
+  z-index: 20;              /* above the following sticky section */
+  isolation: isolate;       /* own stacking context */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100vh;            /* exactly one viewport — never taller */
+
+  background: #fcfbf5;      /* Figma frame background */
+  overflow: hidden;
+}
+
+/* No padding or border anywhere in the hero can add to its height. */
+.works-hero,
+.works-hero *,
+.works-hero *::before,
+.works-hero *::after {
+  box-sizing: border-box;
+}
+
+/* ==========================================================
+   FRAME — the design canvas, centred in the hero
+========================================================== */
+
+.works-frame {
+  position: relative;
+
+  width: calc(527 * var(--f));
+  height: calc(319 * var(--f));
+
+  flex-shrink: 0;
+  background: #fcfbf5;
+}
+
+/* ==========================================================
+   TITLE
+   Export: left 27, top 78, 231 × 175, Inter 900 64px,
+   line-height 71.51%, letter-spacing -3.84px.
+========================================================== */
+
+.works-title {
+  position: absolute;
+
+  left: calc(27 * var(--f));
+  top: calc(78 * var(--f));
+
+  width: calc(231 * var(--f));
+  height: calc(175 * var(--f));
+
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  font-family: 'Inter', var(--site-font-family, sans-serif);
+  font-weight: 900;
+
+  font-size: calc(64 * var(--f));
+  letter-spacing: calc(-3.84 * var(--f));
+
+  color: #000000;
+
+  word-break: break-word;
+}
+
+/* Each word is its own line, so the export's 71.51% leading becomes
+   the BASELINE GAP rather than an inherited line box. `gap` would
+   be added on top of the glyph box and push the pair too far apart;
+   shrinking each line box past the glyphs makes the rendered
+   spacing identical to the source (it just visually overflows, and
+   the frame's spare height absorbs it). */
+.works-title span {
+  display: block;
+  line-height: 0.6;
+}
+
+/* ==========================================================
+   DESCRIPTION
+   Export: left 34, top 202, 205 × 67, Inter 300 8px,
+   line-height .865, letter-spacing -0.48px.
+========================================================== */
+
+.works-desc {
+  position: absolute;
+
+  left: calc(34 * var(--f));
+  top: calc(202 * var(--f));
+
+  width: calc(205 * var(--f));
+  height: calc(67 * var(--f));
+
+  margin: 0;
+
+  font-family: 'Inter', var(--site-font-family, sans-serif);
+  font-weight: 300;
+
+  font-size: calc(8 * var(--f));
+  line-height: 0.865;
+  letter-spacing: calc(-0.48 * var(--f));
+
+  color: #000000;
+
+  word-break: break-word;
+}
+
+/* ==========================================================
+   BUTTON
+   Export: left 34, top 233, 88 × 20, radius 13, black,
+   label Inter 400 8px, white.
+========================================================== */
+
+.works-btn {
+  position: absolute;
+
+  left: calc(34 * var(--f));
+  top: calc(233 * var(--f));
+
+  width: calc(88 * var(--f));
+  height: calc(20 * var(--f));
+
+  display: block;
+
+  text-decoration: none;
+
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.works-btn:hover,
+.works-btn:focus-visible {
+  transform: translateY(calc(-1 * var(--f)));
+}
+
+.works-btn:focus-visible {
+  outline: calc(2 * var(--f)) solid #5ba9e9;
+  outline-offset: calc(2 * var(--f));
+}
+
+.works-btn-bg {
+  position: absolute;
+  inset: 0;
+
+  background: #000000;
+  border-radius: calc(13 * var(--f));
+}
+
+/* Centred in the pill rather than pinned to the export's 35% top:
+   at this label size the percentage offset sits a hair low, and the
+   reference reads as optically centred. */
+.works-btn-label {
+  position: absolute;
+
+  left: 10.23%;
+  right: 18.18%;
+  top: 0;
+  bottom: 0;
+
+  display: flex;
+  align-items: center;
+
+  font-family: 'Inter', var(--site-font-family, sans-serif);
+  font-weight: 400;
+
+  font-size: calc(8 * var(--f));
+  line-height: 1;
+  letter-spacing: calc(-0.48 * var(--f));
+
+  color: #ffffff;
+
+  white-space: nowrap;
+}
+
+.works-btn-arrow {
+  position: absolute;
+
+  left: 77.27%;
+  right: 13.64%;
+  top: 0;
+  bottom: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  color: #ffffff;
+
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.works-btn-arrow svg {
+  display: block;
+  width: 100%;
+  max-width: calc(9 * var(--f));
+  height: auto;
+  overflow: visible;
+}
+
+.works-btn:hover .works-btn-arrow,
+.works-btn:focus-visible .works-btn-arrow {
+  transform: translateX(calc(1 * var(--f)));
+}
+
+/* ==========================================================
+   RESPONSIVE
+   `--f` already scales continuously, so these breakpoints only
+   adjust LAYOUT — the honeycomb's internal geometry is never
+   re-flowed or distorted.
+========================================================== */
+
+/* The frame is tuned for a landscape viewport. On portrait and
+   narrow screens the copy and the honeycomb stack instead, and
+   `--f` re-bases so each part keeps its proportions. */
+@media (orientation: portrait), (max-width: 820px) {
+  .works-hero {
+    --f: min(calc(100vw / 400), calc(100vh / 660)) / 1.6;
+
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .works-frame {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 100%;
+    height: auto;
+
+    padding: 0 calc(20 * var(--f));
+  }
+
+  /* Copy becomes a centred column in normal flow. */
+  .works-title,
+  .works-desc,
+  .works-btn {
+    position: static;
+    height: auto;
+  }
+
+  .works-title {
+    width: 100%;
+
+    align-items: center;
+    text-align: center;
+  }
+
+  .works-title span {
+    line-height: 0.86;
+  }
+
+  .works-desc {
+    width: 100%;
+    max-width: calc(205 * var(--f) * 2.6);
+
+    margin-top: calc(24 * var(--f));
+
+    text-align: center;
+  }
+
+  .works-btn {
+    width: calc(100 * var(--f) * 1.55);
+    height: calc(20 * var(--f) * 1.6);
+
+    margin-top: calc(26 * var(--f));
+  }
+
+  .works-btn-bg {
+    border-radius: calc(13 * var(--f) * 1.6);
+  }
+
+  .works-btn-label {
+    left: 0;
+    right: calc(30 * var(--f));
+
+    justify-content: center;
+  }
+
+  .works-btn-arrow {
+    left: auto;
+    right: calc(12 * var(--f));
+
+    width: calc(9 * var(--f) * 1.4);
+  }
+
+  .works-btn-arrow svg {
+    width: 100%;
+    max-width: none;
+    height: auto;
+  }
+
+  /* Overrides Honeycomb.css — this file is imported after it. */
+  .works-visual {
+    position: static;
+
+    transform: none;
+
+    width: calc(527 * var(--f));
+    height: calc(319 * var(--f));
+
+    margin: calc(30 * var(--f)) auto 0;
+  }
+}
+
+/* ==========================================================
+   REDUCED MOTION
+========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .works-btn,
+  .works-btn-arrow {
+    transition-duration: 0.01ms;
+  }
+}

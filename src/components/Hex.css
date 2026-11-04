@@ -1,0 +1,218 @@
+/* ==========================================================
+   HEX
+   Geometry taken verbatim from the Figma Make export.
+
+   SCALE
+   -----
+   The design frame is 527 × 319. `--f` is a LENGTH equal to one
+   design pixel, so every size is `calc(N * var(--f))` — a number
+   times a length. `calc(Npx * var(--f))` would be length × length,
+   which is invalid CSS and silently drops the declaration.
+
+   POSITIONS / SIZES
+   -----------------
+   `.hex` is the hexagon BODY — a square box whose size is the
+   export's body width (78 / 63 / 51 / 43). Its centre is placed by
+   `left` / `top` / `margin`, so a cell can be described by a single
+   body number on both axes and neighbours never drift apart.
+
+   The `inner` wrapper carries the export's negative insets, which
+   is how the source extends the artwork beyond its box — that
+   margin is what gives the drop shadow room to render.
+
+   The artwork itself is supplied as a data URI (see Hex.jsx) and
+   stretched with `object-fit: fill`, because the source SVG uses
+   `preserveAspectRatio="none"`.
+
+   HOVER
+   -----
+   `transform: scale(1.05)` + a blue drop-shadow. Both are pure CSS
+   state, so moving the pointer away and back re-triggers the effect
+   every single time with no JS involvement and no possible cooldown.
+
+   `transform` only → no layout shift, and neighbours never move.
+========================================================== */
+
+/* ==========================================================
+   HEXAGON BASE
+========================================================== */
+
+.hex {
+  position: absolute;
+  cursor: pointer;
+
+  /* `left` / `top` address the hexagon's centre. */
+  transform: translate(-50%, -50%) scale(1);
+  transform-origin: center center;
+  transition: transform 0.3s ease, filter 0.3s ease;
+
+  will-change: transform;
+}
+
+.hex img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+
+  object-fit: fill;
+
+  transition: filter 0.3s ease;
+
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Inner wrapper reproduces the export's negative insets. */
+.hex .inner {
+  position: absolute;
+}
+
+/* ----------------------------------------------------------
+   HOVER — grow + soft blue glow behind
+   Pure CSS state, so it re-applies on EVERY pointer entry.
+---------------------------------------------------------- */
+
+.hex:hover {
+  transform: translate(-50%, -50%) scale(1.05);
+  z-index: 10;
+}
+
+.hex:hover img {
+  filter: drop-shadow(0 0 20px rgba(91, 169, 233, 0.6));
+}
+
+/* Keyboard parity with hover. */
+.hex:focus-visible {
+  outline: none;
+  transform: translate(-50%, -50%) scale(1.05);
+  z-index: 10;
+}
+
+.hex:focus-visible img {
+  filter: drop-shadow(0 0 20px rgba(91, 169, 233, 0.6));
+}
+
+/* ==========================================================
+   SHAPE HEXAGONS (decorative)
+   Inert — they are part of the backdrop, never clickable.
+========================================================== */
+
+.hex-shape {
+  cursor: default;
+  pointer-events: none;
+}
+
+/* ==========================================================
+   INTERACTIVE LOGO TILES
+   The exported inline styles already give the fox its
+   `0 1px 8.6px #5ba9e9` glow and the other three `opacity: .74`.
+   Those are applied via the style prop; here we only add the
+   reset and the pressed state.
+========================================================== */
+
+.hex-logo {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: none;
+
+  appearance: none;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Rounds the icon's own corners: the artwork inside is a rounded
+   square, and the source crops it edge-to-edge. */
+.hex-logo .clip {
+  position: absolute;
+  inset: 0;
+
+  border-radius: 22%;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* The sheet is cropped by oversizing it, exactly as the export does
+   with percentage offsets. Kept in the stylesheet so each tile's
+   geometry sits with the rest of the layout; the percentages are
+   relative to the 43 px tile box, which every tile shares. */
+.hex-logo .logo-img {
+  position: absolute;
+  max-width: none;
+
+  object-fit: fill;
+}
+
+.hex-logo .logo-img.crop-0-0 {
+  left: 0;
+  top: 0;
+  width: 198.72%;
+  height: 192.94%;
+}
+
+.hex-logo .logo-img.crop-infinity {
+  left: -103.95%;
+  top: -95.13%;
+  width: 203.95%;
+  height: 195.45%;
+}
+
+.hex-logo .logo-img.crop-c-company {
+  left: -8.45%;
+  top: -0.32%;
+  width: 218.31%;
+  height: 192.94%;
+}
+
+.hex-logo .logo-img.crop-dtps {
+  left: 0;
+  top: -96.75%;
+  width: 201.3%;
+  height: 197.08%;
+}
+
+/* The export lays a #5BA9E9 veil over the tiles. On this artwork the
+   tint only reads on the fox — the other three icons are already
+   blue — so it reproduces the design without recolouring them. */
+.hex-logo .tint {
+  position: absolute;
+  inset: 0;
+
+  border-radius: 22%;
+  pointer-events: none;
+
+  mix-blend-mode: color;
+}
+
+/* ----------------------------------------------------------
+   PRESSED
+---------------------------------------------------------- */
+
+.hex.is-pressed {
+  transform: translate(-50%, -50%) scale(0.97);
+}
+
+/* ----------------------------------------------------------
+   SELECTED — the lit cell. Same blue as the fox's exported glow.
+---------------------------------------------------------- */
+
+.hex-logo.is-selected {
+  z-index: 12;
+}
+
+.hex-logo.is-selected .logo-img,
+.hex-logo.is-accent .logo-img {
+  filter: drop-shadow(0 0 14px rgba(91, 169, 233, 0.7));
+}
+
+/* ----------------------------------------------------------
+   REDUCED MOTION
+---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .hex,
+  .hex img {
+    transition-duration: 0.01ms;
+  }
+}
