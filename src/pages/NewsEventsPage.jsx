@@ -1,4 +1,5 @@
 import ExpertiseSection from '../components/ExpertiseSection'
+import NewsEventsHero from '../components/NewsEventsHero'
 import './NewsEventsPage.css'
 
 const REVIEWS = [
@@ -84,24 +85,7 @@ export default function NewsEventsPage() {
     return (
         <>
             {/* Hero Section */}
-            <section className="hero-section news-hero">
-                <div className="news-hero-image-wrap">
-                    <img
-                        src="/images/futuretech news and events page image.png"
-                        alt="News and Events"
-                        className="news-hero-image"
-                        loading="eager"
-                        decoding="async"
-                    />
-                </div>
-                <div className="hero-overlay">
-                    <h1>News &amp; Events</h1>
-                    <p className="tagline">
-                        Stay informed with the latest from MW Futuretech — insights,
-                        announcements, and industry events.
-                    </p>
-                </div>
-            </section>
+            <NewsEventsHero />
 
             <ExpertiseSection />
 

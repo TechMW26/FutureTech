@@ -9,7 +9,18 @@ const NAV_ITEMS = [
   { label: 'About', to: '/about' },
 ]
 
-export default function Header() {
+// Routes whose pages scroll natively (Lenis is off). Their sticky scroll tracks
+// need the route change to repaint instead of fading, and the header stays
+// mounted so nothing transforms its fixed positioning.
+const NATIVE_SCROLL_ROUTES = new Set(['/work', '/news-events', '/about', '/lets-talk'])
+
+const isNativeScrollRoute = (pathname) => NATIVE_SCROLL_ROUTES.has(pathname.replace(/\/+$/, '') || '/')
+
+/**
+ * The site's floating liquid-glass header. `staticPosition` keeps the header
+ * outside the page-transition wrapper for the animation-driven routes.
+ */
+export default function Header({ staticPosition = false }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [headerVisible, setHeaderVisible] = useState(true)
   const lastScrollYRef = useRef(0)
@@ -21,6 +32,7 @@ export default function Header() {
     setMenuOpen(false)
     setHeaderVisible(true)
     lastScrollYRef.current = 0
+    if (isNativeScrollRoute(location.pathname)) window.scrollTo({ top: 0, behavior: 'instant' })
   }, [location.pathname])
 
   // Hide the header on downward scroll and reveal it on upward scroll.
@@ -86,7 +98,7 @@ export default function Header() {
 
   return (
     <>
-      <header className={`site-header${headerVisible ? '' : ' is-hidden'}`} role="banner">
+      <header className={`site-header${headerVisible ? '' : ' is-hidden'}${staticPosition ? ' site-header--static-position' : ''}`} role="banner">
         <div className="site-header__pill liquid-glass liquid-glass--strong liquid-glass--animated">
           <Link to="/" className="site-header__brand">
             <img src="/favicon.png" alt="MW Futuretech logo" className="site-header__logo" />

@@ -9,19 +9,30 @@ import { useDesktopScaleCompensation } from './hooks/useDesktopScaleCompensation
 import { useLenisScroll } from './hooks/useLenisScroll'
 import './styles/liquid-glass.css'
 import './App.css'
+import './animations/animations.css'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
-const WorkPage = lazy(() => import('./pages/WorkPage'))
-const ServicesPage = lazy(() => import('./pages/ServicesPage'))
-const NewsEventsPage = lazy(() => import('./pages/NewsEventsPage'))
-const AboutPage = lazy(() => import('./pages/AboutPage'))
-const ContactPage = lazy(() => import('./pages/ContactPage'))
+const OurWorks = lazy(() => import('./animations/OurWorks'))
+const NewsEventsPage = lazy(() => import('./animations/NewsEvents'))
+const AboutPage = lazy(() => import('./animations/About'))
+const LetsTalkPage = lazy(() => import('./animations/LetsTalk'))
+const ConnectionFooter = lazy(() => import('./animations/ConnectionFooter'))
 const DirectorPage = lazy(() => import('./pages/DirectorPage'))
 const SpadeClonePage = lazy(() => import('./pages/SpadeClonePage'))
 
 const PAGE_FADE_DURATION = 0.42
 const MODEL_INTRO_ARM_DELAY = 500
-const MODEL_INTRO_PATHS = new Set(['/', '/news-events', '/about'])
+const MODEL_INTRO_PATHS = new Set(['/'])
+
+// Routes that render the animation pages. Those pages own their header and
+// the cinematic connection footer, and opt out of Lenis so the
+// position: sticky scroll tracks stay exact.
+const ANIMATION_ROUTES = new Set(['/work', '/news-events', '/about', '/lets-talk'])
+const ANIMATION_FOOTER_PATHS = new Set(['/work', '/news-events', '/about'])
+// Routes that render the site header outside the page-transition wrapper.
+const STATIC_HEADER_PATHS = new Set(['/work', '/news-events', '/about', '/lets-talk'])
+
+const isAnimationRoute = (pathname) => ANIMATION_ROUTES.has(pathname)
 
 // Hero background images for routes that still use HeroScene.
 const HERO_IMAGE_PRELOADS = [
@@ -66,8 +77,10 @@ export default function App() {
   const location = useLocation()
   const normalizedPath = location.pathname === '/' ? '/' : location.pathname.replace(/\/+$/, '')
   const isSpadeClone = normalizedPath === '/spade'
-  const isWorkPage = normalizedPath === '/work'
-  const lenisRef = useLenisScroll({ disabled: isSpadeClone })
+  const usesAnimationPage = isAnimationRoute(normalizedPath)
+  const showsConnectionFooter = ANIMATION_FOOTER_PATHS.has(normalizedPath)
+  const showsStaticHeader = STATIC_HEADER_PATHS.has(normalizedPath)
+  const lenisRef = useLenisScroll({ disabled: isSpadeClone || usesAnimationPage })
   const [theme] = useState('light')
   // Stable ref-like objects per model-route path. useMemo avoids accessing
   // .current during render (react-hooks/refs) while still giving children
@@ -132,28 +145,37 @@ export default function App() {
         />
       )}
       {!isSpadeClone && <LiquidGlassDefs />}
-      {!isSpadeClone && <Header />}
+      {!isSpadeClone && !showsStaticHeader && <Header />}
+      {/* Animation pages scroll natively, so the header sits outside any
+          transformed wrapper to keep its fixed position exact. */}
+      {!isSpadeClone && showsStaticHeader && <Header staticPosition />}
 
       {/* Cross-fade between routes. mode="wait" lets the outgoing page
           finish fading out before the new one fades in, so the two
-          never visually overlap. */}
+          never visually overlap. The animation pages skip the fade so their
+          scroll-linked tracks mount at their final geometry. */}
       <AnimatePresence mode="wait" initial={false}>
         <motion.main
           key={location.pathname}
           className="page-live"
-          initial={{ opacity: 0, y: 18 }}
+          initial={usesAnimationPage ? false : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: PAGE_FADE_DURATION, ease: [0.16, 1, 0.3, 1] }}
+          exit={usesAnimationPage ? { opacity: 1, y: 0 } : { opacity: 0, y: -10 }}
+          transition={usesAnimationPage
+            ? { duration: 0 }
+            : { duration: PAGE_FADE_DURATION, ease: [0.16, 1, 0.3, 1] }}
         >
           <Suspense fallback={null}>
             <Routes location={location}>
               <Route path="/" element={<HomePage introStartRef={getIntroRef('/')} />} />
-              <Route path="/work" element={<WorkPage />} />
-              <Route path="/news-events" element={<NewsEventsPage introStartRef={getIntroRef('/news-events')} />} />
+              <Route path="/work" element={<OurWorks />} />
+              <Route path="/news-events" element={<NewsEventsPage />} />
               <Route path="/services" element={<Navigate to="/news-events" replace />} />
-              <Route path="/about" element={<AboutPage introStartRef={getIntroRef('/about')} />} />
-              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              {/* Director profiles live on the original director page. */}
+              <Route path="/about/:directorname" element={<Navigate to={`/director${location.pathname.replace(/^\/about/, '')}`} replace />} />
+              <Route path="/contact" element={<LetsTalkPage talk />} />
+              <Route path="/lets-talk" element={<LetsTalkPage talk />} />
               <Route path="/director/:directorname" element={<DirectorPage />} />
               <Route path="/spade" element={<SpadeClonePage />} />
               <Route path="*" element={<HomePage introStartRef={getIntroRef('/')} />} />
@@ -162,7 +184,11 @@ export default function App() {
         </motion.main>
       </AnimatePresence>
 
-      {!isSpadeClone && !isWorkPage && <Footer />}
+      <Suspense fallback={null}>
+        {showsConnectionFooter && <ConnectionFooter />}
+      </Suspense>
+
+      {!isSpadeClone && !usesAnimationPage && <Footer />}
     </>
   )
 }

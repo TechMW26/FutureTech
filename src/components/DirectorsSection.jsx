@@ -1,6 +1,8 @@
 import { motion } from 'motion/react'
 import { Link } from 'react-router-dom'
 import { DIRECTOR_PROFILES } from '../data/directors'
+import avirajCardImage from '../assets/image 35.png'
+import shakeelCardImage from '../assets/image 36.png'
 import './DirectorsSection.css'
 
 const sectionReveal = {
@@ -57,7 +59,7 @@ export default function DirectorsSection() {
           <motion.div className="directors-card-image" {...cardReveal}>
             <Link to={`/director/${AVIRAJ.slug}`} className="directors-card-image__link">
               <img
-                src="/directors/Aviraj director card mw futuretech.png"
+                src={avirajCardImage}
                 alt="Aviraj Sharma"
                 className="directors-card-image__img"
                 loading="lazy"
@@ -66,27 +68,17 @@ export default function DirectorsSection() {
             </Link>
           </motion.div>
 
-          {/* Shakeel Jamadar — placeholder until card image is ready */}
-          <motion.div className="directors-card" {...cardReveal}>
-            <div className="directors-card__image-wrap directors-card__image-wrap--empty">
-              <div className="directors-card__placeholder-icon">
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-              </div>
-              <p className="directors-card__placeholder-text">Photo coming soon</p>
-            </div>
-            <div className="directors-card__body">
-              <h3 className="directors-card__name">{SHAKEEL.name}</h3>
-              <p className="directors-card__role">{SHAKEEL.role}</p>
-              <Link
-                to={`/director/${SHAKEEL.slug}`}
-                className="directors-card__btn liquid-glass liquid-glass--card liquid-glass-button"
-              >
-                Visit Pages
-              </Link>
-            </div>
+          {/* Shakeel Jamadar — the image is already a complete card design */}
+          <motion.div className="directors-card-image" {...cardReveal}>
+            <Link to={`/director/${SHAKEEL.slug}`} className="directors-card-image__link">
+              <img
+                src={shakeelCardImage}
+                alt="Shakeel Jamadar"
+                className="directors-card-image__img"
+                loading="lazy"
+                decoding="async"
+              />
+            </Link>
           </motion.div>
         </div>
       </div>

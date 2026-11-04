@@ -20,6 +20,18 @@
   pointer-events: none;
 }
 
+/* Animation pages keep the header mounted outside the page-transition wrapper:
+   distance-based transforms and opacity fades would offset or hide it. */
+.site-header--static-position {
+  transition: none;
+  will-change: auto;
+}
+
+.site-header--static-position.is-hidden,
+:root[data-transitioning='true'] .site-header--static-position {
+  opacity: 1;
+}
+
 /* Blur + fade out during route transitions */
 :root[data-transitioning='true'] .site-header {
   opacity: 0;

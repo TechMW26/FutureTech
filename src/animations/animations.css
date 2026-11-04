@@ -1,0 +1,117 @@
+/* Shared base styles for the animation-driven pages. The standalone prototype
+   declared these globally; here they are scoped to each page root so the rest
+   of the site keeps its own typography and palette. */
+.home-screen,
+.news-page,
+.about-page,
+.contact-page {
+  background: #f7f7fb;
+  color: #171923;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.home-screen a,
+.news-page a,
+.about-page a,
+.contact-page a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.home-screen {
+  background:
+    radial-gradient(ellipse at 73% 57%, rgba(226, 228, 243, 0.55), transparent 39%),
+    radial-gradient(ellipse at 8% 8%, rgba(232, 231, 245, 0.42), transparent 38%),
+    #f7f7fb;
+}
+
+/* The works track height is written inline from scrollTimeline.js. */
+.carousel-scroll {
+  position: relative;
+}
+
+.hero {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  min-height: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(ellipse at 73% 57%, rgba(226, 228, 243, 0.55), transparent 39%),
+    radial-gradient(ellipse at 8% 8%, rgba(232, 231, 245, 0.42), transparent 38%),
+    #f7f7fb;
+}
+
+.carousel-scene { position: absolute; inset: 0; overflow: hidden; will-change: transform; }
+
+.project-dialog {
+  position: fixed;
+  width: min(480px, 88vw);
+  max-width: none;
+  max-height: 90svh;
+  padding: 18px;
+  overflow: visible;
+  border: 1px solid #e5e7ef;
+  border-radius: 18px;
+  background: #fff;
+  color: #171923;
+  box-shadow: 0 24px 100px #1c254133;
+}
+
+.project-dialog::backdrop {
+  background: #17203d55;
+  backdrop-filter: blur(10px);
+}
+
+.project-dialog img {
+  display: block;
+  width: 100%;
+  max-height: 70svh;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.project-dialog h2 {
+  margin: 18px 0 0;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.project-close {
+  position: absolute;
+  top: 26px;
+  right: 26px;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #222;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-screen,
+  .news-page,
+  .about-page,
+  .contact-page {
+    scroll-behavior: auto;
+  }
+
+  .home-screen *,
+  .home-screen *::before,
+  .home-screen *::after,
+  .news-page *,
+  .news-page *::before,
+  .news-page *::after,
+  .about-page *,
+  .about-page *::before,
+  .about-page *::after,
+  .contact-page *,
+  .contact-page *::before,
+  .contact-page *::after {
+    transition-duration: 0.01ms !important;
+  }
+}

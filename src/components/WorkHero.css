@@ -1,0 +1,1007 @@
+/* ============================================================
+   WORK HERO
+============================================================ */
+
+.work-hero {
+  position: relative;
+
+  width: 100%;
+  min-height: 100vh;
+
+  overflow: hidden;
+
+  /*
+     Single source of truth for the hero's side padding.
+
+     Used by BOTH the copy's `padding-left` and the honeycomb cluster's
+     `right` offset, so the two side gaps stay equal. Change this one
+     value to move both edges together.
+  */
+  --hc-inset: 9%;
+
+  /*
+     Correction that makes the copy's left gap equal the cluster's
+     VISIBLE right gap.
+
+     `--hc-inset` positions the cluster's 750px authoring BOX, but the
+     rightmost visible hexagon stops short of that box edge: the cells
+     are laid out from the box's left side, and the hexagon artwork is
+     inset from each cell. So the visible right gap comes out wider than
+     the nominal inset.
+
+     Measured delta (left gap minus visible right gap) at each width:
+       1920 → −27px   1512 → −27px   1440 → −38px   1280 → −38px
+
+     Hence two values: this one for the large-desktop range above
+     1200px, and the override in the `max-width: 1200px` block below.
+  */
+  --hc-inset-fix: 27px;
+
+  background: #faf9f5;
+
+  color: #000;
+
+  font-family:
+    Inter,
+    "Helvetica Neue",
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+.work-hero *,
+.work-hero *::before,
+.work-hero *::after {
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   HERO CONTENT
+============================================================ */
+
+.work-hero-content {
+  position: relative;
+
+  width: 100%;
+
+  min-height: 100vh;
+
+  display: flex;
+  align-items: center;
+}
+
+/* ============================================================
+   LEFT COPY
+============================================================ */
+
+.work-copy {
+  position: relative;
+
+  z-index: 20;
+
+  width: 49%;
+
+  /*
+     Matches the honeycomb's right-hand side padding.
+
+     Both this and the cluster's `right` offset read from the same
+     `--hc-inset` variable (declared on .work-hero), so the copy's left
+     gap and the cluster's right gap are equal by construction. Deriving
+     both from one value is what keeps them in sync — independent
+     hard-coded lengths would drift apart whenever either changed.
+
+     `max()` keeps a sensible floor of 65px on narrow viewports, where
+     a percentage inset would collapse to almost nothing.
+  */
+  padding-left: max(
+    65px,
+    calc(var(--hc-inset) + var(--hc-inset-fix))
+  );
+
+  padding-top: 70px;
+}
+
+.work-copy h1 {
+  margin: 0;
+
+  color: #000;
+
+  font-size: clamp(
+    100px,
+    9.45vw,
+    160px
+  );
+
+  line-height: 0.835;
+
+  font-weight: 800;
+
+  letter-spacing: -0.078em;
+}
+
+.work-copy p {
+  margin: 43px 0 0;
+
+  color: #111;
+
+  font-size: clamp(
+    16px,
+    1.25vw,
+    20px
+  );
+
+  line-height: 1.035;
+
+  font-weight: 400;
+
+  letter-spacing: -0.035em;
+}
+
+/* ============================================================
+   EXPLORE BUTTON
+============================================================ */
+
+.explore-button {
+  min-width: 270px;
+
+  height: 62px;
+
+  margin-top: 30px;
+
+  padding:
+    0
+    23px
+    0
+    27px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  border-radius: 999px;
+
+  background: #000;
+
+  color: #fff;
+
+  text-decoration: none;
+
+  font-size: 18px;
+
+  letter-spacing: -0.035em;
+
+  transition:
+    transform 220ms ease,
+    box-shadow 220ms ease;
+}
+
+.explore-button:hover {
+  transform: translateY(-3px);
+
+  box-shadow:
+    0 14px 32px rgba(
+      0,
+      0,
+      0,
+      0.18
+    );
+}
+
+.explore-button-arrow {
+  width: 38px;
+  height: 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.explore-button-arrow svg {
+  width: 38px;
+  height: 24px;
+}
+
+/* ============================================================
+   HONEYCOMB AREA
+============================================================ */
+
+/*
+   The cluster is authored in a FIXED 750 x 660 pixel coordinate space
+   and scaled as one unit by `--hc-scale`.
+
+   Fixed coordinates are what make the no-overlap guarantee hold: the
+   cell offsets below are absolute pixels, so every pair of hitboxes is
+   disjoint by construction at every viewport size. Scaling the whole
+   cluster preserves those relationships — resizing cells per breakpoint
+   (which a percentage layout forces) is what re-introduced the overlaps.
+
+   At `--hc-scale: 0.95` the cluster is 713 x 627, comfortably inside the
+   900px-tall hero, so no cell is clipped by the viewport.
+*/
+
+.work-honeycomb-area {
+  position: absolute;
+
+  top: 50%;
+  right: var(--hc-inset);
+
+  width: 750px;
+  height: 660px;
+
+  /*
+     Default scale.
+
+     The honeycombs are made 20% larger through `--hc-grow` on the
+     ARTWORK (see .work-honeycomb-artwork), NOT by scaling this cluster.
+
+     Scaling the cluster would grow the 150 x 165 hitbox past the
+     150 x 165 pitch and make neighbouring hitboxes overlap, breaking
+     individual hover. Growing only the artwork leaves the hitbox and
+     the pitch untouched, so the spacing is preserved and every cell
+     stays independently hoverable.
+  */
+  --hc-scale: 0.9;
+
+  transform:
+    translateY(-50%)
+    scale(var(--hc-scale, 1));
+
+  transform-origin: center center;
+
+  z-index: 5;
+}
+
+/*
+   The generated light field stays removed. Every visual in this
+   composition is a supplied PNG: the hexagons (Polygon 11 / 12) and the
+   four brand icons (image 4–7), so nothing here is synthesised with
+   gradients, clip-paths or blur.
+*/
+
+/* ============================================================
+   HONEYCOMB CONTAINER
+============================================================ */
+
+.work-honeycomb {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================================
+   CELL SIZE
+============================================================ */
+
+/*
+   The cell is the HITBOX, sized to the hexagon's VISIBLE body.
+
+   Target visible hexagon is 170 x 194 at the reference desktop width.
+   The artwork is attached with a negative left/top offset so the
+   transparent shadow padding spills outside the hitbox instead of
+   widening it (see .work-honeycomb-artwork).
+
+   Cells are laid out on a fixed 150 x 165 pitch. With a 170 x 194
+   hexagon that means neighbouring hitboxes are disjoint while the
+   hexagons still read as a honeycomb — the interlock comes from the
+   artwork overhanging its box, not from overlapping hit areas.
+*/
+
+.work-honeycomb-cell {
+  position: absolute;
+
+  width: 150px;
+  height: 165px;
+
+  cursor: pointer;
+
+  z-index: 2;
+
+  transition:
+    transform 300ms
+      cubic-bezier(
+        0.22,
+        1,
+        0.36,
+        1
+      );
+}
+
+/* ============================================================
+   HEXAGON SHAPE
+============================================================ */
+
+/*
+   The cell is a plain positioning box. Its hexagon is a pre-rendered
+   PNG (Polygon 11 / 12) drawn to fill the whole cell, so no clip-path,
+   border or gradient is used to rebuild it.
+
+   No `overflow: hidden` either — the hover glow bleeds past the cell
+   box, and that bleed is what makes the glow read as a halo.
+*/
+
+.work-honeycomb-shape {
+  position: relative;
+
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/*
+   The hexagon artwork, sized so its VISIBLE body is 20% larger than the
+   hitbox.
+
+   Polygon 11.png is 361 x 369, but the hexagon only occupies
+   271 x 290 of that — the remaining padding (45 / 29 / 45 / 50 px) is
+   transparent space reserved for the drop shadow. Sizing the <img> to
+   the cell would therefore draw a hexagon ~33% larger than intended.
+
+   The base size is 226 x 231 (the canvas scaled by 170 / 271), which
+   draws the visible hexagon at 170 x 194. `--hc-grow: 1.2` then scales
+   that by 20%, giving a 204 x 233 visible hexagon.
+
+   The artwork is centred on the cell with `translate(-50%, -50%)`, so
+   growing it expands equally in all four directions and the hexagons
+   stay centred on their hitboxes.
+
+   Only `left` / `top` are used, never `right` / `bottom` — setting both
+   axes makes the width resolve to `cell + 2 x offset` and the artwork
+   balloons far beyond its intended size.
+*/
+
+.work-honeycomb-artwork {
+  position: absolute;
+
+  /*
+     Every honeycomb is 20% larger than the base build. This is the one
+     value to change to resize the hexagons: it grows the ARTWORK only,
+     so the hitbox pitch — and therefore the spacing between cells and
+     the no-overlap guarantee — is untouched.
+  */
+  --hc-grow: 1.2;
+
+  left: 50%;
+  top: 50%;
+
+  width: calc(132.94% * var(--hc-grow));
+  height: calc(119.07% * var(--hc-grow));
+
+  transform: translate(-50%, -50%);
+
+  object-fit: fill;
+
+  display: block;
+
+  pointer-events: none;
+
+  /* Rest state: no glow. The filter is added on hover only. */
+  transition: filter 300ms ease;
+
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* ============================================================
+   HOVER
+============================================================ */
+
+/*
+   Hover-only state, applied to EVERY cell alike — carrying a logo does
+   not change how a cell behaves.
+
+   At rest nothing glows: each cell paints the neutral Polygon artwork
+   with no filter. The blue glow is applied here, on hover, to the
+   hexagon artwork itself so the bleed follows the hexagon's silhouette.
+*/
+
+.work-honeycomb-cell:hover {
+  z-index: 50;
+
+  transform: scale(1.115);
+}
+
+/* Glow the hexagon on hover — never at rest. */
+.work-honeycomb-cell:hover .work-honeycomb-artwork {
+  filter:
+    drop-shadow(
+      0 0 20px
+      rgba(
+        91,
+        169,
+        233,
+        0.6
+      )
+    );
+}
+
+/* Keyboard parity with hover. */
+.work-honeycomb-cell:focus-within {
+  z-index: 50;
+
+  transform: scale(1.115);
+}
+
+.work-honeycomb-cell:focus-within .work-honeycomb-artwork {
+  filter:
+    drop-shadow(
+      0 0 20px
+      rgba(
+        91,
+        169,
+        233,
+        0.6
+      )
+    );
+}
+
+/* ============================================================
+   LOGO BASE
+============================================================ */
+
+.work-project-logo {
+  position: relative;
+
+  z-index: 10;
+
+  object-fit: contain;
+
+  display: block;
+
+  user-select: none;
+
+  pointer-events: none;
+
+  transition:
+    transform 300ms
+      cubic-bezier(
+        0.22,
+        1,
+        0.36,
+        1
+      );
+}
+
+/* ============================================================
+   INDIVIDUAL LOGO CALIBRATION
+============================================================ */
+
+/*
+|--------------------------------------------------------------------------
+| IMAGE 4
+|--------------------------------------------------------------------------
+|
+| Original:
+| 241 × 241
+|
+| Actual visible bounds:
+| roughly 215 × 217
+|
+| Therefore we don't make the PNG canvas itself excessively large.
+|
+*/
+
+.logo-one {
+  width: 105px;
+  height: 105px;
+}
+
+/*
+|--------------------------------------------------------------------------
+| IMAGE 5
+|--------------------------------------------------------------------------
+|
+| Original:
+| 168 × 172
+|
+| Visible bounds:
+| approximately 150 × 155
+|
+*/
+
+.logo-two {
+  width: 99px;
+  height: 101px;
+}
+
+/*
+|--------------------------------------------------------------------------
+| IMAGE 6
+|--------------------------------------------------------------------------
+|
+| Original:
+| 168 × 168
+|
+| Visible bounds:
+| approximately 153 × 154
+|
+*/
+
+.logo-three {
+  width: 103px;
+  height: 103px;
+}
+
+/*
+|--------------------------------------------------------------------------
+| IMAGE 7
+|--------------------------------------------------------------------------
+|
+| Original:
+| 160 × 172
+|
+| Visible bounds:
+| approximately 150 × 156
+|
+*/
+
+.logo-four {
+  width: 99px;
+  height: 106px;
+}
+
+/* ============================================================
+   LOGO HOVER
+============================================================ */
+
+.work-honeycomb-cell:hover
+.work-project-logo {
+  transform:
+    scale(1.045);
+}
+
+/* ============================================================
+   THE 12 CELLS
+============================================================ */
+
+/*
+                     ①
+
+               ②    ③    ④
+
+            ⑤    ⑥    ⑦
+
+               ⑧    ⑨    ⑩
+
+            ⑪          ⑫
+
+   ③ = logo 1
+   ⑤ = logo 2
+   ⑦ = logo 3
+   ⑨ = logo 4
+*/
+
+/*
+   Fixed pixel grid: column pitch 150, row pitch 165 — exactly the
+   hitbox size, so no two cells can overlap.
+
+   Strict column/row alignment is deliberate: a true honeycomb offsets
+   alternate rows by half a cell, which necessarily overlaps the boxes
+   above and below. Overlap-free hitboxes and interlocking hexagons are
+   mutually exclusive, and overlap-free wins because each cell must stay
+   individually hoverable.
+
+   The arrangement follows the reference's four logo positions
+   (fox top-centre, infinity left, DTPS right, C below-centre) and keeps
+   the 4 + 8 split, while staying inside a 570 x 760 area:
+
+                      ①              row 0
+                   ②  ③  ④           row 1
+                ⑤  ⑥  ⑦  ⑧  ⑨        row 2
+                   ⑩  ⑪  ⑫           row 3
+*/
+
+/* ------------------------------------------------------------
+   ① TOP EMPTY DONE
+------------------------------------------------------------ */
+
+.cell-1 {
+  left: 400px;
+  top: -40px;
+}
+
+/* ------------------------------------------------------------
+   ② UPPER LEFT EMPTY DONE
+------------------------------------------------------------ */
+
+.cell-2 {
+  left: 140px;
+  top: 120px;
+}
+
+/* ------------------------------------------------------------
+   ③ TOP LOGO — fox DONE
+------------------------------------------------------------ */
+
+.cell-3 {
+  left: 330px;
+  top: 120px;
+}
+
+/* ------------------------------------------------------------
+   ④ UPPER RIGHT EMPTY DONE
+------------------------------------------------------------ */
+
+.cell-4 {
+  left: 530px;
+  top: 120px;
+}
+
+/* ------------------------------------------------------------
+   ⑤ LEFT LOGO — infinity DoNE
+------------------------------------------------------------ */
+
+.cell-5 {
+  left: 430px;
+  top: 280px;
+}
+
+/* ------------------------------------------------------------
+   ⑥ LOWER LEFT EMPTY LEFT OF CANACT DONE
+------------------------------------------------------------ */
+
+.cell-6 {
+  left: 50px;
+  top: 280px;
+}
+
+/* ------------------------------------------------------------
+   ⑦ CENTRE EMPTY RIGHT OF MAYALOGY DONE
+------------------------------------------------------------ */
+
+.cell-7 {
+  left: 620px;
+  top: 280px;
+}
+
+/* ------------------------------------------------------------
+   ⑧ RIGHT LOGO — DTPS DONE
+------------------------------------------------------------ */
+
+.cell-8 {
+  left: 325px;
+  top: 440px;
+}
+
+/* ------------------------------------------------------------
+  ⑨ FAR RIGHT EMPTY RIGHT OF DTPS DONE
+------------------------------------------------------------ */
+
+.cell-9 {
+  left: 520px;
+  top: 440px;
+}
+
+/* ------------------------------------------------------------
+   ⑩ LOWER LEFT EMPTY LEFT OF DTPS DONE
+------------------------------------------------------------ */
+
+.cell-10 {
+  left: 130px;
+  top: 440px;
+}
+
+/* ------------------------------------------------------------
+   ⑪ LOWER LOGO — C DONE
+------------------------------------------------------------ */
+
+.cell-11 {
+  left: 240px;
+  top: 280px;
+}
+
+/* ------------------------------------------------------------
+   ⑫ LOWER RIGHT EMPTY LOWEST DONE
+------------------------------------------------------------ */
+
+.cell-12 {
+  left: 260px;
+  top: 595px;
+}
+
+/* ------------------------------------------------------------
+   ⑮ RIGHT OF CELL 12
+------------------------------------------------------------ */
+
+.cell-15 {
+  left: 410px;
+  top: 595px;
+}
+
+/* ============================================================
+   PER-CELL SIZE REDUCTIONS
+============================================================ */
+
+/*
+   Each cell keeps the shared 1.2 base growth but multiplies it by its
+   own reduction factor, so the requested percentages are relative to
+   the size the honeycomb currently renders at.
+
+   The reduction applies to `--hc-grow`, which sizes the hexagon
+   ARTWORK. The hitbox, the cell position and the spacing between cells
+   are all untouched, so nothing but the individual hexagon's size
+   changes.
+
+     cell-1   −40%  →  1.2 * 0.6  =  0.72
+     cell-2   −20%  →  1.2 * 0.8  =  0.96
+     cell-4   −20%  →  1.2 * 0.8  =  0.96
+     cell-6   −40%  →  1.2 * 0.6  =  0.72
+     cell-7   −40%  →  1.2 * 0.6  =  0.72
+     cell-9   −20%  →  1.2 * 0.8  =  0.96
+     cell-10  −20%  →  1.2 * 0.8  =  0.96
+     cell-12  −40%  →  1.2 * 0.6  =  0.72
+
+   Cells 3, 5, 8 and 11 (the four logo cells) are deliberately not
+   listed and keep the full 1.2 size.
+*/
+
+.cell-1 .work-honeycomb-artwork {
+  --hc-grow: 0.72;
+}
+
+.cell-2 .work-honeycomb-artwork {
+  --hc-grow: 0.96;
+}
+
+.cell-4 .work-honeycomb-artwork {
+  --hc-grow: 0.96;
+}
+
+.cell-6 .work-honeycomb-artwork {
+  --hc-grow: 0.72;
+}
+
+.cell-7 .work-honeycomb-artwork {
+  --hc-grow: 0.72;
+}
+
+.cell-9 .work-honeycomb-artwork {
+  --hc-grow: 0.96;
+}
+
+.cell-10 .work-honeycomb-artwork {
+  --hc-grow: 0.96;
+}
+
+.cell-12 .work-honeycomb-artwork {
+  --hc-grow: 0.72;
+}
+
+/*
+   The added cell is 10% smaller than cell-1, which sits at 0.72:
+   0.72 * 0.9 = 0.648.
+*/
+
+.cell-15 .work-honeycomb-artwork {
+  --hc-grow: 0.648;
+}
+
+/* ============================================================
+   DESKTOP LARGE
+============================================================ */
+
+/*
+   Only `--hc-scale` changes across breakpoints. The cell size and the
+   12 offsets are never touched, which is what keeps every hitbox
+   disjoint at every width. The logo sizes scale with the cluster
+   because they are sized in the same, unscaled coordinate space.
+*/
+
+@media (min-width: 1500px) {
+
+  .work-honeycomb-area {
+    --hc-scale: 0.93;
+  }
+}
+
+/*
+   The 1201px–1499px band uses the default `--hc-scale: 0.9`, which makes
+   the cluster slightly narrower than the 1500px+ band. That changes how
+   far the visible hexagon stops short of the authoring box, so the inset
+   correction needs its own value here to keep both side gaps equal.
+*/
+
+@media (min-width: 1201px) and (max-width: 1499px) {
+
+  .work-hero {
+    --hc-inset-fix: 38px;
+  }
+}
+
+/* ============================================================
+   MEDIUM DESKTOP
+============================================================ */
+
+@media (max-width: 1200px) {
+
+  /* Override the shared inset, not the cluster's `right` alone — otherwise
+     the copy and the cluster would stop matching at this breakpoint.
+     The correction differs here because `--hc-scale` is 0.84, which moves
+     how far the visible hexagon stops short of the authoring box. */
+  .work-hero {
+    --hc-inset: 7%;
+    --hc-inset-fix: 61px;
+  }
+
+  .work-honeycomb-area {
+    --hc-scale: 0.84;
+  }
+
+  .work-copy h1 {
+    font-size: clamp(
+      88px,
+      9vw,
+      130px
+    );
+  }
+
+  .work-copy p {
+    font-size: 15px;
+  }
+}
+
+/* ============================================================
+   TABLET
+============================================================ */
+
+@media (max-width: 850px) {
+
+  .work-hero {
+    overflow: visible;
+  }
+
+  .work-hero-content {
+    min-height: auto;
+
+    padding-top: 145px;
+    padding-bottom: 80px;
+
+    display: flex;
+    flex-direction: column;
+  }
+
+  .work-copy {
+    width: 100%;
+
+    padding:
+      0 30px;
+
+    text-align: center;
+  }
+
+  .work-copy h1 {
+    font-size: clamp(
+      80px,
+      16vw,
+      125px
+    );
+  }
+
+  .work-copy p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .desktop-break {
+    display: none;
+  }
+
+  .explore-button {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .work-honeycomb-area {
+    position: relative;
+
+    top: auto;
+    right: auto;
+
+    /*
+       Stacked layout: the cluster sits under the copy. Only the scale
+       changes — never a cell resize — so the disjoint hitboxes and the
+       hitbox/artwork relationship survive intact.
+
+       `transform` does not shrink the layout box, so the difference
+       between the authored 660px height and the scaled height is
+       reclaimed with a negative bottom margin. Without it the scaled
+       cluster overflows the viewport and pushes the next section down.
+    */
+    --hc-scale: 0.78;
+
+    transform: scale(var(--hc-scale));
+
+    transform-origin: center top;
+
+    margin: 45px auto calc(-660px * (1 - var(--hc-scale)));
+  }
+}
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+@media (max-width: 600px) {
+
+  .work-hero-content {
+    padding-top: 120px;
+  }
+
+  .work-copy {
+    padding:
+      0 20px;
+  }
+
+  .work-copy h1 {
+    font-size: 23vw;
+  }
+
+  .work-copy p {
+    font-size: 14px;
+
+    line-height: 1.2;
+  }
+
+  .explore-button {
+    min-width: 235px;
+
+    height: 56px;
+
+    font-size: 16px;
+  }
+
+  /*
+     The complete honeycomb system is scaled as one unit on phones,
+     keeping all 12 cells visible and every hitbox disjoint.
+  */
+
+  .work-honeycomb-area {
+    --hc-scale: 0.56;
+
+    /*
+       The layout box stays 750px wide while only `--hc-scale` of it is
+       drawn, so `margin: auto` would centre the BOX and push the visible
+       cluster off the right edge. These margins centre the visible
+       cluster instead.
+    */
+    margin-top: 10px;
+    margin-left: calc(-750px * (1 - var(--hc-scale)) / 2);
+    margin-right: calc(-750px * (1 - var(--hc-scale)) / 2);
+
+    margin-bottom: calc(-660px * (1 - var(--hc-scale)));
+  }
+}
+
+/* ============================================================
+   VERY SMALL PHONES
+============================================================ */
+
+@media (max-width: 400px) {
+
+  .work-honeycomb-area {
+    --hc-scale: 0.47;
+
+    margin-left: calc(-750px * (1 - var(--hc-scale)) / 2);
+    margin-right: calc(-750px * (1 - var(--hc-scale)) / 2);
+
+    margin-bottom: calc(-660px * (1 - var(--hc-scale)));
+  }
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .work-honeycomb-cell,
+  .work-project-logo,
+  .explore-button {
+    transition: none;
+  }
+}

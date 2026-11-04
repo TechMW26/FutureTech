@@ -1,0 +1,42 @@
+﻿.connection-footer { position: relative; isolation: isolate; background: #101214; color: #f0f0ec; }
+.connection-stage { position: sticky; top: 0; width: 100%; height: 100svh; min-height: 500px; overflow: hidden; background: #101214; }
+.connection-poster, .connection-film { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+.connection-film { opacity: 0; }
+.connection-footer.has-frames .connection-film { opacity: 1; }
+.connection-footer.has-frames .connection-poster { opacity: 0; }
+.connection-shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, #10121480 0%, #10121408 25%, #10121418 55%, #101214be 100%), radial-gradient(ellipse at 50% 45%, #10121442, transparent 65%); }
+.connection-shade::after { content: ''; position: absolute; inset: 0; background: #101214; opacity: calc(var(--connection-reveal, 1) * .33); }
+.connection-top { position: absolute; top: 38px; left: 5%; right: 5%; display: flex; justify-content: space-between; align-items: center; }
+.connection-top > a { display: inline-flex; align-items: center; gap: 9px; font-size: 11px; color: #e2e3de; }
+.connection-top img { width: 25px; height: 25px; filter: grayscale(1) brightness(0) invert(1); opacity: .85; }
+.connection-invitation { position: absolute; top: 46%; left: 8%; right: 8%; text-align: center; transform: translateY(-50%); }
+.connection-invitation > p { margin: 0 0 23px; color: #b9bdb6; font-size: 9px; letter-spacing: .14em; }
+.connection-invitation h2 { margin: 0; font-size: clamp(45px, 5.6vw, 86px); line-height: 1.02; font-weight: 400; letter-spacing: -.065em; text-shadow: 0 2px 20px #0000001c; }
+.connection-invitation h2 em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #c6cec0; }
+.connection-link { display: inline-flex; align-items: center; gap: 30px; margin-top: 30px; padding: 6px 7px 6px 23px; border: 1px solid #dfe4d742; border-radius: 999px; background: #ffffff0b; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); color: #e9ece4; font-size: 12px; transition: background .25s, border-color .25s; }
+.connection-arrow { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #e9ede0; color: #263128; font-size: 20px; transition: transform .25s; }
+.connection-link:hover { background: #ffffff16; border-color: #dfe4d77a; }
+.connection-link:hover .connection-arrow { transform: rotate(45deg); }
+.connection-bottom { position: absolute; right: 5%; bottom: 29px; left: 5%; display: flex; align-items: center; justify-content: space-between; gap: 25px; font-size: 9px; color: #91998f; }
+.connection-bottom a { display: inline-flex; align-items: center; gap: 16px; color: #b5beb2; }
+.connection-footer.is-sequenced .connection-invitation { opacity: var(--connection-reveal, 0); transform: translateY(calc(-50% + (1 - var(--connection-reveal, 0)) * 24px)); }
+.connection-footer a:focus-visible { outline: 2px solid #e1e8d6; outline-offset: 6px; }
+.organisation-news { padding-bottom: 75px; }
+@media (max-width: 700px) {
+ .connection-stage { min-height: 540px; }
+ .connection-poster { top: auto; bottom: 45px; height: auto; aspect-ratio: 1.6; object-fit: cover; }
+ .connection-shade { background: linear-gradient(180deg, #101214 0%, #10121400 56%, #10121400 76%, #101214bb 100%); }
+ .connection-invitation { top: 33%; left: 6%; right: 6%; }
+ .connection-invitation h2 { font-size: clamp(41px, 10.2vw, 62px); }
+ .connection-invitation > p { font-size: 7px; margin-bottom: 18px; letter-spacing: .1em; }
+ .connection-link { margin-top: 23px; font-size: 11px; gap: 25px; }
+ .connection-top { top: 27px; left: 7%; }
+ .connection-bottom { bottom: 22px; left: 7%; right: 7%; font-size: 8px; }
+ .connection-bottom > span { max-width: 145px; line-height: 1.7; }
+ .connection-bottom a { gap: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+ .connection-stage { position: relative; }
+ .connection-footer.is-sequenced .connection-invitation { opacity: 1; transform: translateY(-50%); }
+ .connection-arrow, .connection-link { transition: none; }
+}

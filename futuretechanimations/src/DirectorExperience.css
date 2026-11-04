@@ -1,0 +1,32 @@
+﻿.director-experience{position:relative;height:255svh;background:#f5f7fb;--director-group-x:0vw;--director-group-y:0px;--director-group-tilt:0deg;--director-intro-opacity:1;--director-bio-opacity:0;--director-bio-lift:65px}
+.director-experience-stage{position:sticky;top:0;height:100svh;min-height:620px;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 77% 80%,#d9e4f0a6,transparent 52%),linear-gradient(125deg,#fafbfe,#eff3f9)}
+.director-experience-top,.director-experience-bottom{position:absolute;left:5%;right:5%;display:flex;align-items:center;justify-content:space-between;z-index:5;font-size:9px;letter-spacing:.12em;color:#6985a3}
+.director-experience-top{top:14%}.director-experience-top a{font-size:11px;letter-spacing:0}.director-experience-bottom{bottom:4%;font-size:9px}
+.director-experience-heading{position:absolute;z-index:1;top:26%;left:7.6%;opacity:var(--director-intro-opacity);will-change:opacity}
+.director-role{display:block;font-size:10px;letter-spacing:.15em;font-weight:650;color:#526f8f;margin-bottom:32px}
+.director-experience-heading h1,.director-experience-heading h2{font-size:clamp(70px,10.2vw,180px);font-weight:550;letter-spacing:-.075em;line-height:.96;color:#163047}
+.director-experience-heading h1 span,.director-experience-heading h2 span{color:#6c8eac}
+.director-orbit-group{position:absolute;z-index:2;left:39%;top:14%;width:59%;height:84%;transform:translate3d(var(--director-group-x),var(--director-group-y),0) rotate(var(--director-group-tilt));will-change:transform;isolation:isolate}
+.metal-ribbon{display:block;width:100%;height:100%;position:absolute;inset:0;pointer-events:none}
+.director-orbit-group .metal-ribbon--back{z-index:0}.director-orbit-group .metal-ribbon--front{z-index:3}
+.director-experience-photo{position:absolute;z-index:1;left:16%;bottom:7%;height:93%;width:66%;display:flex;justify-content:center;align-items:flex-end}
+.director-experience-photo img{display:block;width:100%;height:100%;object-fit:contain;object-position:center bottom;mask-image:linear-gradient(#000 80%,#000b 92%,transparent 100%)}
+.director-experience-note{position:absolute;left:8%;top:71%;z-index:4;max-width:270px;opacity:var(--director-intro-opacity);will-change:opacity}
+.director-note-rule{display:none}.director-experience-note p{font-size:clamp(12px,1.15vw,18px);line-height:1.5;color:#6c85a0}
+.director-experience-note a{display:flex;justify-content:space-between;gap:45px;align-items:center;margin-top:28px;border-bottom:1px solid #7a96ad;padding-bottom:16px;font-size:14px;color:#1b3853}
+.director-experience-note a span{font-size:23px;transition:transform .25s}.director-experience-note a:hover span{transform:translate(3px,-3px)}
+.director-biography{position:absolute;left:57%;right:7%;top:31%;z-index:4;opacity:var(--director-bio-opacity);transform:translateY(var(--director-bio-lift));will-change:opacity,transform}
+.director-biography .director-role{font-size:9px;margin-bottom:24px}.director-biography h2{font-size:clamp(32px,3.8vw,65px);font-weight:550;letter-spacing:-.06em;line-height:1.12;color:#17344c;margin:0 0 28px}.director-biography h2 span{color:#6f8da8}.director-biography p{font-size:clamp(12px,1.05vw,16px);line-height:1.9;color:#687e93;max-width:430px;margin-bottom:15px}.director-biography .about-text-link{margin-top:5px}
+@media(max-width:700px){.director-experience{height:230svh}.director-experience-stage{min-height:700px}.director-experience-top{top:96px;left:6%;right:6%}.director-experience-top>span{font-size:7px;max-width:125px;text-align:right;line-height:1.6}.director-experience-heading{left:7%;top:21%;z-index:3}.director-role{font-size:8px;margin-bottom:16px}.director-experience-heading h1,.director-experience-heading h2{font-size:clamp(58px,15vw,98px)}.director-orbit-group{left:4%;top:37%;width:94%;height:58%}.director-experience-photo{height:97%;bottom:6%}.director-experience-note{left:7%;top:50%;max-width:155px}.director-experience-note p{font-size:11px}.director-experience-note a{margin-top:12px;font-size:11px;gap:20px;padding-bottom:8px}.director-experience-bottom{font-size:6px;bottom:20px}.director-biography{left:8%;right:8%;top:19%;padding:0}.director-biography h2{font-size:34px;margin-bottom:15px}.director-biography p{font-size:11px;line-height:1.7;max-width:330px}.director-biography .director-role{margin-bottom:12px;font-size:8px}.director-biography .about-text-link{font-size:11px;padding:8px 0}.director-orbit-group{opacity:calc(1 - var(--director-bio-opacity) * .45)}}
+@media(prefers-reduced-motion:reduce){.director-experience{height:auto}.director-experience-stage{position:relative;height:auto;min-height:100svh;padding-bottom:60px}.director-orbit-group{height:650px;max-height:75svh;top:140px;transform:none}.director-experience-heading{top:240px;opacity:1}.director-experience-note{top:610px;opacity:1}.director-biography{position:relative;left:auto;right:auto;top:auto;padding:850px 8% 50px;opacity:1;transform:none}.director-experience-bottom{bottom:25px}.director-biography p{max-width:600px}}
+.director-orbit-group{transform:translate3d(var(--director-group-x),var(--director-group-y),0) rotate(var(--director-group-tilt)) scale(var(--director-group-scale,1))}
+@media(prefers-reduced-motion:reduce){.director-orbit-group{transform:none}}
+/* Fine orbit light: broad metal is reserved for the main hero. */
+.director-light-orbits{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;transform:rotate(var(--director-orbit-rotation,0deg));transform-origin:50% 55%;will-change:transform}
+.director-light-orbits--back{z-index:0}.director-light-orbits--front{z-index:3}
+.director-orbit-glow{filter:blur(5px);opacity:.35}
+.director-light-orbit--1{opacity:.42}
+.director-orbit-spark{animation:director-light-travel 24s linear infinite;filter:drop-shadow(0 0 4px #adddff);opacity:.75}
+.director-light-orbit--1 .director-orbit-spark{animation-duration:32s;animation-direction:reverse;opacity:.4}
+@keyframes director-light-travel{to{stroke-dashoffset:-100}}
+@media(prefers-reduced-motion:reduce){.director-light-orbits{transform:none}.director-orbit-spark{animation:none}}
