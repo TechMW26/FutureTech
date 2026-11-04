@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.log
+
+.codex-tools/
+.codex-media/
+.reference/
