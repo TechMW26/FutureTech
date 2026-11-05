@@ -1,14 +1,62 @@
-const entries = [
-  ['Form / Field', 'Visual identity · Digital experience', 'An independent creative direction where natural imagery meets bold typography. A study in turning loose ideas into a distinct digital identity.'],
-  ['Element', 'Art direction · Web design', 'An architectural approach to a digital experience. Strong imagery, considered space and confident type bring a different perspective into focus.'],
-  ['Studio North', 'Brand expression · Digital design', 'A new point of view, shaped into a memorable online presence. An expressive visual language with people and their stories at its center.'],
-  ['Objects', 'Editorial design · Digital experience', 'A considered space for the objects of tomorrow. Editorial typography and a quiet composition give every detail room to be discovered.'],
-  ['New Culture', 'Creative direction · Web design', 'Culture in the making. An evolving visual exploration of new ideas, using a clear layout and oversized typography to frame what comes next.'],
-  ['In Motion', 'Art direction · Brand experience', 'A new wave of imagination. Color, expressive imagery and fluid composition come together in a digital experience with a sense of movement.'],
-  ['Everyday / Future', 'Digital design · Visual storytelling', 'Finding possibility in the everyday. A cinematic visual direction that connects familiar places with a fresh perspective on the future.'],
-  ['Beyond', 'Brand direction · Digital experience', 'A creative expression built around going beyond the expected. Bold contrasts and a simple structure let an individual point of view lead the experience.'],
+﻿import algae from '../carousel/algae.jpg'
+import canact from '../carousel/canact.jpg'
+import dtps from '../carousel/dtps.jpg'
+import mayalogy from '../carousel/mayalogy.jpg'
+import mira from '../carousel/mira.jpg'
+import talioscreen from '../carousel/talioscreen.jpg'
+
+export const projects = [
+  {
+    id: 'mira',
+    title: 'MIRA AI',
+    category: 'Intelligent assistant · Product design',
+    description: 'An intelligent AI assistant that makes work smarter, faster and more efficient. A calm visual language for chat, code, organisation and automation.',
+    src: mira,
+    alt: 'MIRA AI intelligent assistant shown on a desktop monitor',
+  },
+  {
+    id: 'algae',
+    title: 'Algae Tree',
+    category: 'Carbon capture · Sustainable technology',
+    description: 'A living solution for cleaner air. A next-gen, algae-powered system that captures carbon dioxide from the air, releases clean oxygen and helps restore a healthier planet.',
+    src: algae,
+    alt: 'Algae Tree carbon capture device in a glass dome surrounded by greenery',
+  },
+  {
+    id: 'canact',
+    title: 'Canact',
+    category: 'Social app · Digital identity',
+    description: 'A social digital personality app that helps people build a trustworthy identity reflecting who they are in real life through reputation, verified actions and authentic presence.',
+    src: canact,
+    alt: 'Canact social identity app displayed on a phone',
+  },
+  {
+    id: 'dtps',
+    title: 'DTPS',
+    category: 'Weight loss & nutrition · Web experience',
+    description: 'A trusted weight loss and nutrition partner. A warm, personal site connecting sustainable weight loss, PCOS management and holistic health.',
+    src: dtps,
+    alt: 'DTPS dietitian website shown on a laptop surrounded by fresh produce',
+  },
+  {
+    id: 'mayalogy',
+    title: 'Mayalogy',
+    category: 'Astrology · Personal guidance',
+    description: 'A personal astrology companion. Discover, understand and align through readings, AI-powered guidance and cosmic remedies.',
+    src: mayalogy,
+    alt: 'Mayalogy astrology platform shown on a laptop with zodiac imagery',
+  },
+  {
+    id: 'talio',
+    title: 'Talio',
+    category: 'HRMS & productivity · Product design',
+    description: 'Streamline work and empower teams. An HRMS and productivity platform for attendance, leave, payroll and employee management.',
+    src: talioscreen,
+    alt: 'Talio HRMS platform shown on a desktop monitor',
+  },
 ]
 
-export const workProjects = entries.map(([title, category, description], index) => ({
-  title, category, description, src: `/images/work-preview-${index + 1}.png`, alt: `${title} project preview`,
-}))
+/** The ribbon renders at most eight cards; this keeps that contract explicit. */
+export const MAX_PROJECTS = 8
+
+export const workProjects = projects.slice(0, MAX_PROJECTS)

@@ -1,6 +1,41 @@
 import { projectRibbonPoint, ribbonPoint, ribbonScene, ribbonCardOpacity, ribbonClip } from './WorksRibbonMotion';
 
 const COLS = 48, ROWS = 6, STRIDE = 6;
+
+// Some devices stall image decodes indefinitely, which used to leave the ribbon
+// blank forever because rendering waits for every texture. Always settle on
+// load, error or timeout so the scene can paint the cards that did arrive.
+const LOAD_TIMEOUT = 12000;
+
+function loadImage(image, source) {
+  let settled = false;
+  const finish = (succeed) => {
+    if (settled) return;
+    settled = true;
+    clearTimeout(timer);
+    if (succeed) image.onload();
+    else image.onerror();
+  };
+  const timer = setTimeout(() => finish(false), LOAD_TIMEOUT);
+  image.upload = () => finish(true);
+
+  // createImageBitmap keeps the decoded JPG off the DOM-image path that iOS
+  // caps for large photos; fall back to a plain <img> where it is unsupported.
+  if (typeof createImageBitmap === 'function' && typeof fetch === 'function') {
+    fetch(source, { mode: 'cors', credentials: 'same-origin' })
+      .then(response => (response.ok ? response.blob() : Promise.reject(new Error('Image request failed'))))
+      .then(blob => createImageBitmap(blob))
+      .then(bitmap => {
+        if (settled) { bitmap.close?.(); return; }
+        image.bitmap = bitmap;
+        image.upload();
+      })
+      .catch(() => { if (!settled) { image.src = source; } });
+    return;
+  }
+  image.src = source;
+}
+
 const VERTEX = `
 attribute vec3 aPosition;
 attribute vec2 aUV;
@@ -51,12 +86,16 @@ export class WorksRibbonRenderer {
   readyCount = 0;
   uniforms;
 
-  constructor(canvas, count, wake, fail) {
+  constructor(canvas, count, paths, wake, fail) {
     this.canvas = canvas;
     this.count = count;
+    this.paths = paths;
     this.wake = wake;
     this.fail = fail;
-    const gl = canvas.getContext('webgl', { alpha: true, antialias: true, depth: true, premultipliedAlpha: false, powerPreference: 'high-performance' });
+    // Older mobile GPUs (and some in-app browsers) only expose the experimental
+    // context name, so try both before giving up on the 3D ribbon.
+    const gl = canvas.getContext('webgl', { alpha: true, antialias: true, depth: true, premultipliedAlpha: false, powerPreference: 'high-performance' })
+      || canvas.getContext('experimental-webgl', { alpha: true, depth: true, premultipliedAlpha: false });
     if (!gl) throw new Error('WebGL unavailable');
     this.gl = gl;
     const compile = (type, source) => {
@@ -97,28 +136,38 @@ export class WorksRibbonRenderer {
       const texture = gl.createTexture();
       this.textures.push(texture);
       gl.bindTexture(gl.TEXTURE_2D, texture);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([247, 247, 251, 255]));
+      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, new Uint8Array([231, 231, 238, 255]));
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
       const image = new Image();
       this.images.push(image);
+      // Called by loadImage once the bitmap (or fallback <img>) is ready.
       image.onload = () => {
         if (!this.active) return;
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+        const source = image.bitmap || (image.complete && image.naturalWidth ? image : null);
+        try {
+          gl.bindTexture(gl.TEXTURE_2D, texture);
+          if (source) gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, source);
+        } catch { this.fail(); return; }
+        image.bitmap?.close?.();
+        image.bitmap = null;
         this.readyCount++; this.wake();
       };
-      image.onerror = () => { if (this.active) this.fail(); };
-      image.src = `/images/work-preview-${index + 1}.png`;
+      // A single unreadable card must not take the whole ribbon down.
+      image.onerror = () => {
+        if (!this.active) return;
+        this.readyCount++; this.wake();
+      };
+      loadImage(image, paths[index]);
     }
   }
 
   render(progress, width, height, focused = -1, miniSpin = 0) {
-    if (!this.active) return;
+    if (!this.active || this.gl.isContextLost()) return;
     const gl = this.gl, dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const pixelWidth = Math.round(width * dpr), pixelHeight = Math.round(height * dpr);
+    const pixelWidth = Math.max(1, Math.round(width * dpr)), pixelHeight = Math.max(1, Math.round(height * dpr));
     if (this.canvas.width !== pixelWidth || this.canvas.height !== pixelHeight) { this.canvas.width = pixelWidth; this.canvas.height = pixelHeight; }
     gl.viewport(0, 0, pixelWidth, pixelHeight);
     gl.disable(gl.SCISSOR_TEST);
@@ -184,9 +233,29 @@ export class WorksRibbonRenderer {
   }
 
   dispose() {
+    if (!this.active) return;
     this.active = false;
-    this.images.forEach(image => { image.onload = null; image.onerror = null; });
-    this.textures.forEach(texture => this.gl.deleteTexture(texture));
-    this.gl.deleteBuffer(this.buffer); this.gl.deleteBuffer(this.indicesBuffer); this.gl.deleteProgram(this.program);
+    // Drop in-flight downloads so a disposed ribbon cannot keep decoding images.
+    this.images.forEach(image => {
+      image.onload = null; image.onerror = null;
+      image.bitmap?.close?.(); image.bitmap = null;
+      image.src = '';
+    });
+    this.images.length = 0;
+    try {
+      this.textures.forEach(texture => this.gl.deleteTexture(texture));
+      this.gl.deleteBuffer(this.buffer); this.gl.deleteBuffer(this.indicesBuffer); this.gl.deleteProgram(this.program);
+    } catch { /* context already gone */ }
+    this.textures.length = 0;
+    // Release the GPU context so remounts never leak one; browsers cap how many
+    // a page may hold. Only do this when the canvas is actually leaving the
+    // document: React StrictMode mounts the replacement renderer before it
+    // disposes the previous one, and losing a shared canvas would kill the
+    // context the new instance just acquired.
+    if (!this.canvas.isConnected) {
+      const lose = this.gl.getExtension('WEBGL_lose_context');
+      try { lose?.loseContext(); } catch { /* context already gone */ }
+    }
+    this.gl = null;
   }
 }

@@ -1,10 +1,14 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { WorksRibbonRenderer } from './WorksRibbonRenderer'
 import { interval, smooth, projectFocus } from './WorksRibbonMotion'
+import { MAX_PROJECTS } from './workProjects'
 import './WorksSequence.css'
+
+const MAX_CARDS = MAX_PROJECTS
 
 /** Scroll-orchestrated ribbon of project cards that resolves into a focused carousel. */
 export default function WorksSequence({ progress, items, onSelect }) {
+  const cards = Math.min(MAX_CARDS, items.length)
   const host = useRef(null)
   const canvas = useRef(null)
   const first = useRef(null)
@@ -20,29 +24,42 @@ export default function WorksSequence({ progress, items, onSelect }) {
   const fallbackRef = useRef(false)
   const [fallback, setFallback] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
-  const project = items[activeIndex]
+  const project = items[activeIndex] ?? items[0]
 
   useEffect(() => {
     const root = host.current, surface = canvas.current
+    if (!root || !surface) return
     let width = root.clientWidth, height = root.clientHeight
     let frame = 0, last = 0, current = target.current, miniSpin = 0
-    let running = true, visible = true
+    let running = true, visible = true, retry = 0
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const measure = () => {
+      width = root.clientWidth || window.innerWidth
+      height = root.clientHeight || window.innerHeight
+      // Round to device pixels so sub-pixel container sizes cannot break scissor math.
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      width = Math.max(1, Math.round(width * dpr) / dpr)
+      height = Math.max(1, Math.round(height * dpr) / dpr)
+    }
+    measure()
     const render = (time) => {
       frame = 0
       if (!running || !visible || document.hidden) { last = 0; return }
       const dt = last ? Math.min((time - last) / 1000, .05) : 1 / 60
       last = time
-      current += (target.current - current) * (1 - Math.exp(-dt / .24))
+      // Reduced motion keeps the full scroll sequence but snaps the ribbon to the
+      // scroll position instead of easing behind it.
+      const ease = motion.matches ? 1 : 1 - Math.exp(-dt / .24)
+      current += (target.current - current) * ease
       if (Math.abs(target.current - current) < .00001) current = target.current
-      const p = motion.matches || fallbackRef.current ? Math.max(.5, target.current) : current
-      if (p < .16 && !motion.matches) miniSpin += dt * .055
+      const p = current
+      if (!motion.matches && p < .16) miniSpin += dt * .055
       renderer.current?.render(p, width, height, focused.current, miniSpin)
       const intro = Math.min(.54, p / .36 * .54)
-      const moveText = motion.matches ? 0 : smooth(interval(intro, .16, .54))
+      const moveText = smooth(interval(intro, .16, .54))
       if (first.current) first.current.style.transform = `translate3d(${moveText * width * .67}px, ${-moveText * height * .13}px, 0)`
       if (second.current) second.current.style.transform = `translate3d(${-moveText * width * .67}px, ${moveText * height * .13}px, 0)`
-      const focus = projectFocus(p, Math.min(8, items.length))
+      const focus = projectFocus(p, Math.min(MAX_CARDS, items.length))
       if (focus.index !== active.current) { active.current = focus.index; setActiveIndex(focus.index) }
       if (details.current) {
         details.current.style.opacity = String(focus.reveal)
@@ -62,9 +79,22 @@ export default function WorksSequence({ progress, items, onSelect }) {
     const fail = () => {
       if (running) { fallbackRef.current = true; setFallback(true); renderer.current?.dispose(); renderer.current = null; schedule() }
     }
-    try { renderer.current = new WorksRibbonRenderer(surface, Math.min(8, items.length), schedule, fail) }
-    catch { fail() }
-    const resize = new ResizeObserver(() => { width = root.clientWidth; height = root.clientHeight; schedule() })
+    // Some browsers report a lost GPU context or a transient WebGL failure at
+    // first paint. Retry a couple of times before switching to the static
+    // fallback so a brief hiccup does not permanently remove the carousel.
+    let mine = null
+    const create = () => {
+      try {
+        mine = new WorksRibbonRenderer(surface, Math.min(MAX_CARDS, items.length), items.map(item => item.src), schedule, fail)
+        renderer.current = mine
+      } catch {
+        mine = null
+        if (retry++ < 2) setTimeout(() => { if (running && !mine) create() }, 350)
+        else fail()
+      }
+    }
+    create()
+    const resize = new ResizeObserver(() => { measure(); schedule() })
     resize.observe(root)
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) schedule() })
     observer.observe(root)
@@ -72,15 +102,18 @@ export default function WorksSequence({ progress, items, onSelect }) {
     surface.addEventListener('webglcontextlost', contextLost)
     motion.addEventListener('change', schedule)
     document.addEventListener('visibilitychange', schedule)
+    window.addEventListener('orientationchange', schedule)
     schedule()
     return () => {
-      running = false; cancelAnimationFrame(frame); renderer.current?.dispose(); renderer.current = null
+      running = false; cancelAnimationFrame(frame); mine?.dispose(); mine = null
+      if (renderer.current === mine) renderer.current = null
       resize.disconnect(); observer.disconnect(); wake.current = () => {}
       surface.removeEventListener('webglcontextlost', contextLost)
       motion.removeEventListener('change', schedule)
       document.removeEventListener('visibilitychange', schedule)
+      window.removeEventListener('orientationchange', schedule)
     }
-  }, [items.length])
+  }, [items])
 
   useLayoutEffect(() => {
     target.current = progress
@@ -107,13 +140,15 @@ export default function WorksSequence({ progress, items, onSelect }) {
           if (Math.hypot(event.clientX - down.current.x, event.clientY - down.current.y) > 8) return
           const rect = event.currentTarget.getBoundingClientRect()
           const index = renderer.current?.pick(event.clientX - rect.left, event.clientY - rect.top) ?? -1
-          if (index >= 0) onSelect(items[index])
+          if (index >= 0 && items[index]) onSelect(items[index])
         }}
       />
       {fallback && (
-        <button className="works-fallback-project" onClick={() => onSelect(project)} aria-label={`View ${project.title}`}>
-          <img src={project.src} alt={project.alt} />
-        </button>
+        <div className="works-fallback-project" role="group" aria-label="Project previews">
+          {items.slice(0, cards).map(item => (
+            <img key={item.id ?? item.src} src={item.src} alt={item.alt} onClick={() => onSelect(item)} />
+          ))}
+        </div>
       )}
       <section ref={details} className="work-detail" aria-labelledby="work-detail-title" aria-hidden="true">
         <div ref={detailContent} className="work-detail-content" aria-live="polite">
@@ -124,14 +159,14 @@ export default function WorksSequence({ progress, items, onSelect }) {
           <p className="work-detail-count">
             <span>{String(activeIndex + 1).padStart(2, '0')}</span>
             <span className="work-detail-line" />
-            <span>{String(Math.min(8, items.length)).padStart(2, '0')}</span>
+            <span>{String(cards).padStart(2, '0')}</span>
           </p>
         </div>
       </section>
       <div className="works-accessible-projects" aria-label="Projects">
-        {items.slice(0, 8).map((item, index) => (
+        {items.slice(0, cards).map((item, index) => (
           <button
-            key={item.src}
+            key={item.id ?? item.src}
             onClick={() => onSelect(item)}
             onFocus={() => { focused.current = index; wake.current() }}
             onBlur={() => { focused.current = -1; wake.current() }}
