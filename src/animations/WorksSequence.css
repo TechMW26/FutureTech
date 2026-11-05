@@ -31,9 +31,16 @@
 .works-accessible-projects { position: absolute; z-index: 3; bottom: 8%; left: 4%; }
 .works-accessible-projects button { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .works-accessible-projects button:focus-visible { position: relative; width: auto; height: auto; overflow: visible; clip-path: none; padding: 12px 18px; border: 1px solid #00427e; border-radius: 30px; background: white; color: #00427e; font: 12px Arial, sans-serif; }
-.works-fallback-project { position: absolute; top: 54%; left: 27%; width: min(37vw, calc(45svh / .68)); transform: translate(-50%, -50%); padding: 0; border: 0; background: none; cursor: pointer; }
+.works-fallback-project { position: absolute; top: 54%; left: 50%; width: min(37vw, calc(45svh / .68)); transform: translate(-50%, -50%); padding: 0; border: 0; background: none; cursor: pointer; }
 .works-fallback-project img { display: block; width: 100%; }
+/* When WebGL is unavailable the cards fall back to a scroll-snapping rail so the
+   section still reads as a carousel on every device, including phones. */
 .works-sequence-fallback .works-ribbon-canvas, .works-sequence-fallback .works-motion-title, .works-sequence-fallback .works-motion-note { display: none; }
+.works-sequence-fallback .works-fallback-project { top: auto; left: 0; transform: none; width: 100%; height: 100%; display: flex; align-items: center; gap: 3vw; padding: 0 max(24px, calc((100% - min(58vw, 60svh)) / 2)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: none; }
+.works-sequence-fallback .works-fallback-project::-webkit-scrollbar { display: none; }
+.works-sequence-fallback .works-fallback-project img { flex: 0 0 min(58vw, 60svh); width: min(58vw, 60svh); aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; scroll-snap-align: center; }
+.works-sequence-fallback .work-detail { display: none; }
+.works-sequence-fallback .works-accessible-projects { bottom: 4%; }
 .work-detail-link:focus-visible, .works-fallback-project:focus-visible { outline: 2px solid #00427e; outline-offset: 5px; }
 @keyframes works-title-in { from { transform: translate(-65vw, 20vh); } to { transform: translate(0,0); } }
 @keyframes works-title-in-right { from { transform: translate(65vw, -20vh); } to { transform: translate(0,0); } }
@@ -48,6 +55,8 @@
  .work-detail-count { position: absolute; right: 0; bottom: 5px; margin: 0; font-size: 8px; }
  .work-detail-link { font-size: 10px; gap: 22px; }
  .works-fallback-project { top: 34%; left: 50%; width: min(82vw, calc(30svh / .68)); }
+ .works-sequence-fallback .works-fallback-project { top: auto; left: 0; width: 100%; height: 100%; gap: 5vw; padding: 0 12vw; }
+ .works-sequence-fallback .works-fallback-project img { flex-basis: 76vw; width: 76vw; }
  .works-accessible-projects { bottom: 3%; }
 }
 @media (max-width: 700px) and (max-height: 650px) {
@@ -56,4 +65,4 @@
  .work-detail-category { margin-bottom: 8px; }
  .work-detail h2 { font-size: 29px; }
 }
-@media (prefers-reduced-motion: reduce) { .works-motion-title > span > span { animation: none !important; transform: none !important; } .works-motion-title > span { transform: none !important; } }
+@media (prefers-reduced-motion: reduce) { .works-motion-title > span > span { animation-duration: .01ms !important; } }

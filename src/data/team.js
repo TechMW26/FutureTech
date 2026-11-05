@@ -1,20 +1,6 @@
 export const TEAM = [
-  {
-    name: 'Aadil Khan',
-    role: 'Fullstack Developer',
-    quote: '"Code with clarity, ship with intent."',
-    img: '/team/Aadil.webp',
-    bio: 'Aadil bridges the front and back ends — turning Figma flows into shipping product and wiring up the APIs that power them. He cares about clean state, fast pages, and making the boring parts disappear.',
-    skills: ['React', 'Node.js', 'TypeScript', 'PostgreSQL'],
-  },
-  {
-    name: 'Lokesh Dhote',
-    role: 'Fullstack Developer',
-    quote: '"Simple systems scale the furthest."',
-    img: '/team/Lokesh.webp',
-    bio: 'Lokesh ships across the stack with a bias toward simplicity. He sweats build pipelines, keeps the bundle lean, and obsesses over the moments where UX and infra meet.',
-    skills: ['Next.js', 'GraphQL', 'AWS', 'Postgres'],
-  },
+ 
+  
   {
     name: 'Sahil Sahu',
     role: 'UX / UI Designer',
@@ -33,7 +19,7 @@ export const TEAM = [
   },
   {
     name: 'Ashish Singh',
-    role: 'Backend Engineer',
+    role: 'IT Support Engineer',
     quote: '"Uptime is a quiet kind of craft."',
     img: '/team/Ashish1.jpeg',
     bio: 'Ashish keeps the lights on across every workstation, server, and shared system the studio runs on. He triages fast, documents thoroughly, and turns the messy parts of IT into something the rest of the team never has to think about.',
@@ -55,12 +41,5 @@ export const TEAM = [
     bio: 'A decade of hands-on engineering experience, leading teams from architecture to deployment for years solving what others get stuck on.',
     skills: ['React', 'Node.js', 'Problem-Solving', 'Team Leadership', 'Project Management'],
   },
-  {
-    name: 'Himanshu Goswami',
-    role: 'AI/ML Engineer',
-    quote: '"AI amplifies our capabilities, but human intuition solves the problem. Experience remains irreplaceable."',
-    img: '/team/Himanshu.jpeg',
-    bio: '3+ years delivering production-grade machine learning and analytical solutions.',
-    skills: ['Python', 'AI/ML', 'Problem-Solving', 'Quantitative Analysis', 'Data Science'],
-  },
+
 ]
