@@ -385,3 +385,92 @@
   }
 }
 
+/* Scroll cloud veil.
+   Each cloud is its own transparent sprite (public/images/clouds/*.png) that
+   crawls in from its side of the screen as the hero is scrolled, meets the
+   others over the middle, then withdraws on further scroll. HeroScene writes
+   --cloud-progress (0 -> 1) and --cloud-opacity (0.2 -> 1) onto the layer. */
+.hero-clouds {
+  --cloud-progress: 0;
+  --cloud-opacity: 0;
+  /* Fixed to the viewport so the clouds cover the WHOLE screen, not just the
+     hero box, while the first screen scrolls. Rendered only while the hero is
+     on screen (HeroScene toggles .is-active) so nothing else is affected. */
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 60;
+  overflow: visible;
+  pointer-events: none;
+  opacity: var(--cloud-opacity);
+  visibility: hidden;
+  will-change: opacity;
+}
+
+.hero-clouds.is-active {
+  visibility: visible;
+}
+
+/* Depth: far clouds are smaller, washed out and soft; near clouds are large
+   and crisp so they read as foreground. */
+.hero-cloud--far {
+  opacity: 0.7;
+  filter: blur(3px) saturate(0.94);
+}
+.hero-cloud--mid {
+  opacity: 0.88;
+  filter: blur(1.1px);
+}
+.hero-cloud--near {
+  opacity: 1;
+  filter: blur(0.2px);
+}
+.hero-cloud {
+  position: absolute;
+  display: block;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: 100% 100%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Two wide banks. Each is 150vw wide so that when they meet in the middle
+   they overlap generously and leave no uncovered strip. */
+.hero-cloud--bank-l {
+  left: -150vw; bottom: 0;
+  width: 150vw; height: 118%;
+  background-image: url('/images/clouds/bank-a.png');
+  transform: translate3d(calc(var(--cloud-progress) * 158vw), calc(var(--cloud-progress) * 6vh), 0);
+}
+.hero-cloud--bank-r {
+  right: -150vw; bottom: 0;
+  width: 150vw; height: 118%;
+  background-image: url('/images/clouds/bank-b.png');
+  transform: translate3d(calc(var(--cloud-progress) * -158vw), calc(var(--cloud-progress) * 6vh), 0);
+}
+
+/* Smaller wisps add depth in front of the banks. */
+.hero-cloud--wisp {
+  background-image: url('/images/clouds/cloud-2.png');
+  background-size: contain;
+  opacity: 0.9;
+  filter: blur(1px);
+}
+.hero-cloud--wisp-l1 { left: -40vw; top: 6%;  width: 46vw;
+  transform: translate3d(calc(var(--cloud-progress) * 96vw), calc(var(--cloud-progress) * 8vh), 0); }
+.hero-cloud--wisp-r1 { right: -40vw; top: 2%; width: 44vw;
+  transform: translate3d(calc(var(--cloud-progress) * -96vw), calc(var(--cloud-progress) * 10vh), 0); }
+.hero-cloud--wisp-l2 { left: -44vw; top: 46%; width: 50vw;
+  transform: translate3d(calc(var(--cloud-progress) * 104vw), calc(var(--cloud-progress) * -6vh), 0); }
+.hero-cloud--wisp-r2 { right: -44vw; top: 42%; width: 48vw;
+  transform: translate3d(calc(var(--cloud-progress) * -104vw), calc(var(--cloud-progress) * -4vh), 0); }
+
+@media (max-width: 700px) {
+  .hero-cloud--bank-l, .hero-cloud--bank-r { width: 210vw; }
+  .hero-cloud--bank-l { left: -210vw; }
+  .hero-cloud--bank-r { right: -210vw; }
+  .hero-cloud--wisp { width: 70vw !important; }
+}

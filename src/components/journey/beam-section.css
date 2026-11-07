@@ -1,0 +1,90 @@
+:root{--beam-blue:#326d9a;--beam-surface:#fff;--beam-line:#e0e6eb;--beam-ink:#182633;--beam-muted:#83909b;--beam-gold:#a38c70}
+.connections{position:relative;height:480svh;background:var(--beam-surface);color:var(--beam-ink);font-family:'Manrope','Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;color-scheme:light}
+.connections-stage{position:sticky;top:0;height:100svh;overflow:hidden;background:white}
+.connections-rail{position:relative;height:200svh;will-change:transform}
+.connections-panel,.connections-copy{position:relative;height:100svh;min-height:560px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.connections-panel{padding:6vh 5vw}
+.connections-heading{text-align:center;position:relative;z-index:1}
+.connections-eyebrow{display:block;font-size:9px;letter-spacing:.24em;color:var(--beam-blue);font-weight:600}
+.connections-heading h2{font-family:inherit;font-size:clamp(38px,4.6vw,72px);line-height:1.09;letter-spacing:-.058em;margin:24px 0 19px;text-transform:none;font-weight:400}
+.connections-heading p{font-size:11px;letter-spacing:.025em;color:var(--beam-muted);margin:0}
+.beam-network{position:relative;width:min(1340px,100%);height:clamp(280px,44vh,460px);flex-shrink:0;margin-top:40px}
+.beam-lines{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.beam-track{fill:none;stroke:var(--beam-line);stroke-width:1;vector-effect:non-scaling-stroke}
+.beam-lit,.beam-tail{fill:none;stroke-width:1.4;stroke-linecap:round;vector-effect:non-scaling-stroke}.beam-tail{stroke-width:4;filter:url(#beam-glow);opacity:.3}
+.integration{--node-color:var(--beam-blue);position:absolute;width:62px;height:62px;border:1px solid #e9edf0;border-radius:50%;display:grid;place-items:center;color:var(--node-color);background:linear-gradient(150deg,#fff,#f7f9fb);transform:translate(-50%,-50%);box-shadow:0 3px 5px #213d5103,0 12px 26px #213d5104,inset 0 1px 0 white}
+.integration-icon{width:23px;height:23px;display:grid;place-items:center}.integration-icon svg{width:100%;height:100%;stroke-width:1.4}
+.integration-label{position:absolute;top:calc(100% + 15px);font-size:9px;letter-spacing:.04em;color:#929ca6;white-space:nowrap}
+.node-1{left:18%;top:15%}.node-2{left:7%;top:46%}.node-3{left:19%;top:77%;--node-color:var(--beam-gold)}.node-4{left:82%;top:15%}.node-5{left:93%;top:46%;--node-color:var(--beam-gold)}.node-6{left:81%;top:77%}
+.futuretech-core{--charge:0;position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:#fff;border:1px solid #e5eaef;box-shadow:0 8px 36px #213d5108,0 0 calc(var(--charge)*65px) #326d9a0d}
+.futuretech-core:before{content:'';position:absolute;inset:-9px;border:1px solid #edf0f4;border-radius:inherit;opacity:var(--charge)}
+.futuretech-logo{opacity:var(--charge);width:75%;height:75%;border-radius:50%;overflow:hidden}.futuretech-logo img{display:block;width:100%;height:100%;object-fit:contain}
+.connections-copy{--copy-reveal:0;text-align:center;padding:80px 6vw;justify-content:center}
+.beam-destination{position:absolute;left:50%;top:15%;width:1px;height:1px}.beam-destination span{position:absolute;width:7px;height:7px;border:1px solid var(--beam-blue);background:white;border-radius:50%;transform:translate(-50%,-50%)}
+.story-eyebrow{margin-bottom:32px;opacity:var(--copy-reveal)}
+.connections-copy h3{font-family:inherit;font-size:clamp(36px,5.7vw,88px);line-height:1.18;font-weight:400;letter-spacing:-.06em;margin:0;position:relative;background:white}
+.reveal-line{display:block;overflow:hidden;padding:0 .08em .06em}.reveal-word{--reveal:0;display:inline-block;opacity:var(--reveal);transform:translateY(calc((1 - var(--reveal))*110%)) rotate(calc((1 - var(--reveal))*3deg));filter:blur(calc((1 - var(--reveal))*6px));will-change:transform,opacity}.accent-word{color:var(--beam-blue)}
+.story-detail{display:flex;align-items:flex-start;text-align:left;gap:28px;max-width:560px;margin-top:40px;opacity:var(--copy-reveal);transform:translateY(calc((1 - var(--copy-reveal))*20px))}.story-rule{width:45px;height:1px;background:var(--beam-blue);flex-shrink:0;margin-top:12px;transform-origin:left;transform:scaleX(var(--copy-reveal))}.story-detail p{font-size:14px;line-height:1.9;color:#77838f;margin:0}.story-footnote{position:absolute;bottom:6%;font-size:8px;letter-spacing:.22em;color:#9ca5ad;opacity:var(--copy-reveal)}
+@media(min-width:1600px){.beam-network{margin-top:65px}}
+@media(max-width:600px){.connections-panel{padding:50px 22px}.connections-heading h2{font-size:42px}.beam-network{height:330px;margin-top:40px}.integration{width:44px;height:44px}.integration-icon{width:19px;height:19px}.integration-label{font-size:8px;top:calc(100% + 10px)}.futuretech-core{width:82px;height:82px}.node-1{left:16%}.node-3{left:16%}.node-4{left:84%}.node-6{left:84%}.connections-copy{padding:70px 22px}.connections-copy h3{font-size:clamp(29px,7.5vw,44px)}.story-detail{gap:16px;margin-top:30px;max-width:360px}.story-rule{width:24px}.story-detail p{font-size:12px}.story-eyebrow{font-size:8px}.connections-eyebrow{font-size:8px}}
+@media(max-height:700px){.connections-panel,.connections-copy{min-height:0}.connections-heading h2{font-size:36px;margin:16px 0}.beam-network{height:42svh;margin-top:25px}.integration{width:46px;height:46px}.futuretech-core{width:82px;height:82px}.connections-copy h3{font-size:clamp(28px,5vw,60px)}.story-detail{margin-top:24px}.story-eyebrow{margin-bottom:20px}}
+@media(prefers-reduced-motion:reduce){.connections{height:auto}.connections-stage{position:relative;height:auto;overflow:visible}.connections-rail{height:auto;transform:none!important}.connections-panel,.connections-copy{height:auto;min-height:100svh}.connections-panel{opacity:1!important}.connections-copy{--copy-reveal:1!important}.futuretech-core{--charge:1!important}.reveal-word{--reveal:1!important;transform:none;filter:none}.beam-lit,.beam-tail{display:none}}
+
+/* Editorial headline: quiet sans-serif balanced by a single expressive serif. */
+.connections-heading .world-heading{font-size:clamp(44px,5.4vw,84px);font-weight:400;line-height:1.04;letter-spacing:-.065em;margin:0 0 12px;text-wrap:nowrap}
+.world-heading-top{display:block;color:var(--beam-ink)}
+.world-heading-bottom{display:block;margin-top:.04em;color:#667480;font-size:.82em;font-weight:400;letter-spacing:-.055em}
+.world-heading-bottom em{position:relative;display:inline-block;font-family:'Instrument Serif',Georgia,serif;font-size:1.42em;line-height:.9;font-weight:400;letter-spacing:-.045em;color:var(--beam-blue);padding:0 .03em .08em}
+.world-heading-bottom em:after{content:'';position:absolute;left:4%;right:5%;bottom:.015em;height:1px;background:linear-gradient(90deg,transparent,#326d9a55 25%,#326d9a22 85%,transparent);transform:rotate(-5deg)}
+.heading-period{color:var(--beam-ink)}
+@media(max-width:600px){.connections-heading .world-heading{font-size:clamp(34px,9.6vw,54px);margin-bottom:8px}}
+@media(max-height:700px) and (min-width:601px){.connections-heading .world-heading{font-size:clamp(38px,4.4vw,60px);margin-bottom:4px}}
+
+
+/* Monochrome interactive rain chapter. */
+.connections-copy.rain-story{align-items:center;justify-content:center;text-align:center;padding:8vw;background:#fff;isolation:isolate;overflow:hidden}
+.rain-story:before{display:none}
+.rain-story .dr-root{z-index:-2}
+.rain-story:after{content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(ellipse at center,#ffffffed 0%,#ffffffb8 25%,#ffffff24 56%,transparent 75%)}
+.connections-copy.rain-story h3{width:100%;max-width:1250px;background:transparent;color:#101010;font-size:clamp(35px,6vw,88px);line-height:1.15;font-weight:400;letter-spacing:-.06em;pointer-events:none;margin:0}
+.rain-story .accent-word{color:#101010}
+.rain-story .beam-destination{top:0;left:50%;width:1px;height:1px}
+@media(max-width:600px){.connections-copy.rain-story{padding:24px}.connections-copy.rain-story h3{font-size:clamp(27px,7.3vw,43px);line-height:1.25}.rain-story:after{background:radial-gradient(ellipse,#fffffff2,#ffffff66 55%,transparent 85%)}}
+@media(prefers-reduced-motion:reduce){.connections-copy.rain-story{min-height:100svh}}
+
+/* Sculpted nodes and a continuous energy handoff into the rain. */
+.integration{--node-charge:0;background:radial-gradient(ellipse at 30% 15%,#fff 15%,#f7faff 48%,#e4ecf3 100%);border:1px solid #dce6ef;box-shadow:inset 0 2px 2px #fff,inset 0 -3px 5px #274b7210,0 4px 5px #1a3c5f0a,0 12px 24px #1a3c5f12,0 0 calc(8px + var(--node-charge)*18px) #327dbb14}
+.integration:before{content:'';position:absolute;inset:5px;border-radius:50%;border-top:1px solid #fff;border-bottom:1px solid #c9d9e53d;pointer-events:none}
+.integration:after{content:'';position:absolute;inset:-5px;border:1px solid color-mix(in srgb,var(--node-color) 14%,transparent);border-radius:50%;opacity:calc(var(--node-charge)*.75);box-shadow:0 0 15px color-mix(in srgb,var(--node-color) 10%,transparent);pointer-events:none}
+.integration-icon{filter:drop-shadow(0 1px 0 #fff) drop-shadow(0 2px 2px #164a7633);position:relative;z-index:1}.integration-icon svg{stroke-width:1.65}
+.futuretech-core{background:radial-gradient(ellipse at 32% 15%,#fff 20%,#f7fbff 65%,#dce8f1);border:1px solid #d6e2ec;box-shadow:inset 0 3px 3px white,inset 0 -4px 8px #183f6a10,0 5px 9px #153c6110,0 16px 35px #153c6114,0 0 calc(var(--charge)*70px) #2474ff26}
+.futuretech-core:before{inset:-10px;border:1px solid #82b4d955;box-shadow:0 0 24px #2474ff14;opacity:var(--charge)}
+.futuretech-core:after{content:'';position:absolute;inset:5px;border-radius:50%;border-top:2px solid white;border-bottom:1px solid #c4d7e7;pointer-events:none}
+.futuretech-logo{filter:drop-shadow(0 2px 1px #fff) drop-shadow(0 3px 5px #14528d26);transform:scale(calc(.94 + var(--charge)*.06))}
+.beam-outgoing .beam-lit{stroke-width:2.2;filter:drop-shadow(0 0 3px #3b91d0aa)}
+.beam-outgoing .beam-tail{stroke-width:11;filter:url(#beam-glow)}
+.beam-outgoing .beam-track{stroke:#dbe7f1;stroke-width:1}
+.rain-story{--rain-birth:0;--rain-radius:0%;--source-glow:0}
+.rain-story .beam-destination{top:18%;z-index:2}
+.rain-source{position:absolute;left:0;top:0;width:9px;height:9px;transform:translate(-50%,-50%);border-radius:50%;background:#edf8ff;opacity:var(--source-glow);box-shadow:0 0 7px 3px #419bd2,0 0 24px 12px #419bd244,0 0 65px 25px #419bd21a}
+.rain-story .dr-root{opacity:var(--rain-birth);mask-image:radial-gradient(ellipse at 50% 18%,#000 0%,#000 calc(var(--rain-radius)*.62),transparent var(--rain-radius));-webkit-mask-image:radial-gradient(ellipse at 50% 18%,#000 0%,#000 calc(var(--rain-radius)*.62),transparent var(--rain-radius))}
+@media(prefers-reduced-motion:reduce){.rain-story{--rain-birth:1!important;--rain-radius:150%!important;--source-glow:0!important}.rain-story .dr-root{mask-image:none;-webkit-mask-image:none}.integration{--node-charge:1!important}}
+
+
+/* ---------------------------------------------------------------------------
+   Integration notes.
+   The site's global stylesheet forces `font-family: inherit` on every element.
+   Re-applying the section's own fonts by specificity keeps the typography
+   identical to the standalone build while staying scoped to this section.
+--------------------------------------------------------------------------- */
+.connections, .connections * { font-family: 'Manrope', 'Segoe UI', sans-serif; }
+.connections .world-heading-bottom em { font-family: 'Instrument Serif', Georgia, serif; }
+
+/* Instrument Serif is bundled locally (SIL OFL) so the heading matches the
+   standalone build without a third-party font request at runtime. */
+@font-face{font-family:'Instrument Serif';src:url('/fonts/InstrumentSerif-Regular.ttf') format('truetype');font-style:normal;font-weight:400;font-display:swap}
+@font-face{font-family:'Instrument Serif';src:url('/fonts/InstrumentSerif-Italic.ttf') format('truetype');font-style:italic;font-weight:400;font-display:swap}
+
+/* Same root-size normalization as the journey section: the heading's em based
+   line-height and indent assume a 16px root. */
+.connections { font-size: 16px; }
