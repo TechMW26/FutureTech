@@ -1,4 +1,5 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, useGLTF } from '@react-three/drei'
 import { Box3, Color, PMREMGenerator, Vector3 } from 'three'
@@ -401,6 +402,7 @@ export default function HeroScene({
   const pointerRef = useRef({ active: false, lastX: 0 })
   const pointerTiltRef = useRef({ x: 0, y: 0 })
   const heroSectionRef = useRef(null)
+  const cloudRef = useRef(null)
 
   const deviceProfile = useMemo(
     () => ({
@@ -500,6 +502,66 @@ export default function HeroScene({
       if (frameId) window.cancelAnimationFrame(frameId)
     }
   }, [activateRenderLoop])
+
+  // Scroll-driven cloud veil for the first screen only. The clouds wait at the
+  // edges (20% opacity), sweep in from both sides between 50% and 75% of the
+  // hero's scroll, cover it at 75%, then retreat and vanish by 100%.
+  useEffect(() => {
+    const node = heroSectionRef.current
+    const layer = cloudRef.current
+    if (!node || !layer) return undefined
+
+    let frameId = 0
+
+    // Scroll fraction across the first screen: 0 at the top, 1 once the hero
+    // has scrolled exactly one viewport away.
+    const track = () => {
+      const height = node.offsetHeight || window.innerHeight || 1
+      return Math.min(1, Math.max(0, -node.getBoundingClientRect().top / height))
+    }
+
+    const smooth = (t) => t * t * (3 - 2 * t)
+
+    // Drive the layer straight from scroll progress (never from a timer):
+    //   0.50 -> 0.75  clouds enter from both edges
+    //   0.75          fully covering the screen
+    //   0.75 -> 1.00  clouds retreat back to their edges
+    //   1.00          fully gone
+    const applyFor = (fraction) => {
+      const inAmount = Math.min(1, Math.max(0, (fraction - 0.5) / 0.25))
+      const outAmount = Math.min(1, Math.max(0, (fraction - 0.75) / 0.25))
+      const progress = smooth(inAmount) * (1 - smooth(outAmount))
+      layer.style.setProperty('--cloud-progress', progress.toFixed(4))
+      // 20% while idling at the edges, fully opaque once they close over.
+      layer.style.setProperty('--cloud-opacity', (0.2 + progress * 0.8).toFixed(4))
+      // The layer is fixed to the viewport, so it only exists while the hero
+      // is the section on screen — it must never linger over the rest of the page.
+      layer.classList.toggle('is-active', fraction > 0.001 && fraction < 0.999)
+    }
+
+    const measure = () => {
+      frameId = 0
+      applyFor(track())
+    }
+
+    const onScroll = () => {
+      if (!frameId) frameId = window.requestAnimationFrame(measure)
+    }
+
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null
+    observer?.observe(node)
+
+    applyFor(track())
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      observer?.disconnect()
+      if (frameId) window.cancelAnimationFrame(frameId)
+    }
+  }, [])
 
   // Resolve cached model URL (for the homepage hand-off path) and
   // pre-warm drei's GLTF cache for that exact URL so subsequent mounts
@@ -679,6 +741,21 @@ export default function HeroScene({
         <h1>{title}</h1>
         {tagline && <p className="tagline">{tagline}</p>}
       </div>
+
+      {/* Scroll-driven clouds live in a document-level portal so the hero's
+          `isolation` stacking context cannot clip them. Two wide banks slide in
+          from opposite sides; they overlap to cover the whole viewport. */}
+      {typeof document !== 'undefined' && createPortal(
+        <div ref={cloudRef} className="hero-clouds" aria-hidden="true">
+          <span className="hero-cloud hero-cloud--bank-l" />
+          <span className="hero-cloud hero-cloud--bank-r" />
+          <span className="hero-cloud hero-cloud--wisp hero-cloud--wisp-l1" />
+          <span className="hero-cloud hero-cloud--wisp hero-cloud--wisp-r1" />
+          <span className="hero-cloud hero-cloud--wisp hero-cloud--wisp-l2" />
+          <span className="hero-cloud hero-cloud--wisp hero-cloud--wisp-r2" />
+        </div>,
+        document.body,
+      )}
     </section>
   )
 }
