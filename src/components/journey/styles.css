@@ -1,0 +1,60 @@
+
+:root{color-scheme:dark;--ink:#19201e;--paper:#f0f0e8}
+*{box-sizing:border-box}html,body{margin:0;background:#141b1d;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}body{color:var(--paper)}
+.journey{height:720vh;height:720svh;position:relative}.stage{height:100vh;height:100svh;position:sticky;top:0;overflow:hidden;isolation:isolate;background:#555b57 url('/journey/ezgif-frame-001.jpg') center/cover}.stage canvas{display:block;width:100%;height:100%}
+.shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#121b2010,transparent 50%,#121b2026)}
+.interior-shade{position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(180deg,#0c161d12,#0c161d80 55%,#0c161d30)}
+.scene{position:absolute;left:6%;right:6%;top:50%;transform:translateY(-50%);opacity:0;pointer-events:none;will-change:opacity,transform;text-align:center}
+h1,h2{margin:0;font-family:inherit;font-weight:900;font-style:normal;text-transform:uppercase;letter-spacing:-.065em;line-height:.91;text-wrap:balance}
+.headline-line{display:block}.headline-line+.headline-line{margin-top:.09em}
+.intro{top:47%}.intro h1{font-size:clamp(64px,10.5vw,176px);color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:3px #fff5df;paint-order:stroke fill;filter:drop-shadow(0 2px 0 #9a8972) drop-shadow(0 4px 0 #665f5555) drop-shadow(0 9px 12px #242a3145)}.intro .outline{font-size:.77em}
+#inside h2,#future h2{font-size:clamp(40px,5.2vw,84px);font-weight:700;letter-spacing:-.045em;line-height:1.04;color:#f7f5ef;-webkit-text-stroke:0;text-shadow:0 3px 20px #07131c55}
+.progress{position:absolute;bottom:0;left:0;height:2px;width:100%;transform-origin:left;transform:scaleX(0);background:#f0f0e870}
+
+@media(min-width:1600px){.scene{left:8%;right:8%}}
+@media(max-width:600px){.journey{height:650svh}.scene{left:5%;right:5%}.intro h1{font-size:15vw;-webkit-text-stroke:1.8px #fff5df}.intro .outline{font-size:.78em}#inside h2,#future h2{font-size:clamp(32px,7.6vw,46px)}.headline-line+.headline-line{margin-top:.16em}}
+@media(max-height:500px) and (min-width:601px){.intro h1{font-size:17vh}#inside h2,#future h2{font-size:11vh}}
+
+/* Foreground clouds borrow the scene's photographic texture and warm light. */
+.journey{height:860vh;height:860svh}
+.cloud-entry{position:absolute;inset:0;pointer-events:none;overflow:hidden;will-change:opacity}
+.entry-cloud{position:absolute;pointer-events:none;background-image:url('/journey/ezgif-frame-001.jpg');background-repeat:no-repeat;will-change:transform;transform-origin:center}
+.cloud-far{top:-18%;width:105%;height:138%;background-size:180% 230%;filter:blur(2px)}
+.cloud-far.cloud-left{left:-40%;background-position:left bottom}
+.cloud-far.cloud-right{right:-40%;background-position:right bottom}
+.cloud-near{top:-8%;width:110%;height:132%;background-size:160% 205%;filter:blur(.6px)}
+.cloud-near.cloud-left{left:-48%;background-position:15% bottom}
+.cloud-near.cloud-right{right:-48%;background-position:90% bottom}
+/* Fade to zero before every image edge, including edges exposed by movement. */
+.entry-cloud{-webkit-mask-image:radial-gradient(ellipse 50% 50% at center,#000 30%,#000e 45%,#0008 65%,#0003 80%,transparent 98%);mask-image:radial-gradient(ellipse 50% 50% at center,#000 30%,#000e 45%,#0008 65%,#0003 80%,transparent 98%);-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+@media(max-width:600px){.journey{height:790svh}.cloud-far{background-size:240% 210%}.cloud-near{background-size:220% 190%}}
+@media(prefers-reduced-motion:reduce){.journey{height:720vh;height:720svh}.cloud-entry{display:none}}
+@media(prefers-reduced-motion:reduce) and (max-width:600px){.journey{height:650svh}}
+
+
+/* ---------------------------------------------------------------------------
+   Integration notes.
+   This section is dropped into the MW Futuretech site, whose global stylesheet
+   sets `* { font-family: inherit }`. Restoring the original typography here
+   keeps the section pixel-identical to its standalone build without touching
+   any element elsewhere on the site.
+--------------------------------------------------------------------------- */
+.journey, .journey * { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.journey .headline-line { font-family: inherit; }
+
+/* The site sets `html { font-size: var(--font-size) }` for zoom compensation
+   (10.5px at default zoom), which would scale every em-based value here:
+   letter-spacing, the outline headline and the connections heading. The
+   standalone build always lays out against a 16px root, so restore that for
+   this section only. */
+.hero-journey { font-size: 16px; }
+@media (prefers-reduced-motion: reduce) { .hero-journey { font-size: 16px; } }
+
+/* The site enables optimizeLegibility / antialiased smoothing globally, which
+   changes glyph advance widths. The section must measure text exactly like its
+   standalone build. */
+.hero-journey, .hero-journey * {
+  text-rendering: auto;
+  -webkit-font-smoothing: auto;
+  -moz-osx-font-smoothing: auto;
+}

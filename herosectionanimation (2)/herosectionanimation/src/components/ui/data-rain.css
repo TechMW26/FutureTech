@@ -1,0 +1,4 @@
+.dr-root{--dr-core:#2474ff;position:fixed;inset:0;overflow:hidden;background:#fff;pointer-events:none}
+.dr-root--contained{position:absolute;width:100%;height:100%}
+.dr-main,.dr-bloom{position:absolute;inset:0;display:block;width:100%;height:100%}
+.dr-bloom,.dr-vignette,.dr-grain{display:none}
