@@ -342,7 +342,7 @@
 
 @media (max-width: 480px) {
   .home-journey {
-    --journey-card-width: min(84vw, 19rem);
+    --journey-card-width: min(72vw, 17rem);
     --journey-text-lift: clamp(4.85rem, 21vw, 6rem);
     --journey-map-fade-height: clamp(11rem, 42vw, 19rem);
     min-height: 88rem;
@@ -369,6 +369,24 @@
 
   .home-journey__card {
     min-height: 0;
+  }
+
+  /* Neighbouring cards fan in behind the active one; at phone widths the rail
+     no longer separates them, so their text collides with the active copy.
+     Keep only the active card's text. */
+  .home-journey__card:not(.is-active) .home-journey__body,
+  .home-journey__card:not(.is-active) strong,
+  .home-journey__card:not(.is-active) .home-journey__icon,
+  .home-journey__card:not(.is-active) .home-journey__kicker {
+    visibility: hidden;
+  }
+
+  /* The card rail is sized to the arc (245vw wide), so percentage-positioned
+     cards swing far past the viewport edges. Map them onto the screen instead. */
+  .home-journey__cards {
+    left: 0;
+    width: 100%;
+    transform: none;
   }
 
 }
