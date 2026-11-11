@@ -83,7 +83,7 @@ body:has(.director-page) .site-footer {
   letter-spacing: var(--director-hero-letter-spacing, -0.04em);
   text-transform: uppercase;
   white-space: nowrap;
-  color: var(--director-accent);
+  color: #000;
   pointer-events: none;
 }
 
@@ -106,14 +106,15 @@ body:has(.director-page) .site-footer {
   display: grid;
   align-items: start;
   justify-items: center;
-  padding: var(--director-about-title-top, 30vh) clamp(1rem, 4vw, 3rem) 0;
+  padding: var(--director-about-title-top, 30vh) 0 0;
+  overflow: hidden;
   pointer-events: none;
 }
 
 .director-hero__about-title {
   max-width: min(96vw, 72rem);
   margin: 0;
-  font-size: clamp(3.2rem, 11vw, 9.25rem);
+  font-size: var(--director-about-title-size, clamp(3.2rem, 11vw, 9.25rem));
   font-weight: 800;
   line-height: 0.9;
   letter-spacing: 0.025em;

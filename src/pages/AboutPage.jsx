@@ -1,5 +1,5 @@
-import { useEffect } from 'react'
-import HeroScene, { SILVER_MODEL_LIGHTING_PROPS } from '../components/HeroScene'
+import { lazy, useEffect } from 'react'
+import { SILVER_MODEL_LIGHTING_PROPS } from '../components/heroSceneLighting'
 import DirectorsSection from '../components/DirectorsSection'
 import TeamSection from '../components/TeamSection'
 import {
@@ -8,6 +8,9 @@ import {
   getCoinModelReady,
   getCoinModelUrl,
 } from '../lib/coinModel'
+
+// The 3D hero pulls in three/drei; load it after the page shell so first paint isn't blocked.
+const HeroScene = lazy(() => import('../components/HeroScene'))
 
 export default function AboutPage({ introStartRef }) {
   // Seed synchronously when the cached blob URL is already resolved

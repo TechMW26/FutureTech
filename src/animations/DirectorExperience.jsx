@@ -69,7 +69,7 @@ export default function DirectorExperience({ embedded = false }) {
         <div className="director-orbit-group">
           <DirectorOrbits />
           <div className="director-experience-photo">
-            <img src="/images/about/aviraj-cutout.png" alt="Aviraj Sharma, Director of MW Futuretech" width="1081" height="1455" loading={embedded ? 'lazy' : 'eager'} fetchPriority={embedded ? 'auto' : 'high'} />
+            <img src="/images/about/aviraj-cutout.webp" alt="Aviraj Sharma, Director of MW Futuretech" width="1081" height="1455" loading={embedded ? 'lazy' : 'eager'} fetchPriority={embedded ? 'auto' : 'high'} />
           </div>
           <DirectorOrbits front />
         </div>
