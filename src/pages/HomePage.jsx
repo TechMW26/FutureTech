@@ -1,8 +1,12 @@
-import HeroScene, { SILVER_MODEL_LIGHTING_PROPS } from '../components/HeroScene'
+import { lazy } from 'react'
+import { SILVER_MODEL_LIGHTING_PROPS } from '../components/heroSceneLighting'
 import HeroJourney from '../components/journey/HeroJourney'
 import FutureScrollReveal from '../components/FutureScrollReveal'
 import HomeJourney from '../components/HomeJourney'
 import HomeMagicSearch from '../components/HomeMagicSearch'
+
+// The 3D hero pulls in three/drei; load it after the page shell so first paint isn't blocked.
+const HeroScene = lazy(() => import('../components/HeroScene'))
 
 export default function HomePage({ introStartRef }) {
   return (

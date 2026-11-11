@@ -45,13 +45,15 @@
 @keyframes works-title-in { from { transform: translate(-65vw, 20vh); } to { transform: translate(0,0); } }
 @keyframes works-title-in-right { from { transform: translate(65vw, -20vh); } to { transform: translate(0,0); } }
 @media (max-width: 700px) {
- .works-motion-title { left: 8%; right: 8%; top: 32%; font-size: clamp(54px, 17vw, 90px); }
- .works-motion-title > span:last-child { margin-top: .65em; }
+ /* The headline sits in its own band at the top; the ribbon and the focused
+    project detail live underneath it so nothing overlaps on narrow screens. */
+ .works-motion-title { left: 7%; right: 7%; top: 9%; font-size: clamp(42px, 13vw, 66px); }
+ .works-motion-title > span:last-child { margin-top: .3em; }
  .works-motion-note { display: none; }
- .work-detail { top: 72%; left: 10%; width: 80%; }
- .work-detail-category { margin-bottom: 12px; font-size: 8px; }
- .work-detail h2 { font-size: clamp(30px, 7.7vw, 43px); }
- .work-detail-description { max-width: 100%; margin: 15px 0 18px; font-size: 12px; line-height: 1.75; }
+ .work-detail { top: 74%; left: 8%; width: 84%; }
+ .work-detail-category { margin-bottom: 10px; font-size: 8px; }
+ .work-detail h2 { font-size: clamp(28px, 7.4vw, 40px); }
+ .work-detail-description { max-width: 100%; margin: 12px 0 14px; font-size: 12px; line-height: 1.7; }
  .work-detail-count { position: absolute; right: 0; bottom: 5px; margin: 0; font-size: 8px; }
  .work-detail-link { font-size: 10px; gap: 22px; }
  .works-fallback-project { top: 34%; left: 50%; width: min(82vw, calc(30svh / .68)); }
@@ -60,9 +62,10 @@
  .works-accessible-projects { bottom: 3%; }
 }
 @media (max-width: 700px) and (max-height: 650px) {
- .work-detail { top: 74%; }
- .work-detail-description { margin-top: 10px; margin-bottom: 12px; font-size: 11px; line-height: 1.6; }
- .work-detail-category { margin-bottom: 8px; }
- .work-detail h2 { font-size: 29px; }
+ .works-motion-title { top: 6%; font-size: clamp(34px, 10vw, 48px); }
+ .work-detail { top: 76%; }
+ .work-detail-description { margin-top: 8px; margin-bottom: 10px; font-size: 11px; line-height: 1.55; }
+ .work-detail-category { margin-bottom: 6px; }
+ .work-detail h2 { font-size: 26px; }
 }
 @media (prefers-reduced-motion: reduce) { .works-motion-title > span > span { animation-duration: .01ms !important; } }

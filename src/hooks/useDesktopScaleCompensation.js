@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { getBrowserZoomFactor } from './useZoomCompensatedViewport'
+import { getBrowserZoomFactor, shouldCompensateForZoom } from './useZoomCompensatedViewport'
 
 const DEFAULT_FONT_PERCENT = 100
 
@@ -22,6 +22,15 @@ export function useDesktopScaleCompensation(disabled = false) {
     }
 
     const apply = () => {
+      // Never shrink the root font on small / touch viewports — that made every
+      // mobile heading and paragraph render at a few pixels.
+      if (!shouldCompensateForZoom()) {
+        reset()
+        root.style.setProperty('--desktop-density-scale', '1')
+        root.style.setProperty('--browser-zoom-factor', '1')
+        return
+      }
+
       const browserZoomFactor = getBrowserZoomFactor()
       const hasBrowserZoomOffset = Math.abs(browserZoomFactor - 1) > 0.01
       const fontSizePercent = DEFAULT_FONT_PERCENT / browserZoomFactor

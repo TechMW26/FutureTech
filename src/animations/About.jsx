@@ -91,23 +91,48 @@ export default function About() {
   useEffect(() => {
     const host = root.current?.querySelector('.about-opening-track')
     const backdrop = root.current?.querySelector('.about-continuous')
-    if (!host || !backdrop) return
+    const page = root.current
+    if (!host || !backdrop || !page) return
     const reduced = matchMedia('(prefers-reduced-motion: reduce)')
     let frame = 0
-    const draw = () => {
-      frame = 0
+    let currentTurn = 0
+    let targetTurn = 0
+
+    const readScroll = () => {
       const p = reduced.matches ? 0 : clamp(-host.getBoundingClientRect().top / Math.max(1, host.offsetHeight - innerHeight))
+      // The ring is only on screen while `.about-continuous` scrolls by, so rotate across exactly that span.
+      const visibleSpan = Math.max(1, page.querySelector('.about-continuous')?.offsetHeight - innerHeight || 1)
+      const pageProgress = reduced.matches ? 0 : clamp(scrollY / visibleSpan)
+      return { p, turn: p * 12 + pageProgress * 200 }
+    }
+
+    const tick = () => {
+      // Ease towards the scroll-derived angle so pointer-wheel steps don't snap the ring.
+      const next = currentTurn + (targetTurn - currentTurn) * 0.07
+      currentTurn = Math.abs(targetTurn - next) < 0.05 ? targetTurn : next
+      backdrop.style.setProperty('--orbit-turn', `${currentTurn.toFixed(3)}deg`)
+      frame = currentTurn === targetTurn ? 0 : requestAnimationFrame(tick)
+    }
+
+    const schedule = () => {
+      targetTurn = readScroll().turn
+      if (!frame) frame = requestAnimationFrame(tick)
+    }
+
+    const measure = () => {
+      const { p, turn } = readScroll()
+      targetTurn = currentTurn = turn
       backdrop.style.setProperty('--spread', `${p * 95}px`)
-      backdrop.style.setProperty('--orbit-turn', `${p * 12}deg`)
+      backdrop.style.setProperty('--orbit-turn', `${currentTurn}deg`)
       backdrop.style.setProperty('--orbit-grow', String(1 + p * .16))
       host.style.setProperty('--copy-lift', `${p * -35}px`)
     }
-    const schedule = () => { if (!frame) frame = requestAnimationFrame(draw) }
-    draw()
-    addEventListener('scroll', schedule, { passive: true }); addEventListener('resize', schedule); reduced.addEventListener('change', schedule)
+
+    addEventListener('scroll', schedule, { passive: true }); addEventListener('resize', measure); reduced.addEventListener('change', measure)
+    measure()
     return () => {
       cancelAnimationFrame(frame)
-      removeEventListener('scroll', schedule); removeEventListener('resize', schedule); reduced.removeEventListener('change', schedule)
+      removeEventListener('scroll', schedule); removeEventListener('resize', measure); reduced.removeEventListener('change', measure)
     }
   }, [profile])
 
@@ -147,13 +172,13 @@ export default function About() {
 
           <section className="about-directors" id="directors" aria-label="Our directors">
             <div className="about-director-cards">
-              <Link to="/director/shakeel-jamadar" data-about-reveal aria-label="Visit Shakeel Jamadar’s director profile">
-                <img src="/images/about/shakeel-card.png" alt="Shakeel Jamadar — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" />
-                <span className="director-card-caption">Shakeel Jamadar <span>View profile ↗</span></span>
-              </Link>
               <Link to="/director/aviraj-sharma" data-about-reveal aria-label="Visit Aviraj Sharma’s director profile">
-                <img src="/images/about/aviraj-card.png" alt="Aviraj Sharma — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" />
+                <img src="/images/about/aviraj-card.webp" alt="Aviraj Sharma — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" />
                 <span className="director-card-caption">Aviraj Sharma <span>View profile ↗</span></span>
+              </Link>
+              <Link to="/director/shakeel-jamadar" data-about-reveal aria-label="Visit Shakeel Jamadar’s director profile">
+                <img src="/images/about/shakeel-card.webp" alt="Shakeel Jamadar — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" />
+                <span className="director-card-caption">Shakeel Jamadar <span>View profile ↗</span></span>
               </Link>
             </div>
           </section>
