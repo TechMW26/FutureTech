@@ -16,7 +16,6 @@ const OurWorks = lazy(() => import('./animations/OurWorks'))
 const NewsEventsPage = lazy(() => import('./animations/NewsEvents'))
 const AboutPage = lazy(() => import('./animations/About'))
 const LetsTalkPage = lazy(() => import('./animations/LetsTalk'))
-const ConnectionFooter = lazy(() => import('./animations/ConnectionFooter'))
 const DirectorPage = lazy(() => import('./pages/DirectorPage'))
 const SpadeClonePage = lazy(() => import('./pages/SpadeClonePage'))
 
@@ -25,10 +24,8 @@ const MODEL_INTRO_ARM_DELAY = 500
 const MODEL_INTRO_PATHS = new Set(['/'])
 
 // Routes that render the animation pages. Those pages own their header and
-// the cinematic connection footer, and opt out of Lenis so the
-// position: sticky scroll tracks stay exact.
+// opt out of Lenis so the position: sticky scroll tracks stay exact.
 const ANIMATION_ROUTES = new Set(['/work', '/news-events', '/about', '/lets-talk'])
-const ANIMATION_FOOTER_PATHS = new Set(['/work', '/news-events', '/about'])
 // Routes that render the site header outside the page-transition wrapper.
 const STATIC_HEADER_PATHS = new Set(['/work', '/news-events', '/about', '/lets-talk'])
 
@@ -78,7 +75,6 @@ export default function App() {
   const normalizedPath = location.pathname === '/' ? '/' : location.pathname.replace(/\/+$/, '')
   const isSpadeClone = normalizedPath === '/spade'
   const usesAnimationPage = isAnimationRoute(normalizedPath)
-  const showsConnectionFooter = ANIMATION_FOOTER_PATHS.has(normalizedPath)
   const showsStaticHeader = STATIC_HEADER_PATHS.has(normalizedPath)
   const lenisRef = useLenisScroll({ disabled: isSpadeClone || usesAnimationPage })
   const [theme] = useState('light')
@@ -184,11 +180,7 @@ export default function App() {
         </motion.main>
       </AnimatePresence>
 
-      <Suspense fallback={null}>
-        {showsConnectionFooter && <ConnectionFooter />}
-      </Suspense>
-
-      {!isSpadeClone && !usesAnimationPage && <Footer />}
+      {!isSpadeClone && <Footer />}
     </>
   )
 }

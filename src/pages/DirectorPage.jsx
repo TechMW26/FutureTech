@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+﻿import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -31,7 +31,29 @@ function renderRevealWords(text, keyPrefix) {
   ))
 }
 
-function createHeroLayout(containerRect, viewportHeight, headerBottom = 0) {
+// Measures where a single-line name actually ends so the ghost headline can clear it.
+function measureNameBottom(element) {
+  if (typeof document === 'undefined' || !element) return 0
+
+  const canvas = measureNameBottom.canvas ?? (measureNameBottom.canvas = document.createElement('canvas'))
+  const context = canvas.getContext('2d')
+  if (!context) return 0
+
+  const styles = getComputedStyle(element)
+  const lineHeight = parseFloat(styles.lineHeight) || element.getBoundingClientRect().height
+  const fontSize = parseFloat(styles.fontSize) || lineHeight
+  context.font = `${styles.fontWeight} ${fontSize}px ${styles.fontFamily}`
+  const metrics = context.measureText(element.textContent ?? '')
+  const baseline = (lineHeight - (metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent)) / 2 + metrics.fontBoundingBoxAscent
+  const inkBottom = baseline + metrics.actualBoundingBoxDescent
+  const nameTop = parseFloat(styles.top)
+
+  if (!Number.isFinite(nameTop) || !Number.isFinite(inkBottom)) return 0
+
+  return nameTop + lineHeight + inkBottom - (metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent)
+}
+
+function createHeroLayout(containerRect, viewportHeight, headerBottom = 0, nameBottom = 0) {
   const safeWidth = Math.max(containerRect.width || 0, 320)
   const safeTop = Math.max(containerRect.top || 0, 0)
   const availableHeight = clampNumber(viewportHeight - safeTop, 460, 980)
@@ -43,7 +65,13 @@ function createHeroLayout(containerRect, viewportHeight, headerBottom = 0) {
   const firstTop = clampNumber(Math.max(heroHeight * 0.035, headerClearance), 18, 132)
   const lineGap = clampNumber(heroNameSize * 0.92, 82, 224)
   const heroImageWidth = clampNumber(Math.min(safeWidth * 0.46, heroHeight * 0.7) * 1.2, 288, 672)
-  const aboutTitleTop = clampNumber(heroHeight * 0.25, 104, 260)
+  const aboutTitleSize = clampNumber(heroNameSize * 0.42, 34, 96)
+  // Keep the ghost headline just below the name instead of running through it.
+  const aboutTitleTop = clampNumber(
+    nameBottom ? nameBottom + heroHeight * 0.075 : heroHeight * 0.25,
+    104,
+    heroHeight - aboutTitleSize,
+  )
 
   return {
     '--director-hero-height': `${heroHeight.toFixed(2)}px`,
@@ -55,6 +83,7 @@ function createHeroLayout(containerRect, viewportHeight, headerBottom = 0) {
     '--director-hero-image-width': `${heroImageWidth.toFixed(2)}px`,
     '--director-hero-image-offset': `${(-heroImageWidth / 2).toFixed(2)}px`,
     '--director-about-title-top': `${aboutTitleTop.toFixed(2)}px`,
+    '--director-about-title-size': `${aboutTitleSize.toFixed(2)}px`,
   }
 }
 
@@ -149,6 +178,7 @@ export default function DirectorPage() {
           heroElement.getBoundingClientRect(),
           window.innerHeight,
           headerBottom,
+          measureNameBottom(lastNameRef.current),
         )
 
         setHeroLayout((currentLayout) => {
