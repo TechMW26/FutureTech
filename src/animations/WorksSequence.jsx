@@ -58,11 +58,18 @@ export default function WorksSequence({ progress, items, onSelect }) {
       const intro = Math.min(.54, p / .36 * .54)
       const moveText = smooth(interval(intro, .16, .54))
       const focus = projectFocus(p, Math.min(MAX_CARDS, items.length))
+      // Phones cannot afford the desktop's corner drift: two words racing to
+      // opposite edges end up clipped and leave the ribbon alone in an empty
+      // frame. Keep both words fully inside the viewport and let them settle
+      // into a compact stacked block as the ribbon takes over.
+      const phone = width <= 1024
+      const driftX = phone ? 0 : .67
+      const driftY = phone ? 0 : .13
       // Once the ribbon resolves, lift the two title words so they clear the
       // focused card (which is centred lower on phones).
-      const titleLift = height * .13 * focus.focus
-      if (first.current) first.current.style.transform = `translate3d(${moveText * width * .67}px, ${-moveText * height * .13 - titleLift}px, 0)`
-      if (second.current) second.current.style.transform = `translate3d(${-moveText * width * .67}px, ${moveText * height * .13 - titleLift}px, 0)`
+      const titleLift = height * (phone ? .05 : .13) * focus.focus
+      if (first.current) first.current.style.transform = `translate3d(${moveText * width * driftX}px, ${-moveText * height * driftY - titleLift}px, 0)`
+      if (second.current) second.current.style.transform = `translate3d(${-moveText * width * driftX}px, ${moveText * height * driftY - titleLift}px, 0)`
       if (focus.index !== active.current) { active.current = focus.index; setActiveIndex(focus.index) }
       if (details.current) {
         details.current.style.opacity = String(focus.reveal)
