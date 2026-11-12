@@ -228,11 +228,13 @@
   height: 100vh;
   height: 100dvh;
   width: min(82vw, 360px);
+  width: min(82vw, 360px, calc(100vw - max(env(safe-area-inset-left), 0px) - 16px));
   z-index: 80;
   display: flex;
   flex-direction: column;
   padding: clamp(1.25rem, 4vw, 1.75rem);
   padding-top: max(env(safe-area-inset-top), 1.5rem);
+  padding-right: max(env(safe-area-inset-right), clamp(1.25rem, 4vw, 1.75rem));
   padding-bottom: max(env(safe-area-inset-bottom), 1.5rem);
   border-radius: 24px 0 0 24px;
   gap: 1.25rem;
@@ -437,5 +439,23 @@
 
   .site-header__brand-name {
     font-size: 0.9rem;
+  }
+}
+
+/* ─── Touch devices: guarantee 44px targets ─── */
+@media (pointer: coarse) {
+  .site-header__hamburger {
+    width: 44px;
+    height: 44px;
+  }
+
+  .site-header__link {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .site-header__cta {
+    min-height: 44px;
   }
 }

@@ -57,9 +57,12 @@ export default function WorksSequence({ progress, items, onSelect }) {
       renderer.current?.render(p, width, height, focused.current, miniSpin)
       const intro = Math.min(.54, p / .36 * .54)
       const moveText = smooth(interval(intro, .16, .54))
-      if (first.current) first.current.style.transform = `translate3d(${moveText * width * .67}px, ${-moveText * height * .13}px, 0)`
-      if (second.current) second.current.style.transform = `translate3d(${-moveText * width * .67}px, ${moveText * height * .13}px, 0)`
       const focus = projectFocus(p, Math.min(MAX_CARDS, items.length))
+      // Once the ribbon resolves, lift the two title words so they clear the
+      // focused card (which is centred lower on phones).
+      const titleLift = height * .13 * focus.focus
+      if (first.current) first.current.style.transform = `translate3d(${moveText * width * .67}px, ${-moveText * height * .13 - titleLift}px, 0)`
+      if (second.current) second.current.style.transform = `translate3d(${-moveText * width * .67}px, ${moveText * height * .13 - titleLift}px, 0)`
       if (focus.index !== active.current) { active.current = focus.index; setActiveIndex(focus.index) }
       if (details.current) {
         details.current.style.opacity = String(focus.reveal)

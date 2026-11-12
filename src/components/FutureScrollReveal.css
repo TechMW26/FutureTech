@@ -27,8 +27,12 @@
   display: grid;
   place-items: center;
   height: 100vh;
+  height: 100svh;
   overflow: hidden;
   background: var(--future-reveal-bg);
+  /* Clears the floating header; desktop headers are clear of the headline
+     already, so this stays at 0 unless a short landscape viewport sets it. */
+  padding-top: var(--future-sticky-top, 0px);
 }
 
 .future-scroll-reveal__field,
@@ -814,45 +818,103 @@
     display: none;
   }
 
-  .future-meta-card {
-    min-width: 170px;
-    padding: 14px 16px;
+  /* Keep the same ring as tablet: the headline owns the middle band
+     (~30–70% height), so every card lives above or below it instead of
+     sliding across the copy as it exits. */
+  .future-meta-card--left,
+  .future-meta-card--right,
+  .future-alert-card,
+  .future-mini-chart-card {
+    display: none;
   }
 
-  .future-mini-chart-card {
-    left: 4%;
-    top: 34%;
-    width: min(210px, 58vw);
+  /* Phones have no side columns beside the headline, and motion's per-card
+     exit drift is sized for desktop. Hide the decorative card layer here via
+     an explicit media query (which wins over motion's inline visibility) so
+     cards never slide across the headline. Tablet and desktop rings are
+     unchanged. */
+  .future-scroll-reveal .future-dark-card-layer {
+    display: none;
+  }
+
+  .future-meta-card {
+    min-width: 0;
+    padding: 12px 14px;
   }
 
   .future-meta-card--top {
-    left: 28%;
-    top: 17%;
+    right: 6%;
+    top: 8%;
+    left: auto;
+    text-align: right;
   }
 
-  .future-meta-card--left {
-    left: 5%;
-    top: 28%;
+  .future-transaction-pill--top {
+    left: 4%;
+    right: auto;
+    top: 24%;
   }
 
   .future-meta-card--bottom-left {
     left: 6%;
-    bottom: 13%;
+    bottom: 22%;
+    top: auto;
+  }
+
+  .future-meta-card--bottom-right {
+    right: 6%;
+    bottom: 22%;
+  }
+
+  .future-meta-card--product {
+    left: 50%;
+    top: auto;
+    bottom: 7%;
+    margin-left: 0;
+    transform-origin: center;
+    width: min(260px, 66vw);
+    text-align: center;
+  }
+
+  .future-meta-card--product b {
+    letter-spacing: 0.08em;
   }
 
   .future-transaction-pill {
-    width: min(310px, 78vw);
-    min-height: 58px;
+    width: min(268px, 68vw);
+    min-height: 54px;
+    padding: 8px 12px;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    gap: 9px;
+  }
+
+  .future-transaction-pill i {
+    width: 28px;
+    height: 28px;
+  }
+
+  .future-transaction-pill b {
+    font-size: 0.74rem;
+  }
+
+  .future-transaction-pill span {
+    font-size: 0.6rem;
+  }
+
+  .future-transaction-pill strong {
+    font-size: 0.82rem;
   }
 
   .future-transaction-pill--left {
-    left: 7%;
-    top: 60%;
+    left: 4%;
+    top: auto;
+    bottom: 30%;
   }
 
-  .future-transaction-pill--top {
-    left: 24%;
-    top: 21%;
+  .future-transaction-pill--right {
+    right: 4%;
+    top: 44%;
+    bottom: auto;
   }
 
   .future-device-card {
@@ -871,5 +933,47 @@
 
   .future-device-card__lines {
     margin-top: 24px;
+  }
+}
+
+/* Phones and tablets held in landscape: the viewport is short, so the floating
+   header would otherwise sit on top of the sticky headline. Reserve its
+   height inside the sticky stage and tighten the type to fit. */
+@media (max-height: 560px) and (orientation: landscape) and (max-width: 1024px) {
+  .future-scroll-reveal__sticky {
+    --future-sticky-top: 76px;
+  }
+
+  .future-scroll-reveal__field {
+    inset-block: 72px 12px;
+  }
+
+  /* The card layer cannot clear the headline in a 390px-tall stage. */
+  .future-scroll-reveal .future-dark-card-layer {
+    display: none;
+  }
+
+  .future-reveal-copy {
+    padding: 76px 24px 12px;
+    align-items: center;
+  }
+
+  .future-reveal-copy p {
+    font-size: clamp(1.4rem, 4.3vw, 2rem);
+    line-height: 1.06;
+  }
+
+  .future-reveal-copy--second p {
+    font-size: clamp(1.25rem, 3.8vw, 1.8rem);
+  }
+
+  .future-reveal-copy--second {
+    padding-top: 90px;
+  }
+
+  /* Card window shows only the platform badge inside the stage height. */
+  .future-device-card__screen,
+  .future-device-card__lines {
+    display: none;
   }
 }
