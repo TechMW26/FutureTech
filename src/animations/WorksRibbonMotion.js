@@ -18,7 +18,7 @@ export function projectFocus(progress, count = 8) {
 
 
 export function ribbonScene(progress, width, height, count = 8, miniSpin = 0) {
-  const p = clamp01(progress), mobile = width < 700;
+  const p = clamp01(progress), mobile = width <= 768;
   // Preserve the entrance's scroll distance while reserving room to read each project.
   const intro = Math.min(.54, p / .36 * .54);
   const enter = smooth(interval(intro, .035, .29));
@@ -36,6 +36,25 @@ export function ribbonScene(progress, width, height, count = 8, miniSpin = 0) {
   const focusWidth = Math.min(width * (mobile ? .82 : .37), height * (mobile ? .30 : .45) / .68);
   const focusArc = spacing * .91;
   const focusRadius = focusWidth / (2 * Math.sin(focusArc / 2));
+  // Phone/tablet-portrait layouts stack the pieces vertically: title on top,
+  // focused card in the middle, project detail underneath. Wider screens keep
+  // the side-by-side desktop composition.
+  const narrow = mobile || width <= 1024;
+  const focusHeight = focusWidth * .68;
+  const shortLandscape = width > 701 && width <= 1024 && height <= 560 && width > height;
+  let focusX = -width * .23, focusY = height * .04;
+  if (mobile) {
+    focusX = 0;
+    focusY = Math.min(-height * .16 + height * .10, -height * .03 + focusHeight * .5);
+  } else if (shortLandscape) {
+    const cardCenterX = width * .31;
+    focusX = cardCenterX - width / 2;
+    focusY = height * .07;
+  } else if (narrow) {
+    const cardRight = width * .56;
+    focusX = -(width / 2 - cardRight + focusWidth * .5);
+    focusY = height * .09;
+  }
   const endBase = .7 - TAU * RIBBON_TURNS - (count - 1) / 2 * spacing;
   const alignedBase = Math.round(endBase / TAU) * TAU;
   return {
@@ -50,7 +69,7 @@ export function ribbonScene(progress, width, height, count = 8, miniSpin = 0) {
     scale: mix(miniRadius / radius, mix(.38, 1.12, enter) * mix(1, .64, settle), grow), depth: mix(1, 1.1, grow), mini: 1 - grow,
     focus: focused.focus, activeIndex: focused.index,
     focusRadius, focusArc, focusWidth, focusHeight: focusWidth * .68,
-    focusX: mobile ? 0 : -width * .23, focusY: mobile ? -height * .16 : height * .04,
+    focusX, focusY,
     focusBase: alignedBase - focused.step * spacing, focusDepth: .65,
   };
 }
@@ -97,7 +116,10 @@ export function ribbonCardOpacity(scene, index) {
 
 export function ribbonClip(scene) {
   const centerX = scene.width / 2 + scene.focusX, centerY = scene.height / 2 + scene.focusY;
-  const halfWidth = scene.focusWidth * .62, halfHeight = scene.focusHeight * .76;
+  // Landscape two-up layouts keep the project copy to the right of the card,
+  // so the resolved clip has to cover that column instead of a symmetric window.
+  const sideBySide = scene.width > 768 && scene.width <= 1024 && scene.width > scene.height;
+  const halfWidth = scene.focusWidth * (sideBySide ? 1.9 : .62), halfHeight = scene.focusHeight * .76;
   return {
     left: mix(0, Math.max(0, centerX - halfWidth), scene.focus),
     right: mix(scene.width, Math.min(scene.width, centerX + halfWidth), scene.focus),
