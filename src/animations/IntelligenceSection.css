@@ -49,6 +49,16 @@
   .intelligence-intro { width: 88%; font-size: clamp(19px, 4.6vw, 30px); }
   .intelligence-statement { width: 82%; font-size: clamp(20px, 4.5vw, 30px); }
   .intelligence-statement br { display: none; }
+  /* Let the copy reflow as one balanced paragraph on phones instead of
+     keeping the desktop's hard line splits, which wrap into ragged orphans. */
+  .intelligence-intro .sequence-line,
+  .intelligence-statement .sequence-line {
+    display: inline;
+  }
+  .intelligence-intro,
+  .intelligence-statement {
+    text-wrap: balance;
+  }
   .sequence-applications article { width: 68%; }
   .sequence-applications h3 { margin-bottom: 14px; }
   .sequence-applications p { font-size: 18px; }

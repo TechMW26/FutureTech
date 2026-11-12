@@ -24,8 +24,7 @@ export function ribbonScene(progress, width, height, count = 8, miniSpin = 0) {
   const enter = smooth(interval(intro, .035, .29));
   const travel = smooth(interval(intro, .1, .54));
   const settle = smooth(interval(intro, .42, .54));
-  const radius = Math.min(width * (mobile ? .61 : .37), height * .74);
-  const spacing = TAU / count, arc = spacing * .965;
+  const radius = Math.min(width * (mobile ? .61 : .37), height * .74);  const spacing = TAU / count, arc = spacing * .965;
   const grow = smooth(interval(p, 0, .16));
   const miniRadius = Math.min(mobile ? 82 : 178, width * (mobile ? .19 : .152), height * .27) * (mobile ? 1.28 : 1.4);
   const originalY = mix(height * 1.12, height * .04, enter);
@@ -33,27 +32,33 @@ export function ribbonScene(progress, width, height, count = 8, miniSpin = 0) {
   const excessY = Math.max(0, originalY - launchY);
   const openingY = launchY + excessY / (1 + excessY / (height * .06));
   const focused = projectFocus(p, count);
-  const focusWidth = Math.min(width * (mobile ? .82 : .37), height * (mobile ? .30 : .45) / .68);
   const focusArc = spacing * .91;
-  const focusRadius = focusWidth / (2 * Math.sin(focusArc / 2));
   // Phone/tablet-portrait layouts stack the pieces vertically: title on top,
   // focused card in the middle, project detail underneath. Wider screens keep
   // the side-by-side desktop composition.
+  const shortLandscape = width > height && width > 701 && width <= 1024 && height <= 620;
+  // The stacked layouts need a smaller resolved card than the desktop one: the
+  // project copy has to fit in the band between the card and "WORKS".
+  const focusWidth = Math.min(
+    width * (mobile ? .82 : shortLandscape ? .37 : .64),
+    height * (mobile ? .30 : shortLandscape ? .45 : .40) / .68,
+  );
+  const focusRadius = focusWidth / (2 * Math.sin(focusArc / 2));
   const narrow = mobile || width <= 1024;
   const focusHeight = focusWidth * .68;
-  const shortLandscape = width > 701 && width <= 1024 && height <= 560 && width > height;
   let focusX = -width * .23, focusY = height * .04;
   if (mobile) {
+    // Centre the resolved card in the band between the two title words, small
+    // enough that the project copy fits in the gap underneath it.
     focusX = 0;
-    focusY = Math.min(-height * .16 + height * .10, -height * .03 + focusHeight * .5);
+    focusY = height * .015 + focusHeight * .4 - height / 2;
   } else if (shortLandscape) {
+    focusX = -width * .2;
+    focusY = height * .085;
+  } else if (narrow) {
     const cardCenterX = width * .31;
     focusX = cardCenterX - width / 2;
-    focusY = height * .07;
-  } else if (narrow) {
-    const cardRight = width * .56;
-    focusX = -(width / 2 - cardRight + focusWidth * .5);
-    focusY = height * .09;
+    focusY = height * .015 + focusHeight * .38 - height / 2;
   }
   const endBase = .7 - TAU * RIBBON_TURNS - (count - 1) / 2 * spacing;
   const alignedBase = Math.round(endBase / TAU) * TAU;
@@ -119,12 +124,15 @@ export function ribbonClip(scene) {
   // Landscape two-up layouts keep the project copy to the right of the card,
   // so the resolved clip has to cover that column instead of a symmetric window.
   const sideBySide = scene.width > 768 && scene.width <= 1024 && scene.width > scene.height;
+  // On stacked layouts the copy sits directly underneath, so trim the clip's
+  // bottom edge to keep the card image from bleeding into that text block.
+  const stacked = scene.width <= 1024 && !sideBySide;
   const halfWidth = scene.focusWidth * (sideBySide ? 1.9 : .62), halfHeight = scene.focusHeight * .76;
   return {
     left: mix(0, Math.max(0, centerX - halfWidth), scene.focus),
     right: mix(scene.width, Math.min(scene.width, centerX + halfWidth), scene.focus),
     top: mix(0, Math.max(85, centerY - halfHeight), scene.focus),
-    bottom: mix(scene.height, Math.min(scene.height, centerY + halfHeight), scene.focus),
+    bottom: mix(scene.height, Math.min(scene.height, centerY + (stacked ? halfHeight * .86 : halfHeight)), scene.focus),
   };
 }
 
