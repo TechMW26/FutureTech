@@ -398,3 +398,40 @@
     transition: none;
   }
 }
+
+/* Phones held in landscape: the rail is too wide for a ~390px-tall stage, so
+   neighbours would collide with the active copy. Show only the active card. */
+@media (max-height: 560px) and (orientation: landscape) and (max-width: 1024px) {
+  .home-journey {
+    height: 280vh;
+    min-height: 60rem;
+  }
+
+  .home-journey__sticky {
+    padding: 3.25rem 0 1.25rem;
+  }
+
+  .home-journey__stage {
+    min-height: 22rem;
+    margin-top: 1rem;
+    --journey-card-width: min(62vw, 22rem);
+    --journey-text-lift: 4.25rem;
+  }
+
+  .home-journey__title {
+    font-size: clamp(1.6rem, 4.4vw, 2.3rem);
+  }
+
+  .home-journey__card:not(.is-active) .home-journey__body,
+  .home-journey__card:not(.is-active) strong,
+  .home-journey__card:not(.is-active) .home-journey__icon,
+  .home-journey__card:not(.is-active) .home-journey__kicker {
+    visibility: hidden;
+  }
+
+  .home-journey__cards {
+    left: 0;
+    width: 100%;
+    transform: none;
+  }
+}

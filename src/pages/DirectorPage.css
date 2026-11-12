@@ -287,10 +287,19 @@ body:has(.director-page) .site-footer {
     padding-inline: clamp(1rem, 4vw, 2rem);
   }
 
+  /* The hero is centred here, but the statement still reveals over the
+     lower-right of the portrait. Slide the portrait left of centre so the
+     copy lands in clear space, like it does on wider screens. */
+  .director-portrait--hero {
+    margin-left: calc(var(--director-hero-image-offset, -16.5rem) - min(9vw, 112px));
+    transform: translateY(calc(var(--director-hero-image-width, min(46vw, 33rem)) * 0.04));
+    transform-origin: center bottom;
+  }
+
   .director-hero__copy {
     right: clamp(1rem, 2.5vw, 2rem);
-    bottom: clamp(3rem, 7vh, 4.75rem);
-    width: min(50vw, 35rem);
+    bottom: clamp(2rem, 5vh, 3rem);
+    width: min(45vw, 32rem);
   }
 
   .director-story__statement.director-hero__statement {
@@ -324,24 +333,66 @@ body:has(.director-page) .site-footer {
   }
 }
 
+/* Portrait tablets (iPad portrait, Android tablets). The extra height lets the
+   portrait grow into a wide, bottom-left mass while the statement takes the
+   upper right, mirroring the desktop composition. This must come after the
+   1024 block so it wins at these widths. */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .director-portrait--hero {
+    width: min(74vw, 47svh);
+    margin-left: calc(var(--director-hero-image-offset, -16.5rem) - min(17vw, 210px));
+    transform: translateY(0);
+  }
+
+  .director-hero__copy {
+    right: clamp(1rem, 3vw, 2.25rem);
+    bottom: auto;
+    top: 44%;
+    width: min(46vw, 32rem);
+  }
+
+  .director-story__statement.director-hero__statement {
+    font-size: clamp(1.12rem, 2.1vw, 1.5rem);
+  }
+}
+
+/* Narrow screens (phones). The portrait is pulled down-left and the statement
+   sits in the clear space beside its head and shoulders. GSAP copies the
+   portrait's inline left/top onto the element style, which would beat these
+   declarations, so offsets are applied with a transform. Size-dependent
+   refinements for tall and short phones follow after this block. */
 @media (max-width: 768px) {
   .director-section {
     padding: clamp(0.75rem, 3vw, 1rem) clamp(1rem, 5vw, 1.5rem) clamp(4.75rem, 13vw, 6.5rem);
   }
 
+  .director-hero {
+    padding-bottom: clamp(2.25rem, 5.5vh, 3.5rem);
+  }
+
   .director-hero__copy {
-    left: 50%;
-    top: auto;
-    bottom: clamp(5rem, 14vh, 7rem);
-    right: auto;
-    width: min(88vw, 28rem);
-    transform: translateX(-50%);
+    z-index: 3;
+    right: 4%;
+    left: 38vw;
+    bottom: auto;
+    top: 53%;
+    width: auto;
+    max-width: none;
+    transform: none;
+    pointer-events: none;
+  }
+
+  /* Keep the statement above the bottom mist so its closing lines stay
+     fully legible instead of fading out with the portrait. */
+  .director-hero .director-section__mist {
+    height: clamp(2rem, 5.5vh, 3.25rem);
   }
 
   .director-story__statement.director-hero__statement {
-    font-size: clamp(1.15rem, 5.4vw, 1.8rem);
-    line-height: 1.12;
-    text-align: center;
+    font-size: clamp(0.82rem, 3vw, 1.15rem);
+    line-height: 1.24;
+    letter-spacing: -0.035em;
+    text-align: left;
   }
 
   .director-hero__statement-word-clip {
@@ -385,15 +436,78 @@ body:has(.director-page) .site-footer {
   }
 }
 
-@media (max-width: 480px) {
+/* Short phones (iPhone SE, small Androids) cannot fit the wide composition, so
+   the portrait is a compact head-and-shoulders thumbnail beside the copy. */
+@media (max-width: 768px) and (max-height: 740px) {
+  .director-portrait--hero {
+    width: min(var(--director-hero-image-width, min(62vw, 16rem)), 38vw, 30svh, 21rem);
+    left: 0;
+    top: auto;
+    right: auto;
+    bottom: calc(clamp(2rem, 5svh, 3.25rem) + 1.4rem);
+    margin: 0 0 0 min(clamp(0.25rem, 1vw, 0.75rem), var(--director-hero-text-inset, 0px));
+    transform: translateY(calc(min(var(--director-hero-image-width, min(62vw, 16rem)), 38vw, 30svh, 21rem) * 0.09));
+    transform-origin: center bottom;
+  }
+
   .director-hero__copy {
-    bottom: clamp(4.5rem, 11vh, 5.75rem);
-    width: min(94vw, 24rem);
+    right: 4%;
+    left: 38vw;
+    top: 53%;
   }
 
   .director-story__statement.director-hero__statement {
-    font-size: clamp(1rem, 5.1vw, 1.45rem);
-    line-height: 1.16;
+    font-size: clamp(0.82rem, 3vw, 1.15rem);
+  }
+}
+
+/* Tall phones in portrait (large Androids, iPhone Pro Max) have enough
+   vertical room for the wide composition instead of a small thumbnail. */
+@media (max-width: 768px) and (min-height: 741px) {
+  .director-portrait--hero {
+    width: min(76vw, 44svh);
+    left: 0;
+    top: auto;
+    right: auto;
+    bottom: calc(clamp(0.5rem, 2vh, 1.5rem) + 1.4rem);
+    margin: 0 0 0 calc(min(var(--director-hero-image-width, min(62vw, 16rem)), 76vw, 44svh) * -0.5 + clamp(0.4rem, 2.5vw, 1rem) + var(--director-hero-name-size, 0px) * 0.25);
+    transform: translateY(0);
+    transform-origin: center bottom;
+  }
+
+  .director-hero__copy {
+    right: clamp(0.9rem, 4vw, 1.5rem);
+    left: min(36vw, 300px);
+    bottom: auto;
+    top: 42%;
+  }
+
+  .director-story__statement.director-hero__statement {
+    font-size: clamp(0.9rem, 3.4vw, 1.35rem);
+    line-height: 1.22;
+  }
+}
+
+@media (max-width: 768px) {
+  .director-portrait--hero img {
+    height: auto;
+    object-fit: contain;
+    object-position: center bottom;
+    /* The cut-out is a hard-edged rectangle below the shoulders; let it melt
+       into the section mist instead of ending on a visible box. */
+    -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 94%);
+    mask-image: linear-gradient(180deg, #000 0%, #000 62%, transparent 94%);
+  }
+
+  .director-portrait--hero::before {
+    inset: 4% 6% 30%;
+  }
+}
+
+@media (max-width: 480px) {
+  .director-story__statement.director-hero__statement {
+    font-size: clamp(0.8rem, 3.6vw, 1.1rem);
+    line-height: 1.24;
   }
 
   .director-portrait--story {

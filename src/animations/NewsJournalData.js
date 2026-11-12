@@ -63,7 +63,7 @@ export const journalStories = [
   {
     id: 'collaboration-first', category: 'News', label: 'Our people',
     title: 'Better ideas begin with collaboration',
-    summary: 'Inside the conversations and shared perspectives that help shape MW Futuretechâ€™s approach to creating purposeful digital work.',
+    summary: 'Inside the conversations and shared perspectives that help shape MW Futuretech’s approach to creating purposeful digital work.',
     date: '2026-10-18', dateLabel: '18 October 2026',
     image: '/images/work-preview-8.png', imageAlt: 'Creative direction from the MW Futuretech project collection',
     paragraphs: [

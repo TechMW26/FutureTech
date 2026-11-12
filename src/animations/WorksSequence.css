@@ -61,6 +61,43 @@
  .works-sequence-fallback .works-fallback-project img { flex-basis: 76vw; width: 76vw; }
  .works-accessible-projects { bottom: 3%; }
 }
+
+/* Small tablets and large phones still get the stacked composition, with the
+  project detail either beside the card (landscape) or underneath it. */
+@media (min-width: 701px) and (max-width: 1024px) {
+ .works-motion-title { left: 7%; right: auto; top: 8%; }
+ .works-motion-title > span:last-child { margin-left: 0; margin-top: .22em; }
+ .works-motion-note { display: none; }
+ .work-detail {
+   left: 8%;
+   right: auto;
+   top: 68%;
+   width: 84%;
+   transform: none;
+ }
+ .work-detail h2 { font-size: clamp(28px, 4.4vw, 40px); }
+ .work-detail-description { font-size: 12px; line-height: 1.7; margin: 14px 0 16px; max-width: 100%; }
+ .work-detail-count { position: absolute; right: 0; bottom: 5px; margin: 0; }
+ .works-sequence-fallback .works-fallback-project img { flex-basis: min(58vw, 60svh); width: min(58vw, 60svh); }
+}
+
+@media (min-width: 701px) and (max-width: 1024px) and (orientation: landscape) {
+ .work-detail {
+   top: 50%;
+   left: 60%;
+   width: 36%;
+   transform: translate(0, -50%);
+ }
+ .work-detail-count { position: static; margin-top: 22px; }
+}
+
+/* Landscape phones/tablets have little vertical room, so the title keeps its
+  original two-corner spread (the canvas is shifted right of it instead). */
+@media (max-width: 1024px) and (max-height: 560px) and (min-width: 701px) and (orientation: landscape) {
+ .works-motion-title { left: 20%; right: 20%; top: 10%; }
+ .works-motion-title > span:last-child { margin-left: auto; margin-top: .28em; }
+ .work-detail { top: 54%; left: 59%; width: 34%; }
+}
 @media (max-width: 700px) and (max-height: 650px) {
  .works-motion-title { top: 6%; font-size: clamp(34px, 10vw, 48px); }
  .work-detail { top: 76%; }
