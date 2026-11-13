@@ -17,7 +17,7 @@ h1,h2{margin:0;font-family:inherit;font-weight:900;font-style:normal;text-transf
 
 /* Foreground clouds borrow the scene's photographic texture and warm light. */
 .journey{height:860vh;height:860svh}
-.cloud-entry{position:absolute;inset:0;pointer-events:none;overflow:hidden;will-change:opacity}
+.cloud-entry{position:absolute;inset:0;pointer-events:none;overflow:hidden;will-change:opacity;background:#141b1d}
 .entry-cloud{position:absolute;pointer-events:none;background-image:url('/journey/ezgif-frame-001.jpg');background-repeat:no-repeat;will-change:transform;transform-origin:center}
 .cloud-far{top:-18%;width:105%;height:138%;background-size:180% 230%;filter:blur(2px)}
 .cloud-far.cloud-left{left:-40%;background-position:left bottom}
@@ -25,9 +25,18 @@ h1,h2{margin:0;font-family:inherit;font-weight:900;font-style:normal;text-transf
 .cloud-near{top:-8%;width:110%;height:132%;background-size:160% 205%;filter:blur(.6px)}
 .cloud-near.cloud-left{left:-48%;background-position:15% bottom}
 .cloud-near.cloud-right{right:-48%;background-position:90% bottom}
-/* Fade to zero before every image edge, including edges exposed by movement. */
-.entry-cloud{-webkit-mask-image:radial-gradient(ellipse 50% 50% at center,#000 30%,#000e 45%,#0008 65%,#0003 80%,transparent 98%);mask-image:radial-gradient(ellipse 50% 50% at center,#000 30%,#000e 45%,#0008 65%,#0003 80%,transparent 98%);-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
-@media(max-width:600px){.journey{height:790svh}.cloud-far{background-size:240% 210%}.cloud-near{background-size:220% 190%}}
+/* Fade to zero before every image edge, including edges exposed by movement.
+   Four layers overlap so the union still covers the full frame. A gentler
+   falloff keeps the moving edges from reading as hard vertical lines. */
+.entry-cloud{-webkit-mask-image:radial-gradient(ellipse 72% 72% at center,#000 26%,#000c 46%,#0006 68%,#0001 86%,transparent 100%);mask-image:radial-gradient(ellipse 72% 72% at center,#000 26%,#000c 46%,#0006 68%,#0001 86%,transparent 100%);-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+/* Each curtain layer is nudged inwards so the overlap covers the middle, and
+   the right-hand pair is pulled further in than the left so the two photo
+   samples never butt up edge-to-edge in the centre. */
+.cloud-far.cloud-left{left:-30%}
+.cloud-far.cloud-right{right:-22%}
+.cloud-near.cloud-left{left:-36%}
+.cloud-near.cloud-right{right:-26%}
+@media(max-width:600px){.journey{height:790svh}.cloud-far{top:0;left:-34%;right:auto;width:140%;height:100%;background-size:220% 130%;background-position:0% 70%}.cloud-far.cloud-right{left:auto;right:-40%;background-position:100% 70%}.cloud-near{top:0;left:-42%;right:auto;width:148%;height:100%;background-size:200% 122%;background-position:6% 62%}.cloud-near.cloud-right{left:auto;right:-48%;background-position:94% 62%}.entry-cloud{-webkit-mask-image:radial-gradient(ellipse 70% 78% at center,#000 42%,#000d 62%,#0007 80%,transparent 100%);mask-image:radial-gradient(ellipse 70% 78% at center,#000 42%,#000d 62%,#0007 80%,transparent 100%)}}
 @media(prefers-reduced-motion:reduce){.journey{height:720vh;height:720svh}.cloud-entry{display:none}}
 @media(prefers-reduced-motion:reduce) and (max-width:600px){.journey{height:650svh}}
 
