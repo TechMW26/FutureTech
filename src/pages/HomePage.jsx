@@ -1,6 +1,7 @@
 import { lazy } from 'react'
 import { SILVER_MODEL_LIGHTING_PROPS } from '../components/heroSceneLighting'
 import HeroJourney from '../components/journey/HeroJourney'
+import CloudTransition from '../components/CloudTransition'
 import FutureScrollReveal from '../components/FutureScrollReveal'
 import HomeJourney from '../components/HomeJourney'
 import HomeMagicSearch from '../components/HomeMagicSearch'
@@ -19,6 +20,7 @@ export default function HomePage({ introStartRef }) {
         {...SILVER_MODEL_LIGHTING_PROPS}
       />
       <HeroJourney />
+      <CloudTransition />
       <FutureScrollReveal />
       <HomeJourney />
       <HomeMagicSearch />
