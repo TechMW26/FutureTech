@@ -1,0 +1,18 @@
+/* Scroll-synchronised white cloud wipe over the hero → next-section boundary.
+   A fixed, full-screen bank of overlapping radial clouds sits between the two
+   sections; its opacity is driven directly from scroll progress. */
+.cloud-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, white 0%, transparent 65%),
+    radial-gradient(ellipse at 75% 40%, white 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 80%, #fff 0%, transparent 70%),
+    rgba(255, 255, 255, 0.9);
+  filter: blur(18px);
+  transition: none;
+  will-change: opacity;
+}

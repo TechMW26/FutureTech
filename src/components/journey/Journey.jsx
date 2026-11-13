@@ -8,6 +8,7 @@ export default function Journey() {
  const journey=sectionRef.current, reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const intro=sectionRef.current.querySelector('#intro'), inside=sectionRef.current.querySelector('#inside'), future=sectionRef.current.querySelector('#future');
  const shade=sectionRef.current.querySelector('#interiorShade'), progress=sectionRef.current.querySelector('#progress');
+ const hero=document.querySelector('.hero-section');
  const clouds=Array.from(sectionRef.current.querySelectorAll('.entry-cloud'));
  const cloudEntry=sectionRef.current.querySelector('.cloud-entry');
  let target=0,current=0,lastTime=0,raf=0,ready=false,width=0,height=0,travel=1,failed=0;
@@ -27,10 +28,19 @@ export default function Journey() {
  clouds.forEach((cloud,index)=>{
   const direction=index%2===0?-1:1;
   const near=index>1;
-  cloud.style.transform=`translate3d(${direction*part*(near?100:78)}%, ${part*(near?10:-6)}%, 0) scale(${1+part*(near?.18:.07)})`;
+  // Clouds part outwards in front of the home hero as the journey takes over,
+  // hiding the seam between the two sections. `spread` grows past 1 so the
+  // curtains keep drifting instead of stalling mid-flight.
+  const spread=clamp(part*1.45);
+  cloud.style.transform=`translate3d(${direction*spread*(near?100:78)}%, ${spread*(near?10:-6)}%, 0) scale(${1+spread*(near?.18:.07)})`;
  });
- cloudEntry.style.opacity=1-smooth(.72,1,opening);
- cloudEntry.style.visibility=opening>=1?'hidden':'visible';
+ // Hold the curtain fully opaque over the seam until the first cloud frame
+ // fills the stage; only then dissolve it into the fly-through.
+ cloudEntry.style.opacity=1-smooth(.14,.55,opening);
+ cloudEntry.style.visibility=opening>=.99?'hidden':'visible';
+ // The stage covers the hero once it is pinned to the top of the viewport, so
+ // the hero must stop painting behind it the moment the journey scrolls in.
+ if(hero) hero.style.visibility=current*travel>0?'hidden':'visible';
  const frame=sequence*(count-1),low=Math.floor(frame),fraction=frame-low;ctx.globalAlpha=1;ctx.fillStyle='#141b1d';ctx.fillRect(0,0,width,height);paint(nearest(low),1);if(fraction>.001)paint(nearest(Math.min(low+1,count-1)),fraction);ctx.globalAlpha=1;
  scene(intro,smooth(.3,.85,opening)*(1-smooth(.08,.25,sequence)));scene(inside,smooth(.535,.59,sequence)*(1-smooth(.735,.8,sequence)));scene(future,smooth(.815,.88,sequence));shade.style.opacity=smooth(.52,.59,sequence)*.95;progress.style.transform=`scaleX(${current})`;
  if(current!==target)wake();}
