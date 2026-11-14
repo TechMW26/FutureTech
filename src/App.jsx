@@ -13,6 +13,7 @@ import './animations/animations.css'
 
 const HomePage = lazy(() => import('./pages/HomePage'))
 const OurWorks = lazy(() => import('./animations/OurWorks'))
+const ProjectPage = lazy(() => import('./pages/ProjectPage'))
 const NewsEventsPage = lazy(() => import('./animations/NewsEvents'))
 const AboutPage = lazy(() => import('./animations/About'))
 const LetsTalkPage = lazy(() => import('./animations/LetsTalk'))
@@ -36,7 +37,6 @@ const HERO_IMAGE_PRELOADS = [
   '/images/hero-backgrounds/hero-bg-home.webp',
   '/images/hero-backgrounds/hero-bg-services.webp',
   '/images/hero-backgrounds/hero-bg-about.webp',
-  '/images/graffiti-hero.webp',
 ]
 
 function injectImagePreload(href) {
@@ -165,6 +165,7 @@ export default function App() {
             <Routes location={location}>
               <Route path="/" element={<HomePage introStartRef={getIntroRef('/')} />} />
               <Route path="/work" element={<OurWorks />} />
+              <Route path="/work/:projectSlug" element={<ProjectPage />} />
               <Route path="/news-events" element={<NewsEventsPage />} />
               <Route path="/services" element={<Navigate to="/news-events" replace />} />
               <Route path="/about" element={<AboutPage />} />

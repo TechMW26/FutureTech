@@ -7,9 +7,7 @@ import { WORKS_SCROLL_SCREENS, TOTAL_SCROLL_SCREENS } from './scrollTimeline'
 export default function OurWorks() {
   const [progress, setProgress] = useState(0)
   const [departure, setDeparture] = useState(0)
-  const [selected, setSelected] = useState(null)
   const scrollTrack = useRef(null)
-  const dialog = useRef(null)
 
   useEffect(() => {
     const update = () => {
@@ -30,13 +28,6 @@ export default function OurWorks() {
     }
   }, [])
 
-  useEffect(() => {
-    const modal = dialog.current
-    if (!modal) return
-    if (selected && !modal.open) modal.showModal()
-    else if (!selected && modal.open) modal.close()
-  }, [selected])
-
   return (
     <main className="home-screen" id="works">
       <section
@@ -48,21 +39,11 @@ export default function OurWorks() {
       >
         <div className="hero">
           <div className="carousel-scene" style={{ transform: `translate3d(0, ${-departure}px, 0)` }}>
-            <WorksSequence progress={progress} items={workProjects} onSelect={setSelected} />
+            <WorksSequence progress={progress} items={workProjects} />
           </div>
           <IntelligenceSection scrollTrack={scrollTrack} />
         </div>
       </section>
-      <dialog
-        ref={dialog}
-        className="project-dialog"
-        aria-label={selected?.title || 'Project preview'}
-        onClose={() => setSelected(null)}
-        onClick={event => { if (event.target === event.currentTarget) setSelected(null) }}
-      >
-        <button className="project-close" onClick={() => setSelected(null)} aria-label="Close project">×</button>
-        {selected && <><img src={selected.src} alt={selected.alt} /><h2>{selected.title}</h2></>}
-      </dialog>
     </main>
   )
 }

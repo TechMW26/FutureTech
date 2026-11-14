@@ -1,5 +1,6 @@
 .site-footer {
     width: 100%;
+    background: var(--page-footer-background, #fff);
     padding: clamp(1rem, 2vw, 1.75rem) clamp(0.85rem, 1.8vw, 2rem) clamp(0.85rem, 1.8vw, 1.75rem);
 }
 
@@ -16,7 +17,7 @@
     margin: 0 auto;
     padding: clamp(2.4rem, 4.2vw, 4rem) clamp(1.5rem, 3.8vw, 3.5rem) clamp(1.4rem, 1.8vw, 1.75rem);
     border-radius: clamp(2rem, 4.2vw, 4rem);
-    background: #f5f4f0;
+    background: #f5f3ed;
     overflow: hidden;
     font-family: 'Inter', system-ui, sans-serif;
     color: var(--footer-ink);

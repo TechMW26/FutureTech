@@ -1,7 +1,7 @@
 import { lazy } from 'react'
 import { SILVER_MODEL_LIGHTING_PROPS } from '../components/heroSceneLighting'
 import HeroJourney from '../components/journey/HeroJourney'
-import CloudTransition from '../components/CloudTransition'
+import { CLOUD_OPENING_VIEWPORTS } from '../components/journey/cloudOpening'
 import FutureScrollReveal from '../components/FutureScrollReveal'
 import HomeJourney from '../components/HomeJourney'
 import HomeMagicSearch from '../components/HomeMagicSearch'
@@ -16,11 +16,11 @@ export default function HomePage({ introStartRef }) {
         title="Engineering Tomorrow, In Real Time."
         tagline="Intelligent systems, adaptive design, and next-generation technology built to move business forward."
         introStartRef={introStartRef}
+        cloudExitViewports={CLOUD_OPENING_VIEWPORTS}
         backgroundImage="/images/hero-backgrounds/hero-bg-home.webp"
         {...SILVER_MODEL_LIGHTING_PROPS}
       />
       <HeroJourney />
-      <CloudTransition />
       <FutureScrollReveal />
       <HomeJourney />
       <HomeMagicSearch />

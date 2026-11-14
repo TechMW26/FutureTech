@@ -1,5 +1,5 @@
 .home-journey {
-  --journey-card-width: clamp(15rem, 23vw, 19rem);
+  --journey-card-width: min(22vw, 19rem);
   --journey-text-lift: clamp(5.75rem, 8vw, 7.25rem);
   --journey-map-fade-height: clamp(14rem, 24vw, 28rem);
   --journey-bottom-fade-opacity: 0;
@@ -41,11 +41,17 @@
   z-index: 4;
   pointer-events: none;
   opacity: var(--journey-bottom-fade-opacity);
-  background:
-    radial-gradient(ellipse 76% 112% at 50% 100%, var(--bg) 0%, color-mix(in srgb, var(--bg) 80%, transparent) 44%, color-mix(in srgb, var(--bg) 28%, transparent) 72%, transparent 100%),
-    radial-gradient(ellipse 48% 98% at 0% 100%, color-mix(in srgb, var(--bg) 90%, transparent) 0%, color-mix(in srgb, var(--bg) 42%, transparent) 56%, transparent 100%),
-    radial-gradient(ellipse 48% 98% at 100% 100%, color-mix(in srgb, var(--bg) 90%, transparent) 0%, color-mix(in srgb, var(--bg) 42%, transparent) 56%, transparent 100%),
-    linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--bg) 3%, transparent) 14%, color-mix(in srgb, var(--bg) 16%, transparent) 34%, color-mix(in srgb, var(--bg) 45%, transparent) 62%, color-mix(in srgb, var(--bg) 78%, transparent) 84%, var(--bg) 100%);
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    color-mix(in srgb, var(--bg) 3%, transparent) 14%,
+    color-mix(in srgb, var(--bg) 14%, transparent) 28%,
+    color-mix(in srgb, var(--bg) 34%, transparent) 42%,
+    color-mix(in srgb, var(--bg) 62%, transparent) 58%,
+    color-mix(in srgb, var(--bg) 83%, transparent) 72%,
+    color-mix(in srgb, var(--bg) 96%, transparent) 84%,
+    var(--bg) 94% 100%
+  );
 }
 
 .home-journey__header {
@@ -242,18 +248,30 @@
   will-change: transform, opacity;
 }
 
-.home-journey__card:focus-visible {
+.home-journey__link:focus-visible {
   outline: 2px solid var(--journey-accent);
   outline-offset: clamp(0.5rem, 1.2vw, 0.9rem);
 }
 
-.home-journey__icon {
+.home-journey__link {
+  pointer-events: auto;
+  text-decoration: underline;
+  text-decoration-color: var(--journey-rail);
+  text-underline-offset: .18em;
+}
+
+.home-journey__link:hover {
+  color: var(--journey-accent);
+}
+
+.home-journey__image {
   display: block;
-  margin-bottom: clamp(0.65rem, 1.2vw, 0.9rem);
-  color: color-mix(in srgb, var(--journey-accent) 82%, var(--text));
-  font-size: clamp(0.74rem, 0.95vw, 0.96rem);
-  font-weight: 900;
-  letter-spacing: 0;
+  width: clamp(6rem, 9vw, 9rem);
+  height: clamp(3.75rem, 7vh, 5rem);
+  margin-bottom: clamp(0.55rem, 1vw, 0.8rem);
+  object-fit: cover;
+  border: 1px solid var(--journey-rail-soft);
+  border-radius: 0.65rem;
 }
 
 .home-journey__kicker {
@@ -284,7 +302,7 @@
 
 @media (max-width: 1024px) {
   .home-journey {
-    --journey-card-width: clamp(14.5rem, 32vw, 18rem);
+    --journey-card-width: min(24vw, 18rem);
     --journey-text-lift: clamp(5.5rem, 9vw, 7rem);
     --journey-map-fade-height: clamp(13rem, 26vw, 25rem);
     height: 310vh;
@@ -338,12 +356,22 @@
     margin-top: clamp(1.75rem, 4vh, 3rem);
   }
 
+  /* Centre the active project where the arc is wider than the viewport. */
+  .home-journey__card:not(.is-active) {
+    visibility: hidden;
+  }
+
+  .home-journey__cards {
+    left: 0;
+    width: 100%;
+    transform: none;
+  }
 }
 
 @media (max-width: 480px) {
   .home-journey {
     --journey-card-width: min(72vw, 17rem);
-    --journey-text-lift: clamp(4.85rem, 21vw, 6rem);
+    --journey-text-lift: clamp(8rem, 32vw, 9rem);
     --journey-map-fade-height: clamp(11rem, 42vw, 19rem);
     min-height: 88rem;
   }
@@ -365,28 +393,6 @@
     --journey-globe-fade-height: clamp(24rem, 92vw, 48rem);
     --journey-globe-map-offset: 0rem;
     min-height: clamp(35rem, 70vh, 41rem);
-  }
-
-  .home-journey__card {
-    min-height: 0;
-  }
-
-  /* Neighbouring cards fan in behind the active one; at phone widths the rail
-     no longer separates them, so their text collides with the active copy.
-     Keep only the active card's text. */
-  .home-journey__card:not(.is-active) .home-journey__body,
-  .home-journey__card:not(.is-active) strong,
-  .home-journey__card:not(.is-active) .home-journey__icon,
-  .home-journey__card:not(.is-active) .home-journey__kicker {
-    visibility: hidden;
-  }
-
-  /* The card rail is sized to the arc (245vw wide), so percentage-positioned
-     cards swing far past the viewport edges. Map them onto the screen instead. */
-  .home-journey__cards {
-    left: 0;
-    width: 100%;
-    transform: none;
   }
 
 }
@@ -422,11 +428,12 @@
     font-size: clamp(1.6rem, 4.4vw, 2.3rem);
   }
 
-  .home-journey__card:not(.is-active) .home-journey__body,
-  .home-journey__card:not(.is-active) strong,
-  .home-journey__card:not(.is-active) .home-journey__icon,
-  .home-journey__card:not(.is-active) .home-journey__kicker {
+  .home-journey__card:not(.is-active) {
     visibility: hidden;
+  }
+
+  .home-journey__image {
+    height: 2.75rem;
   }
 
   .home-journey__cards {

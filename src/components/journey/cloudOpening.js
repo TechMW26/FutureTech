@@ -1,0 +1,1 @@
+export const CLOUD_OPENING_VIEWPORTS = 1.4
