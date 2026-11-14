@@ -16,6 +16,7 @@ export default function WorksSequence({ progress, items }) {
   const canvas = useRef(null)
   const title = useRef(null)
   const details = useRef(null)
+  const projectFrame = useRef(null)
   const detailContent = useRef(null)
   const renderer = useRef(null)
   const target = useRef(progress)
@@ -32,6 +33,7 @@ export default function WorksSequence({ progress, items }) {
     const root = host.current, surface = canvas.current
     if (!root || !surface) return
     let width = root.clientWidth, height = root.clientHeight
+    let focusFrame = null
     let frame = 0, last = 0, current = target.current, miniSpin = 0
     let running = true, visible = true, retry = 0
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
@@ -42,6 +44,14 @@ export default function WorksSequence({ progress, items }) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
       width = Math.max(1, Math.round(width * dpr) / dpr)
       height = Math.max(1, Math.round(height * dpr) / dpr)
+      const frameBounds = projectFrame.current.getBoundingClientRect()
+      const rootBounds = root.getBoundingClientRect()
+      focusFrame = frameBounds.width ? {
+        x: frameBounds.left - rootBounds.left + frameBounds.width / 2,
+        y: frameBounds.top - rootBounds.top + frameBounds.height / 2,
+        width: frameBounds.width,
+        height: frameBounds.height,
+      } : null
     }
     measure()
     const render = (time) => {
@@ -56,17 +66,18 @@ export default function WorksSequence({ progress, items }) {
       if (Math.abs(target.current - current) < .00001) current = target.current
       const p = current
       if (!motion.matches && p < .16) miniSpin += dt * .055
-      renderer.current?.render(p, width, height, focused.current, miniSpin)
+      renderer.current?.render(p, width, height, focused.current, miniSpin, focusFrame)
       const intro = Math.min(.54, p / .36 * .54)
       const titleExit = smooth(interval(intro, .16, .54))
       title.current?.style.setProperty('--works-title-exit', String(titleExit))
       const focus = projectFocus(p, Math.min(MAX_CARDS, items.length))
+      const detailReveal = focusFrame ? smooth(interval(p, .46, .50)) : focus.reveal
       if (focus.index !== active.current) { active.current = focus.index; setActiveIndex(focus.index) }
       if (details.current) {
-        details.current.style.opacity = String(focus.reveal)
-        details.current.style.transform = `translate3d(${(1 - focus.reveal) * 24}px, -50%, 0)`
-        details.current.inert = focus.reveal < .8
-        details.current.setAttribute('aria-hidden', String(focus.reveal < .8))
+        details.current.style.opacity = String(detailReveal)
+        details.current.style.setProperty('--work-detail-offset', `${(1 - detailReveal) * 24}px`)
+        details.current.inert = detailReveal < .8
+        details.current.setAttribute('aria-hidden', String(detailReveal < .8))
       }
       if (detailContent.current) {
         detailContent.current.style.opacity = String(focus.textOpacity)
@@ -97,6 +108,8 @@ export default function WorksSequence({ progress, items }) {
     create()
     const resize = new ResizeObserver(() => { measure(); schedule() })
     resize.observe(root)
+    resize.observe(projectFrame.current)
+    resize.observe(detailContent.current)
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) schedule() })
     observer.observe(root)
     const contextLost = (event) => { event.preventDefault(); fail() }
@@ -159,15 +172,20 @@ export default function WorksSequence({ progress, items }) {
           {items.slice(0, cards).map(item => (
             <Link key={item.id} to={item.path} aria-label={`View ${item.title}`}>
               <img src={item.src} alt={item.alt} />
+              <span>{item.title}</span>
             </Link>
           ))}
         </div>
       )}
       <section ref={details} className="work-detail" aria-labelledby="work-detail-title" aria-hidden="true">
+        <div ref={projectFrame} className="work-detail-frame" aria-hidden="true" />
         <div ref={detailContent} className="work-detail-content" aria-live="polite">
           <p className="work-detail-category">{project.category}</p>
           <h2 id="work-detail-title">{project.title}</h2>
-          <p className="work-detail-description">{project.description}</p>
+          <p className="work-detail-description">
+            <span className="work-detail-full-description">{project.description}</span>
+            <span className="work-detail-summary">{project.summary}</span>
+          </p>
           <Link className="work-detail-link" to={project.path}>View project <span aria-hidden="true">↗</span></Link>
           <p className="work-detail-count">
             <span>{String(activeIndex + 1).padStart(2, '0')}</span>

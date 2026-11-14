@@ -48,7 +48,9 @@
 .works-motion-title > span:last-child > span { animation-name: works-title-in-right; }
 .works-motion-note { position: absolute; top: calc(47% + min(12vw, 152px)); left: 50%; margin: 0; transform: translateX(-50%); text-align: center; font-size: clamp(10px, .8vw, 12px); line-height: 1.45; letter-spacing: -.02em; color: #7e8087; pointer-events: none; }
 .works-ribbon-canvas { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; touch-action: pan-y; }
-.work-detail { position: absolute; z-index: 2; top: 54%; left: 59%; width: min(31%, 410px); opacity: 0; transform: translate(24px, -50%); }
+.work-detail { position: absolute; z-index: 2; top: 54%; left: 59%; width: min(31%, 410px); opacity: 0; transform: translate(var(--work-detail-offset, 24px), -50%); }
+.work-detail-frame,
+.work-detail-summary { display: none; }
 .work-detail-category { margin: 0 0 26px; color: #93969c; font-size: 9px; line-height: 1.6; letter-spacing: .09em; text-transform: uppercase; }
 .work-detail h2 { margin: 0; color: #24262d; font-size: clamp(35px, 4.1vw, 65px); line-height: 1.02; font-weight: 400; letter-spacing: -.065em; }
 .work-detail-description { max-width: 330px; margin: 25px 0 26px; color: #81858e; font-size: 13px; line-height: 1.9; }
@@ -74,67 +76,131 @@
 .works-sequence-fallback .works-motion-title > span { align-self: center; transform: none; }
 .works-fallback-project { position: absolute; inset: 25% 0 0; display: flex; align-items: center; gap: 3vw; padding: 0 max(24px, calc((100% - min(58vw, 60svh)) / 2)); overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none; }
 .works-sequence-fallback .works-fallback-project::-webkit-scrollbar { display: none; }
-.works-fallback-project a { flex: 0 0 min(58vw, 60svh); scroll-snap-align: center; border-radius: 6px; }
+.works-fallback-project a { flex: 0 0 min(58vw, 60svh); scroll-snap-align: center; border-radius: 8px; }
 .works-fallback-project img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: inherit; }
+.works-fallback-project span { display: block; margin-top: .65em; font-weight: 700; text-align: center; }
 .works-sequence-fallback .work-detail { display: none; }
 .work-detail-link:focus-visible, .works-fallback-project a:focus-visible { outline: 2px solid #00427e; outline-offset: 5px; }
 @keyframes works-title-in { from { transform: translate(-65vw, 20vh); } to { transform: translate(0,0); } }
 @keyframes works-title-in-right { from { transform: translate(65vw, -20vh); } to { transform: translate(0,0); } }
 @media (max-width: 1024px) {
+ .works-sequence {
+   --works-heading-top: max(88px, 14%);
+   --works-gutter: clamp(16px, 5vw, 40px);
+ }
+ .works-sequence__background {
+   mask-image: radial-gradient(ellipse at 50% 35%, transparent 16%, rgb(0 0 0 / 28%) 58%, rgb(0 0 0 / 55%) 100%);
+ }
  .works-motion-title {
    --works-title-drift: 0px;
-   top: calc(env(safe-area-inset-top, 0px) + max(76px, 14svh));
-   bottom: 35%;
-   left: 6%;
-   right: 6%;
-   font-size: clamp(30px, min(9vw, 9svh), 94px);
+   inset: var(--works-heading-top) var(--works-gutter) auto;
+   align-items: center;
+   gap: .07em;
+   font-size: clamp(38px, min(13.5vw, 8.6svh), 88px);
+   text-align: center;
+ }
+ .works-motion-title > span,
+ .works-motion-title > span:last-child { align-self: center; }
+ .works-motion-title > span > span,
+ .works-motion-title > span:last-child > span {
+   animation-name: works-mobile-title-in;
  }
  .works-motion-note { display: none; }
  .work-detail {
-   top: auto;
-   bottom: calc(env(safe-area-inset-bottom, 0px) + 6.5svh);
-   left: 7%;
-   right: 7%;
+   inset: max(78px, env(safe-area-inset-top)) var(--works-gutter) max(20px, env(safe-area-inset-bottom));
+   display: grid;
+   grid-template-columns: minmax(0, 1fr);
+   align-content: center;
+   justify-items: center;
+   row-gap: clamp(16px, 3svh, 30px);
    width: auto;
    transform: none;
-   /* The card artwork can sit behind the copy, so keep it legible with a soft
-      halo rather than a heavy panel. */
-   text-shadow: 0 1px 2px rgba(255, 255, 255, .95), 0 0 10px rgba(255, 255, 255, .85);
+   pointer-events: none;
  }
- .work-detail-category { margin-bottom: 6px; font-size: 8px; }
- .work-detail h2 { font-size: clamp(26px, 5.6vw, 38px); }
- .work-detail-description { max-width: 48ch; margin: 8px 0 10px; font-size: 11px; line-height: 1.55; }
- .work-detail-count { margin-top: 12px; font-size: 8px; }
- .work-detail-link { font-size: 10px; gap: 22px; padding-bottom: 9px; }
- .works-accessible-projects { bottom: calc(env(safe-area-inset-bottom, 0px) + 2%); }
+ .work-detail-frame {
+   display: block;
+   width: min(100%, 57svh, 640px);
+   aspect-ratio: 16 / 9;
+ }
+ .work-detail-content { width: min(100%, 38rem); text-align: center; }
+ .work-detail-category { margin-bottom: 8px; color: #505967; font-size: 11px; font-weight: 600; }
+ .work-detail h2 { font-size: clamp(36px, 8.8vw, 60px); font-weight: 600; }
+ .work-detail-description { max-width: 42ch; margin: 12px auto 16px; color: #404955; font-size: clamp(16px, 2vw, 18px); line-height: 1.5; }
+ .home-screen .work-detail-link {
+   min-height: 44px;
+   padding: 0 16px;
+   gap: 18px;
+   border: 1px solid #b9c7d5;
+   border-radius: 999px;
+   color: #00427e;
+   font-size: 15px;
+   font-weight: 600;
+ }
+ .work-detail[aria-hidden="false"] .work-detail-link { pointer-events: auto; }
+ .work-detail-count { justify-content: center; margin-top: 16px; color: #596371; font-size: 11px; }
+ .works-accessible-projects { bottom: max(12px, env(safe-area-inset-bottom)); }
+ .works-sequence-fallback .works-motion-title {
+   inset: var(--works-heading-top) var(--works-gutter) auto;
+   font-size: clamp(38px, min(13.5vw, 8.6svh), 88px);
+ }
+ .works-fallback-project {
+   --preview-width: min(84vw, 63svh);
+   inset: 35% 0 4%;
+   padding-inline: calc((100% - var(--preview-width)) / 2);
+ }
+ .works-fallback-project a { flex-basis: var(--preview-width); }
 }
-/* Portrait tablets have the vertical room for a wider card. */
-@media (min-width: 701px) and (max-width: 1024px) and (orientation: portrait) {
- .work-detail { bottom: calc(env(safe-area-inset-bottom, 0px) + 5svh); }
- .work-detail h2 { font-size: clamp(30px, 4.2vw, 44px); }
+@keyframes works-mobile-title-in {
+ from { opacity: 0; transform: translateY(16px); }
+ to { opacity: 1; transform: none; }
 }
-/* Landscape phones and tablets have no vertical band to stack into, so the
-   headline keeps its two-corner spread and the copy moves beside the card. */
+@media (max-width: 1024px) and (max-height: 620px) {
+ .work-detail-full-description { display: none; }
+ .work-detail-summary { display: inline; }
+ .work-detail-description { margin: 9px auto 12px; }
+ .work-detail-count { margin-top: 10px; }
+}
 @media (max-width: 1024px) and (max-height: 620px) and (orientation: landscape) {
- .works-motion-title { top: max(76px, 20%); right: 4%; left: 4%; bottom: 18%; }
- .work-detail {
-   top: 54%;
-   bottom: auto;
-   left: 52%;
-   right: 5%;
-   transform: translateY(-50%);
-   text-shadow: none;
+ .works-motion-title {
+   inset: 76px 51% 8px var(--works-gutter);
+   justify-content: center;
+   font-size: clamp(29px, min(6.3vw, 11svh), 58px);
  }
- .work-detail h2 { font-size: clamp(20px, 3.2vw, 30px); }
- .work-detail-description { max-width: 100%; margin: 6px 0 8px; font-size: 10px; line-height: 1.5; }
- .work-detail-count { margin-top: 8px; }
+ .work-detail {
+   grid-template-columns: minmax(0, .96fr) minmax(0, 1fr);
+   align-items: center;
+   column-gap: clamp(16px, 5vw, 44px);
+   bottom: max(12px, env(safe-area-inset-bottom));
+ }
+ .work-detail-frame { width: min(100%, 85svh); }
+ .work-detail h2 { font-size: clamp(28px, 7.5svh, 46px); }
+ .work-detail-content { text-align: left; }
+ .work-detail-description { margin-inline: 0; }
+ .work-detail-count { justify-content: flex-start; }
+ .works-sequence-fallback .works-motion-title {
+   inset: 76px 51% 8px var(--works-gutter);
+   font-size: clamp(29px, min(6.3vw, 11svh), 58px);
+ }
+ .works-fallback-project {
+   --preview-width: min(42vw, 82svh);
+   inset: 70px 0 0 50%;
+ }
 }
-/* Short phones: shave the headline so the carousel and copy still fit. */
-@media (max-width: 1024px) and (max-height: 700px) and (orientation: portrait) {
- .works-motion-title { font-size: clamp(28px, 8.8vw, 58px); }
- .work-detail h2 { font-size: 24px; }
- .work-detail-description { margin: 6px 0 8px; font-size: 10px; line-height: 1.45; }
- .work-detail-count { margin-top: 8px; }
+@media (max-width: 1024px) and (max-height: 340px) and (orientation: landscape) {
+ .work-detail-content {
+   display: grid;
+   grid-template-columns: auto 1fr;
+   align-items: center;
+   column-gap: 8px;
+ }
+ .work-detail-category,
+ .work-detail h2,
+ .work-detail-description { grid-column: 1 / -1; }
+ .work-detail-category { margin-bottom: 5px; line-height: 1.25; }
+ .work-detail-description { margin-block: 6px 10px; line-height: 1.25; }
+ .home-screen .work-detail-link { padding-inline: 10px; gap: 6px; white-space: nowrap; }
+ .work-detail-count { gap: 4px; margin-top: 0; }
+ .work-detail-line { width: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
  .works-motion-title { --works-title-drift: 0px; }
