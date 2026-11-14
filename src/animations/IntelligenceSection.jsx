@@ -1,6 +1,6 @@
 ﻿import { useEffect, useRef } from 'react';
 import './IntelligenceSection.css';
-import { INTELLIGENCE_START_SCREEN, INTELLIGENCE_SCROLL_SCREENS } from './scrollTimeline';
+import { INTELLIGENCE_START_SCREEN, INTELLIGENCE_SCROLL_SCREENS, worksHandoff } from './scrollTimeline';
 
 const technologies = [
   ['React', 'react', '#53c8e9'], ['Python', 'python', '#3979ae'],
@@ -98,19 +98,20 @@ export default function IntelligenceSection({ scrollTrack }) {
     const measure = () => {
       const track = scrollTrack?.current;
       if (!track) return;
+      width = surface.clientWidth; height = surface.clientHeight;
+      if (!height) return;
       const position = -track.getBoundingClientRect().top;
-      const entrance = smooth(range(position, window.innerHeight * INTELLIGENCE_START_SCREEN, window.innerHeight * (INTELLIGENCE_START_SCREEN + .2)));
-      host.style.setProperty('--scene-y', '0px');
-      host.style.setProperty('--scene-opacity', String(entrance));
-      host.style.visibility = position >= window.innerHeight * INTELLIGENCE_START_SCREEN ? 'visible' : 'hidden';
+      const entrance = worksHandoff(position, height);
+      host.style.setProperty('--scene-opacity', String(1 - (1 - entrance) ** 2));
+      host.style.visibility = entrance > 0 ? 'visible' : 'hidden';
       host.style.pointerEvents = entrance > .99 ? 'auto' : 'none';
+      host.inert = entrance <= .99;
       // Give the opening rotation and zoom twice the scroll distance, preserving the reading pace.
-      const scroll = clamp((position - window.innerHeight * INTELLIGENCE_START_SCREEN) / (window.innerHeight * INTELLIGENCE_SCROLL_SCREENS)) * 1.295;
+      const scroll = clamp((position / height - INTELLIGENCE_START_SCREEN) / INTELLIGENCE_SCROLL_SCREENS) * 1.295;
       const sequence = scroll <= .45 ? scroll / 2 : scroll - .225;
       target = sequence <= .49 ? sequence : sequence <= .635
         ? .49 + (sequence - .49) * (.075 / .145)
         : sequence - .07;
-      width = surface.clientWidth; height = surface.clientHeight;
     };
     const animate = (now) => {
       frame = 0;

@@ -164,7 +164,7 @@ export class WorksRibbonRenderer {
     }
   }
 
-  render(progress, width, height, focused = -1, miniSpin = 0) {
+  render(progress, width, height, focused = -1, miniSpin = 0, focusFrame = null) {
     if (!this.active || this.gl.isContextLost()) return;
     const gl = this.gl, dpr = Math.min(window.devicePixelRatio || 1, 2);
     const pixelWidth = Math.max(1, Math.round(width * dpr)), pixelHeight = Math.max(1, Math.round(height * dpr));
@@ -172,7 +172,7 @@ export class WorksRibbonRenderer {
     gl.viewport(0, 0, pixelWidth, pixelHeight);
     gl.disable(gl.SCISSOR_TEST);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-    const scene = ribbonScene(progress, width, height, this.count, miniSpin);
+    const scene = ribbonScene(progress, width, height, this.count, miniSpin, focusFrame);
     this.scene = scene;
     if (this.readyCount < this.count || scene.opacity < .001) return;
     gl.useProgram(this.program);

@@ -6,15 +6,22 @@ export default function Journey() {
  useEffect(() => {
  let disposed=false;
  const count=200, images=new Array(count), canvas=sectionRef.current.querySelector('#sequence'), ctx=canvas.getContext('2d',{alpha:false});
- const journey=sectionRef.current, reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const journey=sectionRef.current, stage=journey.querySelector('.stage'), reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
  const intro=sectionRef.current.querySelector('#intro'), inside=sectionRef.current.querySelector('#inside'), future=sectionRef.current.querySelector('#future');
  const shade=sectionRef.current.querySelector('#interiorShade'), progress=sectionRef.current.querySelector('#progress');
  const hero=document.querySelector('.hero-section');
  let target=0,current=0,lastTime=0,raf=0,ready=false,width=0,height=0,travel=1,failed=0;
  const clamp=v=>Math.max(0,Math.min(1,v));
  const smooth=(a,b,v)=>{const x=clamp((v-a)/(b-a));return x*x*(3-2*x)};
- function resize(){width=innerWidth;height=sectionRef.current.querySelector('.stage').clientHeight;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);travel=journey.offsetHeight-height;updateTarget();wake()}
- function updateTarget(){target=clamp(-journey.getBoundingClientRect().top/travel);wake()}
+ function resize(){width=innerWidth;height=stage.clientHeight;const dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);travel=journey.offsetHeight-height;updateTarget();wake()}
+ function updateTarget() {
+  const { top } = journey.getBoundingClientRect();
+  // The entrance tracks the viewport directly. Frame scrubbing eases after the stage pins.
+  const entrance = smooth(0, window.innerHeight, window.innerHeight - top);
+  stage.style.setProperty('--journey-entrance', String(entrance));
+  target = clamp(-top / travel);
+  wake();
+ }
  function nearest(index){if(images[index])return images[index];for(let d=1;d<count;d++){if(images[index-d])return images[index-d];if(images[index+d])return images[index+d]}return null}
  function paint(im,alpha){if(!im)return;const scale=Math.max(width/im.naturalWidth,height/im.naturalHeight);const w=im.naturalWidth*scale,h=im.naturalHeight*scale;ctx.globalAlpha=alpha;ctx.drawImage(im,(width-w)/2,(height-h)/2,w,h)}
  function scene(el,opacity){el.style.opacity=opacity;el.style.transform=`translateY(calc(-50% + ${reduced?0:(1-opacity)*12}px))`;el.classList.toggle('active',opacity>.85);el.inert=opacity<.85;el.setAttribute('aria-hidden',String(opacity<.1))}

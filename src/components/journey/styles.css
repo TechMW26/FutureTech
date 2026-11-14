@@ -13,6 +13,7 @@
 @media(max-height:500px) and (min-width:601px){.intro h1{font-size:17vh}#inside h2,#future h2{font-size:11vh}}
 
 .journey{height:860vh;height:860svh}
+.journey .stage { opacity: var(--journey-entrance, 0); }
 .journey .stage canvas{visibility:hidden}
 
 /* Ease out of solid white at both edges, above the footage and below the copy. */

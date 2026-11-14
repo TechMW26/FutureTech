@@ -46,7 +46,7 @@
   background: var(--works-backdrop, var(--works-paper, #f7f7f7));
 }
 
-.carousel-scene { position: absolute; inset: 0; overflow: hidden; will-change: transform; }
+.carousel-scene { position: absolute; inset: 0; overflow: hidden; will-change: opacity; }
 
 @media (prefers-reduced-motion: reduce) {
   .home-screen,

@@ -17,49 +17,35 @@ export function projectFocus(progress, count = 8) {
 }
 
 
-export function ribbonScene(progress, width, height, count = 8, miniSpin = 0) {
-  const p = clamp01(progress), mobile = width <= 768;
+export function ribbonScene(progress, width, height, count = 8, miniSpin = 0, focusFrame = null) {
+  const p = clamp01(progress);
+  const compact = width <= 1024;
+  const shortLandscape = compact && width > height && height <= 620;
   // Preserve the entrance's scroll distance while reserving room to read each project.
   const intro = Math.min(.54, p / .36 * .54);
   const enter = smooth(interval(intro, .035, .29));
   const travel = smooth(interval(intro, .1, .54));
   const settle = smooth(interval(intro, .42, .54));
-  const radius = Math.min(width * (mobile ? .61 : .37), height * .74);  const spacing = TAU / count, arc = spacing * .965;
+  const radius = Math.min(width * (width <= 768 ? .61 : .37), height * .74);
+  const spacing = TAU / count, arc = spacing * .965;
   const grow = smooth(interval(p, 0, .16));
-  const miniRadius = Math.min(mobile ? 82 : 178, width * (mobile ? .19 : .152), height * .27) * (mobile ? 1.28 : 1.4);
+  const miniRadius = compact
+    ? Math.min(width * .55, height * (shortLandscape ? .46 : .29), 345)
+    : Math.min(178, width * .152, height * .27) * 1.4;
+  const openingX = shortLandscape ? width * .22 : 0;
+  const openingCenterY = compact ? height * .075 : height * -.03;
   const originalY = mix(height * 1.12, height * .04, enter);
   const launchY = mix(height * 1.12, height * .04, smooth(interval(.16 / .36 * .54, .035, .29)));
   const excessY = Math.max(0, originalY - launchY);
   const openingY = launchY + excessY / (1 + excessY / (height * .06));
   const focused = projectFocus(p, count);
   const focusArc = spacing * .91;
-  // Phone/tablet-portrait layouts stack the pieces vertically: title on top,
-  // focused card in the middle, project detail underneath. Wider screens keep
-  // the side-by-side desktop composition.
-  const shortLandscape = width > height && width > 701 && width <= 1024 && height <= 620;
-  // The stacked layouts need a smaller resolved card than the desktop one: the
-  // project copy has to fit in the band between the card and "WORKS".
-  const focusWidth = Math.min(
-    width * (mobile ? .82 : shortLandscape ? .37 : .64),
-    height * (mobile ? .30 : shortLandscape ? .45 : .40) / .68,
-  );
+  // The compact layout measures the artwork slot beside or above the copy.
+  const focusWidth = focusFrame?.width ?? Math.min(width * .64, height * .40 / .68);
+  const focusHeight = focusFrame?.height ?? focusWidth * .68;
   const focusRadius = focusWidth / (2 * Math.sin(focusArc / 2));
-  const narrow = mobile || width <= 1024;
-  const focusHeight = focusWidth * .68;
-  let focusX = -width * .23, focusY = height * .04;
-  if (mobile) {
-    // Centre the resolved card in the band between the two title words, small
-    // enough that the project copy fits in the gap underneath it.
-    focusX = 0;
-    focusY = height * .015 + focusHeight * .4 - height / 2;
-  } else if (shortLandscape) {
-    focusX = -width * .2;
-    focusY = height * .085;
-  } else if (narrow) {
-    const cardCenterX = width * .31;
-    focusX = cardCenterX - width / 2;
-    focusY = height * .015 + focusHeight * .38 - height / 2;
-  }
+  const focusX = focusFrame ? focusFrame.x - width / 2 : -width * .23;
+  const focusY = focusFrame ? focusFrame.y - height / 2 : height * .04;
   const endBase = .7 - TAU * RIBBON_TURNS - (count - 1) / 2 * spacing;
   const alignedBase = Math.round(endBase / TAU) * TAU;
   return {
@@ -67,13 +53,13 @@ export function ribbonScene(progress, width, height, count = 8, miniSpin = 0) {
     phase: .7 - travel * TAU * RIBBON_TURNS + miniSpin * (1 - grow),
     pitch: mix(radians(-14), radians(-12 + Math.sin(travel * Math.PI * 2) * 5), grow),
     roll: mix(radians(-4), radians(-24 + Math.sin(travel * Math.PI) * 43), grow),
-    centerX: mix(0, mix(-width * .16, 0, enter), grow),
-    centerY: p < .16 ? mix(height * (mobile ? -.07 : -.03), openingY, grow) : originalY,
+    centerX: mix(openingX, mix(-width * .16, 0, enter), grow),
+    centerY: p < .16 ? mix(openingCenterY, openingY, grow) : originalY,
     opacity: 1,
     wave: Math.min(width * .012, height * .022), perspective: Math.max(700, width * 1.15),
     scale: mix(miniRadius / radius, mix(.38, 1.12, enter) * mix(1, .64, settle), grow), depth: mix(1, 1.1, grow), mini: 1 - grow,
     focus: focused.focus, activeIndex: focused.index,
-    focusRadius, focusArc, focusWidth, focusHeight: focusWidth * .68,
+    focusRadius, focusArc, focusWidth, focusHeight,
     focusX, focusY,
     focusBase: alignedBase - focused.step * spacing, focusDepth: .65,
   };
@@ -121,18 +107,14 @@ export function ribbonCardOpacity(scene, index) {
 
 export function ribbonClip(scene) {
   const centerX = scene.width / 2 + scene.focusX, centerY = scene.height / 2 + scene.focusY;
-  // Landscape two-up layouts keep the project copy to the right of the card,
-  // so the resolved clip has to cover that column instead of a symmetric window.
-  const sideBySide = scene.width > 768 && scene.width <= 1024 && scene.width > scene.height;
-  // On stacked layouts the copy sits directly underneath, so trim the clip's
-  // bottom edge to keep the card image from bleeding into that text block.
-  const stacked = scene.width <= 1024 && !sideBySide;
-  const halfWidth = scene.focusWidth * (sideBySide ? 1.9 : .62), halfHeight = scene.focusHeight * .76;
+  const compact = scene.width <= 1024;
+  const halfWidth = scene.focusWidth * .62;
+  const halfHeight = scene.focusHeight * (compact ? .56 : .76);
   return {
     left: mix(0, Math.max(0, centerX - halfWidth), scene.focus),
     right: mix(scene.width, Math.min(scene.width, centerX + halfWidth), scene.focus),
-    top: mix(0, Math.max(85, centerY - halfHeight), scene.focus),
-    bottom: mix(scene.height, Math.min(scene.height, centerY + (stacked ? halfHeight * .86 : halfHeight)), scene.focus),
+    top: mix(0, Math.max(compact ? 0 : 85, centerY - halfHeight), scene.focus),
+    bottom: mix(scene.height, Math.min(scene.height, centerY + halfHeight), scene.focus),
   };
 }
 
