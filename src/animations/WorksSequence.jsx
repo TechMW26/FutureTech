@@ -1,18 +1,20 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { WorksRibbonRenderer } from './WorksRibbonRenderer'
 import { interval, smooth, projectFocus } from './WorksRibbonMotion'
 import { MAX_PROJECTS } from './workProjects'
+import MicroSlats from '../components/MicroSlats'
 import './WorksSequence.css'
 
 const MAX_CARDS = MAX_PROJECTS
 
 /** Scroll-orchestrated ribbon of project cards that resolves into a focused carousel. */
-export default function WorksSequence({ progress, items, onSelect }) {
+export default function WorksSequence({ progress, items }) {
+  const navigate = useNavigate()
   const cards = Math.min(MAX_CARDS, items.length)
   const host = useRef(null)
   const canvas = useRef(null)
-  const first = useRef(null)
-  const second = useRef(null)
+  const title = useRef(null)
   const details = useRef(null)
   const detailContent = useRef(null)
   const renderer = useRef(null)
@@ -56,20 +58,9 @@ export default function WorksSequence({ progress, items, onSelect }) {
       if (!motion.matches && p < .16) miniSpin += dt * .055
       renderer.current?.render(p, width, height, focused.current, miniSpin)
       const intro = Math.min(.54, p / .36 * .54)
-      const moveText = smooth(interval(intro, .16, .54))
+      const titleExit = smooth(interval(intro, .16, .54))
+      title.current?.style.setProperty('--works-title-exit', String(titleExit))
       const focus = projectFocus(p, Math.min(MAX_CARDS, items.length))
-      // Phones cannot afford the desktop's corner drift: two words racing to
-      // opposite edges end up clipped and leave the ribbon alone in an empty
-      // frame. Keep both words fully inside the viewport and let them settle
-      // into a compact stacked block as the ribbon takes over.
-      const phone = width <= 1024
-      const driftX = phone ? 0 : .67
-      const driftY = phone ? 0 : .13
-      // Once the ribbon resolves, lift the two title words so they clear the
-      // focused card (which is centred lower on phones).
-      const titleLift = height * (phone ? .05 : .13) * focus.focus
-      if (first.current) first.current.style.transform = `translate3d(${moveText * width * driftX}px, ${-moveText * height * driftY - titleLift}px, 0)`
-      if (second.current) second.current.style.transform = `translate3d(${-moveText * width * driftX}px, ${moveText * height * driftY - titleLift}px, 0)`
       if (focus.index !== active.current) { active.current = focus.index; setActiveIndex(focus.index) }
       if (details.current) {
         details.current.style.opacity = String(focus.reveal)
@@ -132,9 +123,19 @@ export default function WorksSequence({ progress, items, onSelect }) {
 
   return (
     <div ref={host} className={`works-sequence${fallback ? ' works-sequence-fallback' : ''}`} id="project-carousel">
-      <h1 className="works-motion-title" aria-label="Our Works">
-        <span ref={first}><span>OUR</span></span>
-        <span ref={second}><span>WORKS</span></span>
+      {progress < 0.15 && (
+        <div
+          className="works-sequence__background"
+          style={{ opacity: 1 - progress / 0.15 }}
+          aria-hidden="true"
+        >
+          <MicroSlats color="#242424" glintColor="#ffffff" backgroundColor="transparent" />
+        </div>
+      )}
+      <h1 ref={title} className="works-motion-title">
+        <span><span>Products That</span></span>
+        {' '}
+        <span><span>Make a Difference</span></span>
       </h1>
       <p className="works-motion-note">Human imagination.<br />Extraordinary digital experiences.</p>
       <canvas
@@ -150,13 +151,15 @@ export default function WorksSequence({ progress, items, onSelect }) {
           if (Math.hypot(event.clientX - down.current.x, event.clientY - down.current.y) > 8) return
           const rect = event.currentTarget.getBoundingClientRect()
           const index = renderer.current?.pick(event.clientX - rect.left, event.clientY - rect.top) ?? -1
-          if (index >= 0 && items[index]) onSelect(items[index])
+          if (index >= 0 && items[index]) navigate(items[index].path)
         }}
       />
       {fallback && (
         <div className="works-fallback-project" role="group" aria-label="Project previews">
           {items.slice(0, cards).map(item => (
-            <img key={item.id ?? item.src} src={item.src} alt={item.alt} onClick={() => onSelect(item)} />
+            <Link key={item.id} to={item.path} aria-label={`View ${item.title}`}>
+              <img src={item.src} alt={item.alt} />
+            </Link>
           ))}
         </div>
       )}
@@ -165,7 +168,7 @@ export default function WorksSequence({ progress, items, onSelect }) {
           <p className="work-detail-category">{project.category}</p>
           <h2 id="work-detail-title">{project.title}</h2>
           <p className="work-detail-description">{project.description}</p>
-          <button className="work-detail-link" onClick={() => onSelect(project)}>View project <span aria-hidden="true">↗</span></button>
+          <Link className="work-detail-link" to={project.path}>View project <span aria-hidden="true">↗</span></Link>
           <p className="work-detail-count">
             <span>{String(activeIndex + 1).padStart(2, '0')}</span>
             <span className="work-detail-line" />
@@ -173,18 +176,18 @@ export default function WorksSequence({ progress, items, onSelect }) {
           </p>
         </div>
       </section>
-      <div className="works-accessible-projects" aria-label="Projects">
+      {!fallback && <nav className="works-accessible-projects" aria-label="Projects">
         {items.slice(0, cards).map((item, index) => (
-          <button
-            key={item.id ?? item.src}
-            onClick={() => onSelect(item)}
+          <Link
+            key={item.id}
+            to={item.path}
             onFocus={() => { focused.current = index; wake.current() }}
             onBlur={() => { focused.current = -1; wake.current() }}
           >
             View {item.title}
-          </button>
+          </Link>
         ))}
-      </div>
+      </nav>}
     </div>
   )
 }

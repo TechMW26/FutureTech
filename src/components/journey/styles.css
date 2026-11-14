@@ -1,11 +1,8 @@
-
-:root{color-scheme:dark;--ink:#19201e;--paper:#f0f0e8}
-*{box-sizing:border-box}html,body{margin:0;background:#141b1d;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}body{color:var(--paper)}
 .journey{height:720vh;height:720svh;position:relative}.stage{height:100vh;height:100svh;position:sticky;top:0;overflow:hidden;isolation:isolate;background:#555b57 url('/journey/ezgif-frame-001.jpg') center/cover}.stage canvas{display:block;width:100%;height:100%}
 .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#121b2010,transparent 50%,#121b2026)}
 .interior-shade{position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(180deg,#0c161d12,#0c161d80 55%,#0c161d30)}
 .scene{position:absolute;left:6%;right:6%;top:50%;transform:translateY(-50%);opacity:0;pointer-events:none;will-change:opacity,transform;text-align:center}
-h1,h2{margin:0;font-family:inherit;font-weight:900;font-style:normal;text-transform:uppercase;letter-spacing:-.065em;line-height:.91;text-wrap:balance}
+.journey .scene :is(h1,h2){margin:0;font-family:inherit;font-weight:900;font-style:normal;text-transform:uppercase;letter-spacing:-.065em;line-height:.91;text-wrap:balance}
 .headline-line{display:block}.headline-line+.headline-line{margin-top:.09em}
 .intro{top:47%}.intro h1{font-size:clamp(64px,10.5vw,176px);color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:3px #fff5df;paint-order:stroke fill;filter:drop-shadow(0 2px 0 #9a8972) drop-shadow(0 4px 0 #665f5555) drop-shadow(0 9px 12px #242a3145)}.intro .outline{font-size:.77em}
 #inside h2,#future h2{font-size:clamp(40px,5.2vw,84px);font-weight:700;letter-spacing:-.045em;line-height:1.04;color:#f7f5ef;-webkit-text-stroke:0;text-shadow:0 3px 20px #07131c55}
@@ -15,29 +12,39 @@ h1,h2{margin:0;font-family:inherit;font-weight:900;font-style:normal;text-transf
 @media(max-width:600px){.journey{height:650svh}.scene{left:5%;right:5%}.intro h1{font-size:15vw;-webkit-text-stroke:1.8px #fff5df}.intro .outline{font-size:.78em}#inside h2,#future h2{font-size:clamp(32px,7.6vw,46px)}.headline-line+.headline-line{margin-top:.16em}}
 @media(max-height:500px) and (min-width:601px){.intro h1{font-size:17vh}#inside h2,#future h2{font-size:11vh}}
 
-/* Foreground clouds borrow the scene's photographic texture and warm light. */
 .journey{height:860vh;height:860svh}
-.cloud-entry{position:absolute;inset:0;pointer-events:none;overflow:hidden;will-change:opacity;background:#141b1d}
-.entry-cloud{position:absolute;pointer-events:none;background-image:url('/journey/ezgif-frame-001.jpg');background-repeat:no-repeat;will-change:transform;transform-origin:center}
-.cloud-far{top:-18%;width:105%;height:138%;background-size:180% 230%;filter:blur(2px)}
-.cloud-far.cloud-left{left:-40%;background-position:left bottom}
-.cloud-far.cloud-right{right:-40%;background-position:right bottom}
-.cloud-near{top:-8%;width:110%;height:132%;background-size:160% 205%;filter:blur(.6px)}
-.cloud-near.cloud-left{left:-48%;background-position:15% bottom}
-.cloud-near.cloud-right{right:-48%;background-position:90% bottom}
-/* Fade to zero before every image edge, including edges exposed by movement.
-   Four layers overlap so the union still covers the full frame. A gentler
-   falloff keeps the moving edges from reading as hard vertical lines. */
-.entry-cloud{-webkit-mask-image:radial-gradient(ellipse 72% 72% at center,#000 26%,#000c 46%,#0006 68%,#0001 86%,transparent 100%);mask-image:radial-gradient(ellipse 72% 72% at center,#000 26%,#000c 46%,#0006 68%,#0001 86%,transparent 100%);-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
-/* Each curtain layer is nudged inwards so the overlap covers the middle, and
-   the right-hand pair is pulled further in than the left so the two photo
-   samples never butt up edge-to-edge in the centre. */
-.cloud-far.cloud-left{left:-30%}
-.cloud-far.cloud-right{right:-22%}
-.cloud-near.cloud-left{left:-36%}
-.cloud-near.cloud-right{right:-26%}
-@media(max-width:600px){.journey{height:790svh}.cloud-far{top:0;left:-34%;right:auto;width:140%;height:100%;background-size:220% 130%;background-position:0% 70%}.cloud-far.cloud-right{left:auto;right:-40%;background-position:100% 70%}.cloud-near{top:0;left:-42%;right:auto;width:148%;height:100%;background-size:200% 122%;background-position:6% 62%}.cloud-near.cloud-right{left:auto;right:-48%;background-position:94% 62%}.entry-cloud{-webkit-mask-image:radial-gradient(ellipse 70% 78% at center,#000 42%,#000d 62%,#0007 80%,transparent 100%);mask-image:radial-gradient(ellipse 70% 78% at center,#000 42%,#000d 62%,#0007 80%,transparent 100%)}}
-@media(prefers-reduced-motion:reduce){.journey{height:720vh;height:720svh}.cloud-entry{display:none}}
+.journey .stage canvas{visibility:hidden}
+
+/* Ease out of solid white at both edges, above the footage and below the copy. */
+.journey .stage::after {
+  --fade-stops:
+    #fff 0 12%,
+    rgb(255 255 255 / 97%) 21%,
+    rgb(255 255 255 / 89%) 30%,
+    rgb(255 255 255 / 75%) 40%,
+    rgb(255 255 255 / 56%) 50%,
+    rgb(255 255 255 / 37%) 60%,
+    rgb(255 255 255 / 20%) 70%,
+    rgb(255 255 255 / 8%) 81%,
+    rgb(255 255 255 / 2%) 91%,
+    rgb(255 255 255 / 0%) 100%;
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background-image: linear-gradient(to bottom, var(--fade-stops)), linear-gradient(to top, var(--fade-stops));
+  background-position: center top, center bottom;
+  background-size: 100% 34%;
+  background-repeat: no-repeat;
+}
+
+.journey .stage .scene {
+  z-index: 2;
+}
+
+@media(max-width:600px){.journey{height:790svh}}
+@media(prefers-reduced-motion:reduce){.journey{height:720vh;height:720svh}}
 @media(prefers-reduced-motion:reduce) and (max-width:600px){.journey{height:650svh}}
 
 

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { CLOUD_OPENING_VIEWPORTS } from './cloudOpening';
 
 export default function Journey() {
  const sectionRef=useRef(null);
@@ -9,8 +10,6 @@ export default function Journey() {
  const intro=sectionRef.current.querySelector('#intro'), inside=sectionRef.current.querySelector('#inside'), future=sectionRef.current.querySelector('#future');
  const shade=sectionRef.current.querySelector('#interiorShade'), progress=sectionRef.current.querySelector('#progress');
  const hero=document.querySelector('.hero-section');
- const clouds=Array.from(sectionRef.current.querySelectorAll('.entry-cloud'));
- const cloudEntry=sectionRef.current.querySelector('.cloud-entry');
  let target=0,current=0,lastTime=0,raf=0,ready=false,width=0,height=0,travel=1,failed=0;
  const clamp=v=>Math.max(0,Math.min(1,v));
  const smooth=(a,b,v)=>{const x=clamp((v-a)/(b-a));return x*x*(3-2*x)};
@@ -21,27 +20,14 @@ export default function Journey() {
  function scene(el,opacity){el.style.opacity=opacity;el.style.transform=`translateY(calc(-50% + ${reduced?0:(1-opacity)*12}px))`;el.classList.toggle('active',opacity>.85);el.inert=opacity<.85;el.setAttribute('aria-hidden',String(opacity<.1))}
  function render(time){raf=0;const dt=Math.min(time-lastTime||16.7,64);lastTime=time;current=reduced?target:current+(target-current)*(1-Math.exp(-dt/85));if(Math.abs(target-current)<.00003)current=target;
  // Reserve the added opening distance, then preserve the original sequence timing.
- const openingDistance=reduced?0:height*1.4;
+ const openingDistance=reduced?0:height*CLOUD_OPENING_VIEWPORTS;
  const opening=reduced?1:clamp(current*travel/openingDistance);
  const sequence=clamp((current*travel-openingDistance)/(travel-openingDistance));
- const part=smooth(0,1,opening);
- clouds.forEach((cloud,index)=>{
-  const direction=index%2===0?-1:1;
-  const near=index>1;
-  // Clouds part outwards in front of the home hero as the journey takes over,
-  // hiding the seam between the two sections. `spread` grows past 1 so the
-  // curtains keep drifting instead of stalling mid-flight.
-  const spread=clamp(part*1.45);
-  cloud.style.transform=`translate3d(${direction*spread*(near?100:78)}%, ${spread*(near?10:-6)}%, 0) scale(${1+spread*(near?.18:.07)})`;
- });
- // Hold the curtain fully opaque over the seam until the first cloud frame
- // fills the stage; only then dissolve it into the fly-through.
- cloudEntry.style.opacity=1-smooth(.14,.55,opening);
- cloudEntry.style.visibility=opening>=.99?'hidden':'visible';
  // The stage covers the hero once it is pinned to the top of the viewport, so
  // the hero must stop painting behind it the moment the journey scrolls in.
  if(hero) hero.style.visibility=current*travel>0?'hidden':'visible';
  const frame=sequence*(count-1),low=Math.floor(frame),fraction=frame-low;ctx.globalAlpha=1;ctx.fillStyle='#141b1d';ctx.fillRect(0,0,width,height);paint(nearest(low),1);if(fraction>.001)paint(nearest(Math.min(low+1,count-1)),fraction);ctx.globalAlpha=1;
+ canvas.style.visibility='visible';
  scene(intro,smooth(.3,.85,opening)*(1-smooth(.08,.25,sequence)));scene(inside,smooth(.535,.59,sequence)*(1-smooth(.735,.8,sequence)));scene(future,smooth(.815,.88,sequence));shade.style.opacity=smooth(.52,.59,sequence)*.95;progress.style.transform=`scaleX(${current})`;
  if(current!==target)wake();}
  function wake(){if(!disposed&&!raf&&ready)raf=requestAnimationFrame(render)}
@@ -58,12 +44,6 @@ export default function Journey() {
 <div className="scene intro" id="intro"><h1><span className="headline-line">Next is</span><span className="headline-line outline">an inside job.</span></h1></div>
 <div className="scene" id="inside"><h2><span className="headline-line">Bold ideas.</span><span className="headline-line">Built here.</span></h2></div>
 <div className="scene" id="future"><h2><span className="headline-line">Human vision.</span><span className="headline-line">Digital impact.</span></h2></div>
-<div className="cloud-entry" aria-hidden="true">
- <div className="entry-cloud cloud-far cloud-left" />
- <div className="entry-cloud cloud-far cloud-right" />
- <div className="entry-cloud cloud-near cloud-left" />
- <div className="entry-cloud cloud-near cloud-right" />
-</div>
 <div className="progress" id="progress"></div>
 </div>
 </section>);

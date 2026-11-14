@@ -1,7 +1,17 @@
-﻿.contact-page { position: relative; isolation: isolate; min-height: 100svh; background: #f8f8f5; color: #2e3337; overflow: clip; }
-.contact-map { position: absolute; z-index: -1; inset: 0 0 0 35%; overflow: hidden; background: #edf0e9; }
+#root:has(.page-live > .contact-page) {
+  --contact-paper: #f8f8f5;
+  --contact-map-paper: #edf0e9;
+  --contact-map-start: 35%;
+  --contact-map-wash: linear-gradient(90deg, var(--contact-paper), #f8f8f5ee 13%, #f8f8f5a8 33%, #f8f8f535 60%, #f8f8f510);
+  --page-footer-background:
+    var(--contact-map-wash) right / calc(100% - var(--contact-map-start)) 100% no-repeat,
+    linear-gradient(90deg, var(--contact-paper) var(--contact-map-start), var(--contact-map-paper) var(--contact-map-start));
+}
+
+.contact-page { position: relative; isolation: isolate; min-height: 100svh; background: var(--page-footer-background); color: #2e3337; overflow: clip; }
+.contact-map { position: absolute; z-index: -1; inset: 0 0 0 var(--contact-map-start); overflow: hidden; background: var(--contact-map-paper); mask-image: linear-gradient(#000 calc(100% - clamp(4rem, 12svh, 8rem)), transparent); }
 .contact-map iframe { width: 100%; height: calc(100% + 32px); border: 0; filter: grayscale(1); opacity: .55; }
-.contact-map::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, #f8f8f5 0%, #f8f8f5ee 13%, #f8f8f5a8 33%, #f8f8f535 60%, #f8f8f510 100%); }
+.contact-map::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: var(--contact-map-wash); }
 .contact-content { width: min(900px, 69%); padding: clamp(150px, 21vh, 225px) 0 140px clamp(45px, 10.5vw, 170px); pointer-events: none; }
 .contact-heading { border-left: 3px solid #00427e; padding-left: 23px; margin-bottom: 55px; }
 .contact-heading p { margin: 0 0 9px; font-size: 11px; color: #777e80; }
@@ -35,8 +45,9 @@
 .contact-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 .contact-page a:focus-visible, .contact-page button:focus-visible { outline: 2px solid #00427e; outline-offset: 5px; }
 @media (min-width: 1600px) { .contact-content { width: 950px; } }
-@media (max-width: 1000px) { .contact-content { padding-left: 7%; width: 75%; } .contact-details { gap: 20px; } .contact-map { left: 30%; } }
+@media (max-width: 1000px) { #root:has(.page-live > .contact-page) { --contact-map-start: 30%; } .contact-content { padding-left: 7%; width: 75%; } .contact-details { gap: 20px; } }
 @media (max-width: 760px) {
+ #root:has(.page-live > .contact-page) { --page-footer-background: var(--contact-paper); }
  .contact-page { min-height: 100svh; }
  .contact-content { width: 100%; padding: 140px 8% 50px; }
  .contact-heading { margin-bottom: 40px; padding-left: 18px; }
@@ -47,9 +58,9 @@
  .contact-form-area { margin-top: 65px; max-width: none; }
  .contact-form-area > h2 { margin-bottom: 30px; }
  .contact-input-label input { font-size: 24px; }
- .contact-map { position: relative; z-index: 0; inset: auto; width: 100%; height: 320px; margin-top: 0; }
+ .contact-map { position: relative; z-index: 0; inset: auto; width: 100%; height: 320px; margin-top: 0; mask-image: none; }
  .contact-map iframe { height: calc(100% + 64px); opacity: .75; }
- .contact-map::after { background: linear-gradient(#f8f8f5, transparent 25%, transparent 80%, #f8f8f5); }
+ .contact-map::after { background: linear-gradient(var(--contact-paper), transparent 25%, transparent 80%, var(--contact-paper)); }
  .contact-content { position: relative; z-index: 1; }
  .contact-map { position: absolute; top: 100%; }
  .contact-page { padding-bottom: 360px; }
