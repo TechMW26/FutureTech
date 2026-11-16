@@ -11,7 +11,6 @@ export default function WorksSequence({ progress, items, onSelect }: { progress:
   const headline = useRef<HTMLHeadingElement>(null);
   const first = useRef<HTMLSpanElement>(null);
   const second = useRef<HTMLSpanElement>(null);
-  const note = useRef<HTMLParagraphElement>(null);
   const details = useRef<HTMLElement>(null);
   const detailContent = useRef<HTMLDivElement>(null);
   const renderer = useRef<WorksRibbonRenderer | null>(null);
@@ -48,7 +47,6 @@ export default function WorksSequence({ progress, items, onSelect }: { progress:
       if (first.current) first.current.style.transform = `translate3d(${moveText * width * .67}px, ${-moveText * height * .13}px, 0)`;
       if (second.current) second.current.style.transform = `translate3d(${-moveText * width * .67}px, ${moveText * height * .13}px, 0)`;
       if (headline.current) headline.current.style.opacity = String(opacity);
-      if (note.current) note.current.style.opacity = String(opacity);
       const focus = projectFocus(p, Math.min(8, items.length));
       if (focus.index !== active.current) { active.current = focus.index; setActiveIndex(focus.index); }
       if (details.current) {
@@ -93,7 +91,6 @@ export default function WorksSequence({ progress, items, onSelect }: { progress:
 
   return <div ref={host} className={`works-sequence${fallback ? ' works-sequence-fallback' : ''}`} id="project-carousel">
     <h1 ref={headline} className="works-motion-title" aria-label="Our Works"><span ref={first}><span>OUR</span></span><span ref={second}><span>WORKS</span></span></h1>
-    <p ref={note} className="works-motion-note">Human imagination.<br />Extraordinary digital experiences.</p>
     <canvas ref={canvas} className="works-ribbon-canvas" aria-hidden="true"
       onPointerDown={event => { down.current = { x: event.clientX, y: event.clientY }; }}
       onPointerMove={event => { const rect = event.currentTarget.getBoundingClientRect(); event.currentTarget.style.cursor = (renderer.current?.pick(event.clientX - rect.left, event.clientY - rect.top) ?? -1) >= 0 ? 'pointer' : 'default'; }}

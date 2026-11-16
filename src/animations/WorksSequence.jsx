@@ -156,7 +156,6 @@ export default function WorksSequence({ progress, items }) {
         {' '}
         <span><span>Make a Difference</span></span>
       </h1>
-      <p className="works-motion-note">Human imagination.<br />Extraordinary digital experiences.</p>
       {!ribbonReady && !fallback && progress < .54 && <div className="skeleton-block works-ribbon-skeleton" aria-hidden="true" />}
       <canvas
         ref={canvas}

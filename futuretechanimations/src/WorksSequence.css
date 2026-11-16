@@ -11,7 +11,6 @@
 .works-motion-title > span:last-child { margin-left: auto; margin-top: .28em; }
 .works-motion-title > span > span { display: block; animation: works-title-in 1.15s cubic-bezier(.2,.7,.2,1) both; }
 .works-motion-title > span:last-child > span { animation-name: works-title-in-right; }
-.works-motion-note { position: absolute; top: calc(47% + min(12vw, 152px)); left: 50%; margin: 0; transform: translateX(-50%); text-align: center; font-size: clamp(10px, .8vw, 12px); line-height: 1.45; letter-spacing: -.02em; color: #7e8087; pointer-events: none; }
 .works-ribbon-canvas { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; touch-action: pan-y; }
 .work-detail { position: absolute; z-index: 2; top: 54%; left: 59%; width: min(31%, 410px); opacity: 0; transform: translate(24px, -50%); }
 .work-detail-category { margin: 0 0 26px; color: #93969c; font-size: 9px; line-height: 1.6; letter-spacing: .09em; text-transform: uppercase; }
@@ -28,14 +27,13 @@
 .works-accessible-projects button:focus-visible { position: relative; width: auto; height: auto; overflow: visible; clip-path: none; padding: 12px 18px; border: 1px solid #00427e; border-radius: 30px; background: white; color: #00427e; font: 12px Arial, sans-serif; }
 .works-fallback-project { position: absolute; top: 54%; left: 27%; width: min(37vw, calc(45svh / .68)); transform: translate(-50%, -50%); padding: 0; border: 0; background: none; cursor: pointer; }
 .works-fallback-project img { display: block; width: 100%; }
-.works-sequence-fallback .works-ribbon-canvas, .works-sequence-fallback .works-motion-title, .works-sequence-fallback .works-motion-note { display: none; }
+.works-sequence-fallback .works-ribbon-canvas, .works-sequence-fallback .works-motion-title { display: none; }
 .work-detail-link:focus-visible, .works-fallback-project:focus-visible { outline: 2px solid #00427e; outline-offset: 5px; }
 @keyframes works-title-in { from { transform: translate(-65vw, 20vh); } to { transform: translate(0,0); } }
 @keyframes works-title-in-right { from { transform: translate(65vw, -20vh); } to { transform: translate(0,0); } }
 @media (max-width: 700px) {
  .works-motion-title { left: 8%; right: 8%; top: 32%; font-size: clamp(54px, 17vw, 90px); }
  .works-motion-title > span:last-child { margin-top: .65em; }
- .works-motion-note { display: none; }
  .work-detail { top: 72%; left: 10%; width: 80%; }
  .work-detail-category { margin-bottom: 12px; font-size: 8px; }
  .work-detail h2 { font-size: clamp(30px, 7.7vw, 43px); }
