@@ -1,16 +1,34 @@
+@font-face {
+  font-family: Poppins;
+  src: url('/fonts/Poppins-Bold.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 .journey{height:720vh;height:720svh;position:relative}.stage{height:100vh;height:100svh;position:sticky;top:0;overflow:hidden;isolation:isolate;background:#555b57 url('/journey/ezgif-frame-001.jpg') center/cover}.stage canvas{display:block;width:100%;height:100%}
 .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,#121b2010,transparent 50%,#121b2026)}
 .interior-shade{position:absolute;inset:0;pointer-events:none;opacity:0;background:linear-gradient(180deg,#0c161d12,#0c161d80 55%,#0c161d30)}
 .scene{position:absolute;left:6%;right:6%;top:50%;transform:translateY(-50%);opacity:0;pointer-events:none;will-change:opacity,transform;text-align:center}
 .journey .scene :is(h1,h2){margin:0;font-family:inherit;font-weight:900;font-style:normal;text-transform:uppercase;letter-spacing:-.065em;line-height:.91;text-wrap:balance}
 .headline-line{display:block}.headline-line+.headline-line{margin-top:.09em}
-.intro{top:47%}.intro h1{font-size:clamp(64px,10.5vw,176px);color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:3px #fff5df;paint-order:stroke fill;filter:drop-shadow(0 2px 0 #9a8972) drop-shadow(0 4px 0 #665f5555) drop-shadow(0 9px 12px #242a3145)}.intro .outline{font-size:.77em}
+.intro{top:47%}
+.journey .scene.intro h1 {
+  color: #182432;
+  font-family: Poppins, sans-serif;
+  font-size: clamp(28px, min(10vw, 18svh), 160px);
+  font-weight: 700;
+  letter-spacing: -.05em;
+  line-height: 1.05;
+  text-transform: none;
+  text-shadow: 0 2px 18px rgb(255 250 239 / 28%);
+}
 #inside h2,#future h2{font-size:clamp(40px,5.2vw,84px);font-weight:700;letter-spacing:-.045em;line-height:1.04;color:#f7f5ef;-webkit-text-stroke:0;text-shadow:0 3px 20px #07131c55}
 .progress{position:absolute;bottom:0;left:0;height:2px;width:100%;transform-origin:left;transform:scaleX(0);background:#f0f0e870}
 
 @media(min-width:1600px){.scene{left:8%;right:8%}}
-@media(max-width:600px){.journey{height:650svh}.scene{left:5%;right:5%}.intro h1{font-size:15vw;-webkit-text-stroke:1.8px #fff5df}.intro .outline{font-size:.78em}#inside h2,#future h2{font-size:clamp(32px,7.6vw,46px)}.headline-line+.headline-line{margin-top:.16em}}
-@media(max-height:500px) and (min-width:601px){.intro h1{font-size:17vh}#inside h2,#future h2{font-size:11vh}}
+@media(max-width:600px){.journey{height:650svh}.scene{left:5%;right:5%}#inside h2,#future h2{font-size:clamp(32px,7.6vw,46px)}.headline-line+.headline-line{margin-top:.16em}}
+@media(max-height:500px) and (min-width:601px){#inside h2,#future h2{font-size:11vh}}
 
 .journey{height:860vh;height:860svh}
 .journey .stage { opacity: var(--journey-entrance, 0); }
@@ -52,16 +70,15 @@
 /* ---------------------------------------------------------------------------
    Integration notes.
    This section is dropped into the MW Futuretech site, whose global stylesheet
-   sets `* { font-family: inherit }`. Restoring the original typography here
-   keeps the section pixel-identical to its standalone build without touching
-   any element elsewhere on the site.
+   sets `* { font-family: inherit }`. Set the default typeface for this section
+   and let each headline line inherit from its heading.
 --------------------------------------------------------------------------- */
 .journey, .journey * { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; }
 .journey .headline-line { font-family: inherit; }
 
 /* The site sets `html { font-size: var(--font-size) }` for zoom compensation
    (10.5px at default zoom), which would scale every em-based value here:
-   letter-spacing, the outline headline and the connections heading. The
+   letter-spacing, the journey headlines and the connections heading. The
    standalone build always lays out against a 16px root, so restore that for
    this section only. */
 .hero-journey { font-size: 16px; }

@@ -48,7 +48,12 @@ export default function Journey() {
 <div className="stage">
 <canvas id="sequence" aria-label="A journey through clouds into a futuristic technology studio" role="img"></canvas>
 <div className="shade"></div><div className="interior-shade" id="interiorShade"></div>
-<div className="scene intro" id="intro"><h1><span className="headline-line">Next is</span><span className="headline-line outline">an inside job.</span></h1></div>
+<div className="scene intro" id="intro">
+  <h1>
+    <span className="headline-line">Imagine more.</span>{' '}
+    <span className="headline-line">Make it real.</span>
+  </h1>
+</div>
 <div className="scene" id="inside"><h2><span className="headline-line">Bold ideas.</span><span className="headline-line">Built here.</span></h2></div>
 <div className="scene" id="future"><h2><span className="headline-line">Human vision.</span><span className="headline-line">Digital impact.</span></h2></div>
 <div className="progress" id="progress"></div>

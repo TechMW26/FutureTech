@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import Header from './components/Header'
 import Footer from './components/Footer'
+import SummitBanner from './components/SummitBanner'
 import SiteSettingsProvider from './components/SiteSettingsProvider'
 import LiquidGlassDefs from './components/LiquidGlassDefs'
 import { useDesktopScaleCompensation } from './hooks/useDesktopScaleCompensation'
@@ -188,6 +189,7 @@ export default function App() {
       </AnimatePresence>
 
       {showsPublicChrome && <Footer />}
+      {showsPublicChrome && <SummitBanner />}
     </SiteSettingsProvider>
   )
 }
