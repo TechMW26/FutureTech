@@ -7,11 +7,11 @@ import { TEAM } from '../data/team'
 import './HomeMagicSearch.css'
 
 const MAGIC_SEARCH_PROMPTS = [
-  'Find me the best selling products in Europe',
-  'Show me new Shopify stores in fashion',
-  'Which ads are spending the most on pet products?',
-  'Show me top earners in home decor',
-  'How does the MW Futuretech Agent OS work?',
+  'What does MW Futuretech actually build?',
+  'How does Algae Tree help clean the air?',
+  'What can MIRA AI help me with?',
+  'What can I explore with Mayalogy?',
+  'How can we start a project together?',
 ]
 
 const AUTO_ADVANCE_MS = 3400
@@ -173,6 +173,7 @@ export default function HomeMagicSearch() {
   const wheelAccumRef = useRef(0)
   const userActiveUntilRef = useRef(0)
   const inputRef = useRef(null)
+  const submittingRef = useRef(false)
 
   const promptCount = MAGIC_SEARCH_PROMPTS.length
 
@@ -203,6 +204,7 @@ export default function HomeMagicSearch() {
 
   const advance = useCallback(
     (delta) => {
+      if (submittingRef.current) return
       const steps = Math.trunc(delta)
       if (!steps) return
       setAnswer('')
@@ -292,6 +294,7 @@ export default function HomeMagicSearch() {
   }, [mode, advance])
 
   const handleToggleInput = () => {
+    if (submittingRef.current) return
     if (mode === 'picker') {
       setMode('input')
       setAnswer('')
@@ -308,6 +311,7 @@ export default function HomeMagicSearch() {
   }
 
   const submitQuery = async () => {
+    if (submittingRef.current) return
     const rawQuery = mode === 'input' ? inputValue.trim() : MAGIC_SEARCH_PROMPTS[selectedIndex]
     if (!rawQuery) {
       setErrorMessage('Please type a question first.')
@@ -320,6 +324,7 @@ export default function HomeMagicSearch() {
       return
     }
 
+    submittingRef.current = true
     setStatus('loading')
     setAnswer('')
     setErrorMessage('')
@@ -343,6 +348,8 @@ export default function HomeMagicSearch() {
     } catch {
       setErrorMessage('Network error. Please try again.')
       setStatus('error')
+    } finally {
+      submittingRef.current = false
     }
   }
 
@@ -413,13 +420,13 @@ export default function HomeMagicSearch() {
         transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
       >
         <div className="home-magic-search__copy">
-          <h2 id="home-magic-search-title">NEW: Magic AI Search</h2>
+          <h2 id="home-magic-search-title">The Futuretech FAQ</h2>
           <p>
-            Find your next profitable product by exploring our vast database with millions of products
-            and ads, using our smart search.
+            From cleaner air to smoother workdays, our projects go to some unexpected places.
+            Pick a question or ask your own about our projects, team, and how we work.
           </p>
-          <Link className="home-magic-search__link" to="/news-events" aria-label="Learn more about Magic AI Search">
-            <span>Learn More</span>
+          <Link className="home-magic-search__link" to="/work">
+            <span>Explore our work</span>
           </Link>
         </div>
 
@@ -467,6 +474,7 @@ export default function HomeMagicSearch() {
                     type="button"
                     aria-label={mode === 'input' ? 'Close custom search' : 'Open custom search'}
                     aria-pressed={mode === 'input'}
+                    disabled={isLoading}
                     onClick={handleToggleInput}
                   >
                     <span aria-hidden="true" />

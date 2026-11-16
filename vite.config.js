@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // Load .env so that server-side variables like GROQ_API_KEY are available
+  // Load .env so that server-side variables like DEEPSEEK_API_KEY are available
   // to the dev middleware that proxies /api/ai-search during `npm run dev`.
   // (In production these are provided by Vercel's environment.)
   const env = loadEnv(mode, process.cwd(), '')

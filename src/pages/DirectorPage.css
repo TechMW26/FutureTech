@@ -1,6 +1,10 @@
-.director-page {
+body:has(.page-live > .director-page) {
   --director-page-bg: color-mix(in srgb, var(--bg) 94%, var(--director-accent) 6%);
+  --page-footer-background: var(--director-page-bg);
+  background: var(--director-page-bg);
+}
 
+.director-page {
   position: relative;
   min-height: 100vh;
   overflow-x: clip;
@@ -10,12 +14,7 @@
 }
 
 .page-live:has(.director-page) {
-  background: color-mix(in srgb, var(--bg) 94%, var(--director-accent) 6%);
-}
-
-body:has(.director-page),
-body:has(.director-page) .site-footer {
-  background: color-mix(in srgb, var(--bg) 94%, var(--director-accent) 6%);
+  background: var(--director-page-bg);
 }
 
 .director-page__sr-only {
