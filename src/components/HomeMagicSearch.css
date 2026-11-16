@@ -652,3 +652,9 @@
     animation: none !important;
   }
 }
+
+.home-magic-search__answer-source {
+  margin: 0 0 .5em;
+  font-size: .8rem;
+  color: #4b5865;
+}

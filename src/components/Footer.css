@@ -339,3 +339,5 @@
         padding: 0.3rem 0;
     }
 }
+
+.site-footer__description a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }

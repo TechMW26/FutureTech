@@ -166,6 +166,7 @@ export default function HomeMagicSearch() {
   const [inputValue, setInputValue] = useState('')
   const [status, setStatus] = useState('idle') // 'idle' | 'loading' | 'success' | 'error'
   const [answer, setAnswer] = useState('')
+  const [answerSource, setAnswerSource] = useState(null)
   const [errorMessage, setErrorMessage] = useState('')
 
   const stageRef = useRef(null)
@@ -343,6 +344,7 @@ export default function HomeMagicSearch() {
         return
       }
 
+      setAnswerSource(data.source)
       setAnswer(data.answer)
       setStatus('success')
     } catch {
@@ -536,6 +538,7 @@ export default function HomeMagicSearch() {
                   role="status"
                   aria-live="polite"
                 >
+                  {answer && answerSource === 'site' && <p className="home-magic-search__answer-source">From the site FAQ</p>}
                   {structuredAnswer.type === 'structured-list' ? (
                     <>
                       {structuredAnswer.prefixTokens.length > 0 && (

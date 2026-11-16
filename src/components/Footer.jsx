@@ -1,32 +1,18 @@
 import { Link } from 'react-router-dom'
+import { GROUP_URL } from '../data/siteSettings.js'
+import { useSiteSettings } from '../lib/siteApi.js'
 import './Footer.css'
 
 const EXPLORE_LINKS = [
   { label: 'Home', to: '/' },
   { label: 'About us', to: '/about' },
-  { label: 'Services', to: '/news-events' },
+  { label: 'Services', to: '/services' },
   { label: 'Our work', to: '/work' },
 ]
 
-const CONNECT_LINKS = [
-  { label: 'Contact', to: '/lets-talk' },
-  {
-    label: 'LinkedIn',
-    href: 'https://linkedin.com',
-    rel: 'noopener noreferrer',
-    target: '_blank',
-  },
-  {
-    label: 'Instagram',
-    href: 'https://instagram.com',
-    rel: 'noopener noreferrer',
-    target: '_blank',
-  },
-]
-
 const LEGAL_LINKS = [
-  { label: 'Privacy policy', href: '#privacy-policy' },
-  { label: 'Terms of use', href: '#terms-of-use' },
+  { label: 'Privacy policy', to: '/privacy' },
+  { label: 'Terms of use', to: '/terms' },
 ]
 
 function scrollToTop() {
@@ -34,6 +20,13 @@ function scrollToTop() {
 }
 
 export default function Footer() {
+  const { linkedin, instagram } = useSiteSettings()
+  const connectLinks = [
+    { label: 'Contact', to: '/contact' },
+    { label: 'LinkedIn', href: linkedin },
+    { label: 'Instagram', href: instagram },
+  ].filter(item => item.to || item.href)
+
   return (
     <footer className="site-footer">
       <div className="site-footer__card">
@@ -54,6 +47,8 @@ export default function Footer() {
               Thoughtful technology. Meaningful progress.
               <br />
               We turn ambitious ideas into digital experiences.
+              <br />
+              <a href={GROUP_URL}>A Mushroom World Group company</a>
             </p>
           </div>
 
@@ -74,7 +69,7 @@ export default function Footer() {
             <div className="site-footer__nav-group">
               <span className="site-footer__nav-label">Connect</span>
               <ul className="site-footer__nav-list">
-                {CONNECT_LINKS.map((item) => (
+                {connectLinks.map((item) => (
                   <li key={item.label}>
                     {item.to ? (
                       <Link to={item.to} className="site-footer__link">
@@ -83,8 +78,8 @@ export default function Footer() {
                     ) : (
                       <a
                         href={item.href}
-                        target={item.target}
-                        rel={item.rel}
+                        target="_blank"
+                        rel="noreferrer"
                         className="site-footer__link"
                       >
                         {item.label}
@@ -102,7 +97,7 @@ export default function Footer() {
             Let&rsquo;s build what&rsquo;s <span className="site-footer__headline-accent">next</span>
           </p>
           <Link
-            to="/lets-talk"
+            to="/contact"
             className="site-footer__headline-cta"
             aria-label="Start a project with MW Futuretech"
           >
@@ -116,9 +111,9 @@ export default function Footer() {
           </span>
           <div className="site-footer__bottom-links">
             {LEGAL_LINKS.map((item) => (
-              <a key={item.label} href={item.href} className="site-footer__legal-link">
+              <Link key={item.label} to={item.to} className="site-footer__legal-link">
                 {item.label}
-              </a>
+              </Link>
             ))}
             <button
               type="button"

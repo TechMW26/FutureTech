@@ -1,4 +1,5 @@
-﻿import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useSiteSettings } from '../lib/siteApi.js'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
@@ -143,6 +144,8 @@ function DirectorLinkedInFeed() {
 export default function DirectorPage() {
   const { directorname = '' } = useParams()
   const profile = getDirectorProfile(directorname)
+  const { photos } = useSiteSettings()
+  const portrait = profile && (photos[profile.name] || profile.image)
   const isAvirajProfile = profile?.slug === 'aviraj-sharma'
   const heroRef = useRef(null)
   const firstNameRef = useRef(null)
@@ -353,7 +356,7 @@ export default function DirectorPage() {
 
         <div ref={portraitRef} className="director-portrait director-portrait--hero">
           <img
-            src={profile.image}
+            src={portrait}
             alt={`${profile.name} portrait`}
             loading="eager"
             decoding="async"
@@ -396,7 +399,7 @@ export default function DirectorPage() {
       ) : (
         <section className="director-section director-story" aria-label="Director statement">
           <motion.div className="director-portrait director-portrait--story" {...sectionReveal}>
-            <img src={profile.image} alt="" loading="lazy" decoding="async" aria-hidden="true" />
+            <img src={portrait} alt="" loading="lazy" decoding="async" aria-hidden="true" />
           </motion.div>
 
           <motion.div className="director-story__copy" {...sectionReveal}>

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
+import SummitBanner from './SummitBanner'
 import './Header.css'
 
 const NAV_ITEMS = [
@@ -12,7 +13,7 @@ const NAV_ITEMS = [
 // Routes whose pages scroll natively (Lenis is off). Their sticky scroll tracks
 // need the route change to repaint instead of fading, and the header stays
 // mounted so nothing transforms its fixed positioning.
-const NATIVE_SCROLL_ROUTES = new Set(['/work', '/news-events', '/about', '/lets-talk'])
+const NATIVE_SCROLL_ROUTES = new Set(['/work', '/news-events', '/about', '/contact'])
 
 const isNativeScrollRoute = (pathname) => NATIVE_SCROLL_ROUTES.has(pathname.replace(/\/+$/, '') || '/')
 
@@ -99,6 +100,7 @@ export default function Header({ staticPosition = false }) {
   return (
     <>
       <header className={`site-header${headerVisible ? '' : ' is-hidden'}${staticPosition ? ' site-header--static-position' : ''}`} role="banner">
+        <SummitBanner visible={headerVisible} />
         <div className="site-header__pill liquid-glass liquid-glass--strong liquid-glass--animated">
           <Link to="/" className="site-header__brand">
             <img src="/favicon.png" alt="MW Futuretech logo" className="site-header__logo" />

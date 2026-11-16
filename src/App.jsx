@@ -3,7 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import Header from './components/Header'
 import Footer from './components/Footer'
-import Loader from './components/Loader'
+import SiteSettingsProvider from './components/SiteSettingsProvider'
 import LiquidGlassDefs from './components/LiquidGlassDefs'
 import { useDesktopScaleCompensation } from './hooks/useDesktopScaleCompensation'
 import { useLenisScroll } from './hooks/useLenisScroll'
@@ -11,6 +11,10 @@ import './styles/liquid-glass.css'
 import './App.css'
 import './animations/animations.css'
 
+const Loader = lazy(() => import('./components/Loader'))
+const SummitPage = lazy(() => import('./pages/SummitPage'))
+const AdminPage = lazy(() => import('./pages/AdminPage'))
+const InformationPage = lazy(() => import('./pages/InformationPage'))
 const HomePage = lazy(() => import('./pages/HomePage'))
 const OurWorks = lazy(() => import('./animations/OurWorks'))
 const ProjectPage = lazy(() => import('./pages/ProjectPage'))
@@ -26,9 +30,9 @@ const MODEL_INTRO_PATHS = new Set(['/'])
 
 // Routes that render the animation pages. Those pages own their header and
 // opt out of Lenis so the position: sticky scroll tracks stay exact.
-const ANIMATION_ROUTES = new Set(['/work', '/news-events', '/about', '/lets-talk'])
+const ANIMATION_ROUTES = new Set(['/work', '/news-events', '/about', '/contact'])
 // Routes that render the site header outside the page-transition wrapper.
-const STATIC_HEADER_PATHS = new Set(['/work', '/news-events', '/about', '/lets-talk'])
+const STATIC_HEADER_PATHS = new Set(['/work', '/news-events', '/about', '/contact'])
 
 const isAnimationRoute = (pathname) => ANIMATION_ROUTES.has(pathname)
 
@@ -74,9 +78,12 @@ export default function App() {
   const location = useLocation()
   const normalizedPath = location.pathname === '/' ? '/' : location.pathname.replace(/\/+$/, '')
   const isSpadeClone = normalizedPath === '/spade'
+  const isAdmin = normalizedPath === '/admin'
+  const isLightweight = isAdmin || normalizedPath === '/bts2026'
+  const showsPublicChrome = !isSpadeClone && !isAdmin
   const usesAnimationPage = isAnimationRoute(normalizedPath)
   const showsStaticHeader = STATIC_HEADER_PATHS.has(normalizedPath)
-  const lenisRef = useLenisScroll({ disabled: isSpadeClone || usesAnimationPage })
+  const lenisRef = useLenisScroll({ disabled: isSpadeClone || isLightweight || usesAnimationPage })
   const [theme] = useState('light')
   // Stable ref-like objects per model-route path. useMemo avoids accessing
   // .current during render (react-hooks/refs) while still giving children
@@ -98,9 +105,9 @@ export default function App() {
   // by the time a user clicks through to another route — no network
   // round-trip, no decode delay, no layout shift on route mount.
   useEffect(() => {
-    if (typeof window === 'undefined') return
+    if (isLightweight || typeof window === 'undefined') return
     HERO_IMAGE_PRELOADS.forEach(injectImagePreload)
-  }, [])
+  }, [isLightweight])
 
   // Scroll to top whenever the route changes.
   useEffect(() => {
@@ -132,19 +139,14 @@ export default function App() {
   )
 
   return (
-    <>
-      {!isSpadeClone && (
-        <Loader
-          onComplete={() => {
-            setLoaderComplete(true)
-          }}
-        />
+    <SiteSettingsProvider>
+      {!isSpadeClone && !isLightweight && (
+        <Suspense fallback={null}>
+          <Loader onComplete={() => setLoaderComplete(true)} />
+        </Suspense>
       )}
-      {!isSpadeClone && <LiquidGlassDefs />}
-      {!isSpadeClone && !showsStaticHeader && <Header />}
-      {/* Animation pages scroll natively, so the header sits outside any
-          transformed wrapper to keep its fixed position exact. */}
-      {!isSpadeClone && showsStaticHeader && <Header staticPosition />}
+      {showsPublicChrome && <LiquidGlassDefs />}
+      {showsPublicChrome && <Header staticPosition={showsStaticHeader} />}
 
       {/* Cross-fade between routes. mode="wait" lets the outgoing page
           finish fading out before the new one fades in, so the two
@@ -167,12 +169,16 @@ export default function App() {
               <Route path="/work" element={<OurWorks />} />
               <Route path="/work/:projectSlug" element={<ProjectPage />} />
               <Route path="/news-events" element={<NewsEventsPage />} />
-              <Route path="/services" element={<Navigate to="/news-events" replace />} />
+              <Route path="/services" element={<InformationPage page="services" />} />
               <Route path="/about" element={<AboutPage />} />
               {/* Director profiles live on the original director page. */}
               <Route path="/about/:directorname" element={<Navigate to={`/director${location.pathname.replace(/^\/about/, '')}`} replace />} />
-              <Route path="/contact" element={<LetsTalkPage talk />} />
-              <Route path="/lets-talk" element={<LetsTalkPage talk />} />
+              <Route path="/contact" element={<LetsTalkPage />} />
+              <Route path="/lets-talk" element={<Navigate to="/contact" replace />} />
+              <Route path="/bts2026" element={<SummitPage />} />
+              <Route path="/admin" element={<AdminPage />} />
+              <Route path="/privacy" element={<InformationPage page="privacy" />} />
+              <Route path="/terms" element={<InformationPage page="terms" />} />
               <Route path="/director/:directorname" element={<DirectorPage />} />
               <Route path="/spade" element={<SpadeClonePage />} />
               <Route path="*" element={<HomePage introStartRef={getIntroRef('/')} />} />
@@ -181,7 +187,7 @@ export default function App() {
         </motion.main>
       </AnimatePresence>
 
-      {!isSpadeClone && <Footer />}
-    </>
+      {showsPublicChrome && <Footer />}
+    </SiteSettingsProvider>
   )
 }

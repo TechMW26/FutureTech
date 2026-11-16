@@ -22,12 +22,11 @@ export const DIRECTOR_PROFILES = {
     lastName: 'Jamadar',
     role: 'Director',
     organization: 'MW Futuretech',
-    image: null, // TODO: add profile image when available
-    cardImage: null, // TODO: add card image when available
+    image: '/directors/shakeel-jamadar-profile.webp',
     ghostHeadline: 'About The Director',
-    statementLead: '',
-    statementBody: '',
-    narrative: '',
+    statementLead: 'Technology should make new ideas possible.',
+    statementBody: 'Shakeel Jamadar is a director at MW Futuretech, a Mushroom World Group company.',
+    narrative: 'MW Futuretech brings software, design and emerging technology together to build practical products.',
   },
 }
 

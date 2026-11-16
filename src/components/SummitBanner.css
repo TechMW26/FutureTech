@@ -1,0 +1,25 @@
+.summit-banner {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto 8px;
+  pointer-events: auto;
+}
+.summit-banner--hidden { pointer-events: none; }
+.summit-banner a {
+  display: inline-flex;
+  align-items: center;
+  gap: .55em;
+  min-height: 32px;
+  padding: 4px 14px;
+  border-radius: 99px;
+  background: #092e54;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  font-size: clamp(11px, 2.8vw, 13px);
+  font-weight: 650;
+  line-height: 1.3;
+}
+.summit-banner a:hover, .summit-banner a:focus-visible {
+  background: #164c7c;
+}

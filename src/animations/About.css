@@ -140,3 +140,6 @@
 .about-silk{position:absolute;left:-15%;width:130%;height:32%;bottom:-15%;border-radius:50%;background:linear-gradient(180deg,#fff,#c1d1e681 12%,#eff4fb 63%);box-shadow:0 -2px 2px #fff;transform:rotate(-9deg);z-index:0}
 .about-silk--two{bottom:-25%;left:-30%;transform:rotate(14deg);background:linear-gradient(180deg,#fff,#c8d7e8aa 35%,#eef3f9)}
 @media(max-width:700px){.about-opening h1{font-size:clamp(39px,9vw,64px)}.about-opening .about-kicker{font-size:8px;margin-bottom:28px}.about-opening .about-intro{max-width:300px;font-size:13px;margin-top:26px!important}.about-opening .about-round-link{margin-top:25px}.about-shared-backdrop .metal-ribbon{width:155%;left:-27.5%}.about-silk{height:24%}.about-continuous .about-opening-copy{padding-top:80px}}
+
+.about-group-link { margin: 14px 0 0; font-size: 14px; color: #244966; }
+.about-group-link a { text-decoration: underline; }

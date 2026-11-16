@@ -1,0 +1,20 @@
+.admin-page { padding-top: clamp(28px, 6vw, 72px); }
+.admin-page h1 { font-size: clamp(2rem, 5vw, 3.25rem); margin-top: .3em; }
+.admin-page__header, .admin-lead__top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.admin-page [role="status"]:empty { display: none; }
+.admin-login { max-width: 26rem; }
+.admin-tabs { display: flex; flex-wrap: wrap; gap: 8px; padding-block: 12px 22px; }
+.admin-tabs button { padding: 8px 14px; font: inherit; background: white; color: #153c5c; border: 1px solid #b6c9d7; border-radius: 6px; cursor: pointer; }
+.admin-tabs button[aria-pressed="true"] { background: #153c5c; color: white; }
+.admin-filters { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-bottom: 18px; }
+.admin-leads { list-style: none; padding: 0; display: grid; gap: 12px; }
+.admin-leads li { padding: 16px; border: 1px solid #d9e5ed; border-radius: 10px; overflow-wrap: anywhere; }
+.admin-leads h2 { font-size: 1.25rem; margin-bottom: .25rem; }
+.admin-leads p { margin-bottom: .45rem; }
+.admin-lead__message { white-space: pre-wrap; }
+.admin-status { font-size: .85rem; }
+.admin-content__grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(100%,240px),1fr)); gap: 14px; }
+.admin-content label.admin-checkbox { display: flex; align-items: center; gap: 8px; }
+.admin-content input[type="checkbox"] { width: 18px; height: 18px; }
+.admin-content summary { cursor: pointer; }
+.admin-content details { padding-block: 8px; }

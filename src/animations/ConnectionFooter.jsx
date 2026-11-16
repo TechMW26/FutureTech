@@ -4,7 +4,7 @@ import { CONNECTION_FRAME_COUNT, connectionMotion, coverFrame } from './Connecti
 import './ConnectionFooter.css'
 
 /** Cinematic closing footer: a scroll-sequenced film that resolves into an invitation. */
-export default function ConnectionFooter({ connectHref = '/lets-talk' }) {
+export default function ConnectionFooter({ connectHref = '/contact' }) {
   const track = useRef(null)
   const stage = useRef(null)
   const canvas = useRef(null)

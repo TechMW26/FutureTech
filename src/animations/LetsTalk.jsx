@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { siteRequest, useSiteSettings } from '../lib/siteApi.js'
 import './LetsTalk.css'
 
 const fields = [
@@ -22,33 +24,52 @@ function ContactIcon({ kind }) {
 export default function LetsTalk() {
   const [step, setStep] = useState(0)
   const [values, setValues] = useState(['', '', ''])
-  const [saved, setSaved] = useState(false)
+  const [submit, setSubmit] = useState({ pending: false, message: '', sent: false })
   const input = useRef(null)
+  const requestId = useRef(null)
+  const sending = useRef(false)
+  const { phone, email, officeAddress, acceptingEnquiries } = useSiteSettings()
+  const directions = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(officeAddress)
 
   useEffect(() => { document.title = 'Contacts — MW Futuretech' }, [])
 
-  function next(event) {
+  async function next(event) {
     event.preventDefault()
-    if (step < 2) { setStep(step + 1); requestAnimationFrame(() => input.current?.focus()); return }
-    const text = `Name: ${values[0].trim()}\nEmail: ${values[1].trim()}\n\n${values[2].trim()}\n\nEnquiry — saved locally, not sent.`
-    const url = URL.createObjectURL(new Blob([text], { type: 'text/plain;charset=utf-8' }))
-    const link = document.createElement('a')
-    link.href = url
-    link.download = 'futuretech-enquiry.txt'
-    link.click()
-    setTimeout(() => URL.revokeObjectURL(url), 1000)
-    setSaved(true)
+    if (sending.current || submit.sent) return
+    if (!values[step].trim()) {
+      setSubmit({ pending: false, sent: false, message: 'Please fill in this field.' })
+      return
+    }
+    if (step < 2) {
+      setStep(step + 1)
+      setSubmit({ pending: false, sent: false, message: '' })
+      requestAnimationFrame(() => input.current?.focus())
+      return
+    }
+    sending.current = true
+    setSubmit({ pending: true, sent: false, message: '' })
+    requestId.current ??= globalThis.crypto.randomUUID()
+    try {
+      await siteRequest('/api/enquiries', {
+        source: 'contact', name: values[0], email: values[1], message: values[2], requestId: requestId.current,
+      })
+      setSubmit({ pending: false, sent: true, message: 'Thank you. Your enquiry has been received.' })
+    } catch (error) {
+      setSubmit({ pending: false, sent: false, message: error.message })
+    } finally {
+      sending.current = false
+    }
   }
 
   function update(value) {
+    requestId.current = null
     setValues(previous => previous.map((item, index) => index === step ? value : item))
-    setSaved(false)
   }
 
   return (
     <main className="contact-page">
       <div className="contact-map">
-        <iframe title="Office location in Bhopal, India" src="https://www.openstreetmap.org/export/embed.html?bbox=77.354%2C23.215%2C77.449%2C23.269&layer=mapnik&marker=23.241%2C77.401" loading="eager" referrerPolicy="no-referrer" />
+        <iframe title="Hustlehub Tech Park, Bengaluru" src="https://www.openstreetmap.org/export/embed.html?bbox=77.626%2C12.888%2C77.676%2C12.914&layer=mapnik&marker=12.901158%2C77.651153" loading="lazy" referrerPolicy="no-referrer" />
       </div>
       <section className="contact-content" aria-labelledby="contact-title">
         <header className="contact-heading">
@@ -56,13 +77,16 @@ export default function LetsTalk() {
           <h1 id="contact-title">Contacts<span>.</span></h1>
         </header>
         <div className="contact-details">
-          <div><h2><ContactIcon kind="pin" />Address</h2><p>Bhopal, India</p></div>
-          <div><h2><ContactIcon kind="phone" />Phone</h2><p>+91 76919 11484</p></div>
-          <div><h2><ContactIcon kind="mail" />Email</h2><p>support@talio.in</p></div>
+          <div><h2><ContactIcon kind="pin" />Address</h2><p><a href={directions} target="_blank" rel="noreferrer">{officeAddress}</a></p><p>Bhopal, Madhya Pradesh, India</p></div>
+          {phone && <div><h2><ContactIcon kind="phone" />Phone</h2><p><a href={`tel:${phone.replace(/[^+\d]/g, '')}`}>{phone}</a></p></div>}
+          {email && <div><h2><ContactIcon kind="mail" />Email</h2><p><a href={`mailto:${email}`}>{email}</a></p></div>}
         </div>
         <section className="contact-form-area" aria-labelledby="contact-form-title">
           <h2 id="contact-form-title">Get in touch</h2>
-          <form onSubmit={next}>
+          {acceptingEnquiries === false ? (
+            <p className="contact-feedback">For enquiries, email <a href={`mailto:${email}`}>{email}</a>.</p>
+          ) : <form onSubmit={next}>
+            <fieldset disabled={submit.pending || submit.sent}>
             <div className="contact-entry">
               <label className="contact-input-label">
                 <span className="contact-sr-only">{fields[step].label}</span>
@@ -71,7 +95,7 @@ export default function LetsTalk() {
                   : <input ref={element => { input.current = element }} key={step} type={fields[step].type} autoComplete={fields[step].autocomplete} required maxLength={step === 0 ? 120 : 254} placeholder={fields[step].placeholder} value={values[step]} onChange={event => update(event.target.value)} />}
               </label>
               <button className="contact-next" type="submit">
-                <span>{step === 2 ? 'Save' : 'Next'}</span>
+                <span>{step === 2 ? (submit.pending ? 'Sending…' : 'Send enquiry') : 'Next'}</span>
                 <span className="contact-next-icon" aria-hidden="true">→</span>
               </button>
             </div>
@@ -84,18 +108,20 @@ export default function LetsTalk() {
                     aria-label={`Step ${index + 1}: ${field.label}`}
                     aria-current={step === index ? 'step' : undefined}
                     disabled={index > step}
-                    onClick={() => { setStep(index); setSaved(false) }}
+                    onClick={() => { setStep(index); setSubmit({ pending: false, message: '', sent: false }) }}
                   >
                     {String(index + 1).padStart(2, '0')}
                   </button>
                 ))}
               </div>
-              <p role="status">{saved ? 'Saved.' : ''}</p>
             </div>
-          </form>
+            </fieldset>
+            <p className="contact-feedback" role="status">{submit.message}</p>
+            <p className="contact-privacy">We use your details to respond to your enquiry. <Link to="/privacy">Privacy policy</Link></p>
+          </form>}
         </section>
       </section>
-      <a className="contact-map-link" href="https://www.openstreetmap.org/?mlat=23.241&mlon=77.401#map=15/23.241/77.401" target="_blank" rel="noreferrer">Explore the map <span aria-hidden="true">↗</span></a>
+      <a className="contact-map-link" href={directions} target="_blank" rel="noreferrer">Bengaluru directions <span aria-hidden="true">↗</span></a>
       <a className="contact-map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
     </main>
   )

@@ -9,6 +9,8 @@ import { EXPERTISE_CARDS } from '../src/data/expertise.js'
 import { MAX_PROJECTS, projects } from '../src/data/workProjects.js'
 
 const PAGES = [
+  { path: '/services', name: 'Services', summary: 'Web development, interface design, branding, performance marketing, automation, and growth strategy.' },
+  { path: '/bts2026', name: 'Bengaluru Tech Summit', summary: 'Event information, featured products, and summit follow-up form.' },
   {
     path: '/',
     name: 'Home',
@@ -25,7 +27,7 @@ const PAGES = [
     path: '/news-events',
     name: 'News & Events',
     summary:
-      'Services engineered for scale. From research to production we architect software that ships, operates, and adapts. Covers the six expertise areas (Web Development, UI/UX Design, Branding & Identity, Performance Marketing, Automation & AI, Growth Strategy).',
+      'News, events and updates from MW Futuretech.',
   },
   {
     path: '/work',
@@ -37,7 +39,7 @@ const PAGES = [
     path: '/contact',
     name: 'Contact',
     summary:
-      'Get Started. Reach out to start a project, partnership, or conversation with MW Futuretech.',
+      'Reach out to start a project or partnership. MW Futuretech has an office at Hustlehub Tech Park, Sector 2, HSR Layout, Bengaluru.',
   },
 ]
 
