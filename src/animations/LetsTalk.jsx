@@ -57,8 +57,8 @@ export default function LetsTalk() {
         </header>
         <div className="contact-details">
           <div><h2><ContactIcon kind="pin" />Address</h2><p>Bhopal, India</p></div>
-          <div><h2><ContactIcon kind="phone" />Phone</h2><p>+91 00000 00000</p></div>
-          <div><h2><ContactIcon kind="mail" />Email</h2><p>hello@futuretech.example</p></div>
+          <div><h2><ContactIcon kind="phone" />Phone</h2><p>+91 76919 11484</p></div>
+          <div><h2><ContactIcon kind="mail" />Email</h2><p>support@talio.in</p></div>
         </div>
         <section className="contact-form-area" aria-labelledby="contact-form-title">
           <h2 id="contact-form-title">Get in touch</h2>
