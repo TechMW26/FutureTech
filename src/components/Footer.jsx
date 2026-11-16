@@ -7,7 +7,6 @@ import './Footer.css'
 const EXPLORE_LINKS = [
   { label: 'Home', to: '/' },
   { label: 'About us', to: '/about' },
-  { label: 'Services', to: '/services' },
   { label: 'Our work', to: '/work' },
 ]
 
