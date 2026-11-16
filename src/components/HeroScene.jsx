@@ -369,6 +369,7 @@ export default function HeroScene({
   introAxis,
   introStartOffset,
   backgroundImage,
+  cloudExitViewports = 0,
 }) {
   const enableIntro = Boolean(introStartRef)
   // If the cached blob URL is already resolved (true on every navigation
@@ -490,40 +491,36 @@ export default function HeroScene({
     }
   }, [activateRenderLoop])
 
-  // Scroll-driven cloud veil for the first screen only. The clouds wait at the
-  // edges (20% opacity), sweep in from both sides between 50% and 75% of the
-  // hero's scroll, cover it at 75%, then retreat and vanish by 100%.
+  // Keep the original cloud banks across the homepage's handoff to the journey.
   useEffect(() => {
     const node = heroSectionRef.current
     const layer = cloudRef.current
     if (!node || !layer) return undefined
 
     let frameId = 0
-
-    // Scroll fraction across the first screen: 0 at the top, 1 once the hero
-    // has scrolled exactly one viewport away.
-    const track = () => {
-      const height = node.offsetHeight || window.innerHeight || 1
-      return Math.min(1, Math.max(0, -node.getBoundingClientRect().top / height))
+    const clamp = (value) => Math.min(1, Math.max(0, value))
+    const smooth = (value) => {
+      const progress = clamp(value)
+      return progress * progress * (3 - 2 * progress)
     }
 
-    const smooth = (t) => t * t * (3 - 2 * t)
-
-    // Drive the layer straight from scroll progress (never from a timer):
-    //   0.50 -> 0.75  clouds enter from both edges
-    //   0.75          fully covering the screen
-    //   0.75 -> 1.00  clouds retreat back to their edges
-    //   1.00          fully gone
     const applyFor = (fraction) => {
-      const inAmount = Math.min(1, Math.max(0, (fraction - 0.5) / 0.25))
-      const outAmount = Math.min(1, Math.max(0, (fraction - 0.75) / 0.25))
-      const progress = smooth(inAmount) * (1 - smooth(outAmount))
+      const reducedMotion = cloudExitViewports > 0 && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const exitStart = cloudExitViewports && !reducedMotion ? 1 : 0.75
+      const exitEnd = exitStart === 1 ? 1 + cloudExitViewports : 1
+      const entrance = smooth((fraction - 0.5) / 0.25)
+      const exit = smooth((fraction - exitStart) / (exitEnd - exitStart))
+      const progress = entrance * (1 - exit)
+      const opacity = exitStart === 1 ? (0.2 + entrance * 0.8) * (1 - exit) : 0.2 + progress * 0.8
+
       layer.style.setProperty('--cloud-progress', progress.toFixed(4))
-      // 20% while idling at the edges, fully opaque once they close over.
-      layer.style.setProperty('--cloud-opacity', (0.2 + progress * 0.8).toFixed(4))
-      // The layer is fixed to the viewport, so it only exists while the hero
-      // is the section on screen — it must never linger over the rest of the page.
-      layer.classList.toggle('is-active', fraction > 0.001 && fraction < 0.999)
+      layer.style.setProperty('--cloud-opacity', opacity.toFixed(4))
+      layer.classList.toggle('is-active', fraction > 0.001 && fraction < exitEnd)
+    }
+
+    const track = () => {
+      const height = node.offsetHeight || window.innerHeight || 1
+      return -node.getBoundingClientRect().top / height
     }
 
     const measure = () => {
@@ -548,7 +545,7 @@ export default function HeroScene({
       observer?.disconnect()
       if (frameId) window.cancelAnimationFrame(frameId)
     }
-  }, [])
+  }, [cloudExitViewports])
 
   // Resolve cached model URL (for the homepage hand-off path) and
   // pre-warm drei's GLTF cache for that exact URL so subsequent mounts

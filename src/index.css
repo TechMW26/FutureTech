@@ -131,6 +131,7 @@ html {
      so the rendered layout stays at its design pixel size at any browser zoom level. */
   font-size: var(--font-size, 100%);
   font-family: var(--site-font-family);
+  background: var(--bg);
 }
 
 html.lenis,
@@ -184,7 +185,6 @@ body::-webkit-scrollbar,
 }
 
 body {
-  background: var(--bg);
   color: var(--text);
   font-family: var(--site-font-family);
   text-rendering: optimizeLegibility;
