@@ -5,6 +5,7 @@ import { projects } from '../data/workProjects.js'
 import { siteRequest } from '../lib/siteApi.js'
 import './SitePages.css'
 import './AdminPage.css'
+import { FormSkeleton } from '../components/RouteSkeleton'
 
 const leadStatuses = { new: 'New', 'in-progress': 'In progress', closed: 'Closed' }
 const contentFields = {
@@ -116,7 +117,7 @@ export default function AdminPage() {
         <div><Link to="/">MW Futuretech</Link><h1>Website admin</h1></div>
         {phase === 'ready' && <button type="button" className="site-button site-button--quiet" disabled={pending} onClick={() => action({ action: 'logout' })}>Sign out</button>}
       </div>
-      {phase === 'loading' && <p role="status">Loading admin…</p>}
+      {phase === 'loading' && <FormSkeleton label="Loading admin…" />}
       <p role="status">{message}</p>
       {phase === 'sign-in' && <form className="site-form admin-login" onSubmit={event => {
         event.preventDefault()

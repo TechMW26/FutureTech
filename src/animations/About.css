@@ -1,4 +1,4 @@
-@font-face{font-family:Manrope;src:url('/fonts/Manrope.ttf') format('truetype');font-style:normal;font-weight:200 800;font-display:swap}
+@font-face{font-family:Manrope;src:url('/fonts/Manrope.ttf') format('truetype');font-style:normal;font-weight:200 800;font-display:optional}
 .about-page{background:#f8f9fb;color:#132333;font-family:Manrope,Arial,sans-serif;overflow:clip}
 .about-page h1,.about-page h2,.about-page h3,.about-page p{margin:0}
 .about-page a:focus-visible{outline:3px solid #236ba9;outline-offset:7px}

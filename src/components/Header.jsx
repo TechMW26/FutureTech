@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'motion/react'
 import './Header.css'
@@ -9,16 +9,8 @@ const NAV_ITEMS = [
   { label: 'About', to: '/about' },
 ]
 
-// Routes whose pages scroll natively (Lenis is off). Their sticky scroll tracks
-// need the route change to repaint instead of fading, and the header stays
-// mounted so nothing transforms its fixed positioning.
-const NATIVE_SCROLL_ROUTES = new Set(['/work', '/news-events', '/about', '/contact'])
-
-const isNativeScrollRoute = (pathname) => NATIVE_SCROLL_ROUTES.has(pathname.replace(/\/+$/, '') || '/')
-
 /**
- * The site's floating liquid-glass header. `staticPosition` keeps the header
- * outside the page-transition wrapper for the animation-driven routes.
+ * The floating header skips visibility transitions on scroll-driven routes.
  */
 export default function Header({ staticPosition = false }) {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -27,12 +19,11 @@ export default function Header({ staticPosition = false }) {
   const location = useLocation()
 
   // Close the drawer whenever the route changes.
-  useEffect(() => {
+  useLayoutEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- route-change cleanup is idiomatic
     setMenuOpen(false)
     setHeaderVisible(true)
     lastScrollYRef.current = 0
-    if (isNativeScrollRoute(location.pathname)) window.scrollTo({ top: 0, behavior: 'instant' })
   }, [location.pathname])
 
   // Hide the header on downward scroll and reveal it on upward scroll.

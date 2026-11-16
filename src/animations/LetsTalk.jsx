@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { siteRequest, useSiteSettings } from '../lib/siteApi.js'
+import RouteSkeleton from '../components/RouteSkeleton'
 import './LetsTalk.css'
 
 const fields = [
@@ -25,10 +26,11 @@ export default function LetsTalk() {
   const [step, setStep] = useState(0)
   const [values, setValues] = useState(['', '', ''])
   const [submit, setSubmit] = useState({ pending: false, message: '', sent: false })
+  const [mapReady, setMapReady] = useState(false)
   const input = useRef(null)
   const requestId = useRef(null)
   const sending = useRef(false)
-  const { phone, email, officeAddress, acceptingEnquiries } = useSiteSettings()
+  const { phone, email, officeAddress, acceptingEnquiries, isSettingsLoading } = useSiteSettings()
   const directions = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(officeAddress)
 
   useEffect(() => { document.title = 'Contacts — MW Futuretech' }, [])
@@ -66,10 +68,13 @@ export default function LetsTalk() {
     setValues(previous => previous.map((item, index) => index === step ? value : item))
   }
 
+  if (isSettingsLoading) return <RouteSkeleton pathname="/contact" />
+
   return (
     <main className="contact-page">
       <div className="contact-map">
-        <iframe title="Hustlehub Tech Park, Bengaluru" src="https://www.openstreetmap.org/export/embed.html?bbox=77.626%2C12.888%2C77.676%2C12.914&layer=mapnik&marker=12.901158%2C77.651153" loading="lazy" referrerPolicy="no-referrer" />
+        {!mapReady && <div className="skeleton-block contact-map__skeleton" aria-hidden="true" />}
+        <iframe title="Hustlehub Tech Park, Bengaluru" src="https://www.openstreetmap.org/export/embed.html?bbox=77.626%2C12.888%2C77.676%2C12.914&layer=mapnik&marker=12.901158%2C77.651153" loading="lazy" referrerPolicy="no-referrer" onLoad={() => setMapReady(true)} />
       </div>
       <section className="contact-content" aria-labelledby="contact-title">
         <header className="contact-heading">

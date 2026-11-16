@@ -26,6 +26,7 @@ export default function WorksSequence({ progress, items }) {
   const down = useRef({ x: 0, y: 0 })
   const fallbackRef = useRef(false)
   const [fallback, setFallback] = useState(false)
+  const [ribbonReady, setRibbonReady] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const project = items[activeIndex] ?? items[0]
 
@@ -35,7 +36,7 @@ export default function WorksSequence({ progress, items }) {
     let width = root.clientWidth, height = root.clientHeight
     let focusFrame = null
     let frame = 0, last = 0, current = target.current, miniSpin = 0
-    let running = true, visible = true, retry = 0
+    let running = true, visible = true, retry = 0, texturesPainted = false
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     const measure = () => {
       width = root.clientWidth || window.innerWidth
@@ -67,6 +68,10 @@ export default function WorksSequence({ progress, items }) {
       const p = current
       if (!motion.matches && p < .16) miniSpin += dt * .055
       renderer.current?.render(p, width, height, focused.current, miniSpin, focusFrame)
+      if (!texturesPainted && renderer.current?.readyCount === cards) {
+        texturesPainted = true
+        setRibbonReady(true)
+      }
       const intro = Math.min(.54, p / .36 * .54)
       const titleExit = smooth(interval(intro, .16, .54))
       title.current?.style.setProperty('--works-title-exit', String(titleExit))
@@ -127,7 +132,7 @@ export default function WorksSequence({ progress, items }) {
       document.removeEventListener('visibilitychange', schedule)
       window.removeEventListener('orientationchange', schedule)
     }
-  }, [items])
+  }, [cards, items])
 
   useLayoutEffect(() => {
     target.current = progress
@@ -151,6 +156,7 @@ export default function WorksSequence({ progress, items }) {
         <span><span>Make a Difference</span></span>
       </h1>
       <p className="works-motion-note">Human imagination.<br />Extraordinary digital experiences.</p>
+      {!ribbonReady && !fallback && progress < .54 && <div className="skeleton-block works-ribbon-skeleton" aria-hidden="true" />}
       <canvas
         ref={canvas}
         className="works-ribbon-canvas"

@@ -2,10 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { siteRequest, useSiteSettings } from '../lib/siteApi.js'
 import { projects } from '../data/workProjects.js'
+import RouteSkeleton from '../components/RouteSkeleton'
 import './SitePages.css'
 
 export default function SummitPage() {
-  const { summitIntro, stallProducts, phone, whatsapp, email, acceptingEnquiries } = useSiteSettings()
+  const { summitIntro, stallProducts, phone, whatsapp, email, acceptingEnquiries, isSettingsLoading } = useSiteSettings()
   const [submission, setSubmission] = useState({ pending: false, sent: false, message: '' })
   const requestId = useRef(null)
   const sending = useRef(false)
@@ -33,6 +34,8 @@ export default function SummitPage() {
       sending.current = false
     }
   }
+
+  if (isSettingsLoading) return <RouteSkeleton pathname="/bts2026" />
 
   return (
     <div className="site-page summit-page">

@@ -11,6 +11,7 @@
 .contact-page { position: relative; isolation: isolate; min-height: 100svh; background: var(--page-footer-background); color: #2e3337; overflow: clip; }
 .contact-map { position: absolute; z-index: -1; inset: 0 0 0 var(--contact-map-start); overflow: hidden; background: var(--contact-map-paper); mask-image: linear-gradient(#000 calc(100% - clamp(4rem, 12svh, 8rem)), transparent); }
 .contact-map iframe { width: 100%; height: calc(100% + 32px); border: 0; filter: grayscale(1); opacity: .55; }
+.contact-map__skeleton { position: absolute; inset: 0; border-radius: 0; pointer-events: none; }
 .contact-map::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: var(--contact-map-wash); }
 .contact-content { width: min(900px, 69%); padding: clamp(150px, 21vh, 225px) 0 140px clamp(45px, 10.5vw, 170px); pointer-events: none; }
 .contact-heading { border-left: 3px solid #00427e; padding-left: 23px; margin-bottom: 55px; }
