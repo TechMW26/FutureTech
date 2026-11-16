@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { SUMMIT_END } from '../data/siteSettings.js'
 import { useSiteSettings } from '../lib/siteApi.js'
@@ -19,7 +20,7 @@ export default function SummitBanner() {
     <div className="summit-banner">
       <Link to="/bts2026">
         <span>{bannerText}</span>
-        <span aria-hidden="true">↗</span>
+        <ArrowUpRight size={15} aria-hidden="true" />
       </Link>
     </div>
   )

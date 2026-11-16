@@ -1,4 +1,5 @@
 ﻿import { useEffect, useRef, useState } from 'react';
+import ArrowUpRight from './ArrowUpRight';
 import type { WorkProject } from './workProjects';
 import { WorksRibbonRenderer } from './WorksRibbonRenderer';
 import { interval, smooth, projectFocus } from './WorksRibbonMotion';
@@ -108,7 +109,7 @@ export default function WorksSequence({ progress, items, onSelect }: { progress:
         <p className="work-detail-category">{project.category}</p>
         <h2 id="work-detail-title">{project.title}</h2>
         <p className="work-detail-description">{project.description}</p>
-        <button className="work-detail-link" onClick={() => onSelect(project)}>View project <span aria-hidden="true">↗</span></button>
+        <button className="work-detail-link" onClick={() => onSelect(project)}>View project <ArrowUpRight size={18} /></button>
         <p className="work-detail-count"><span>{String(activeIndex + 1).padStart(2, '0')}</span><span className="work-detail-line" /><span>{String(Math.min(8, items.length)).padStart(2, '0')}</span></p>
       </div>
     </section>

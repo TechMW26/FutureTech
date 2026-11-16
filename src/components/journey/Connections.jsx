@@ -2,7 +2,7 @@
 // Copyright (c) Magic UI. MIT: https://github.com/magicuidesign/magicui/blob/main/LICENSE.md
 // Scroll-driven React adaptation preserving the original page behavior.
 import { useEffect, useId, useRef } from 'react';
-import { BrainCircuit, CalendarRange, ChartNoAxesCombined, ShieldCheck, UsersRound, WalletCards } from 'lucide-react';
+import { ArrowUpRight, BrainCircuit, CalendarRange, ChartNoAxesCombined, ShieldCheck, UsersRound, WalletCards } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { projects } from '../../data/workProjects';
 import algae from '../../assets/brand-logos/algae.webp';
@@ -194,7 +194,7 @@ export default function Connections() {
      ))}
     </ul>
     <Link className="rain-story__work-link" to="/work">
-     Explore our work <span aria-hidden="true">↗</span>
+     Explore our work <ArrowUpRight size={17} aria-hidden="true" />
     </Link>
    </div>
   </div>

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { siteRequest, useSiteSettings } from '../lib/siteApi.js'
 import { projects } from '../data/workProjects.js'
@@ -55,7 +56,7 @@ export default function SummitPage() {
         <ul className="site-page__cards">
           {displayedProducts.map(product => (
             <li key={product.id}>
-              <Link to={product.path}><h3>{product.title} <span aria-hidden="true">↗</span></h3></Link>
+              <Link to={product.path}><h3>{product.title} <ArrowUpRight size={16} aria-hidden="true" /></h3></Link>
               <p>{product.summary}</p>
             </li>
           ))}

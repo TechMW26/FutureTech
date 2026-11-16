@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { CONNECTION_FRAME_COUNT, connectionMotion, coverFrame } from './ConnectionFooterMotion'
 import './ConnectionFooter.css'
@@ -104,11 +105,11 @@ export default function ConnectionFooter({ connectHref = '/contact' }) {
         <div ref={invitation} className="connection-invitation">
           <p>A LITTLE HELLO. A NEW POSSIBILITY.</p>
           <h2>Good things start<br />with a <em>hello.</em></h2>
-          <Link className="connection-link" to={connectHref}><span>Let’s connect</span><span className="connection-arrow" aria-hidden="true">↗</span></Link>
+          <Link className="connection-link" to={connectHref}><span>Let’s connect</span><span className="connection-arrow" aria-hidden="true"><ArrowUpRight size={19} /></span></Link>
         </div>
         <div className="connection-bottom">
           <span>Human imagination. Future possibilities.</span>
-          <Link to={connectHref}>Start a conversation <span aria-hidden="true">↗</span></Link>
+          <Link to={connectHref}>Start a conversation <ArrowUpRight size={13} aria-hidden="true" /></Link>
         </div>
       </div>
     </footer>

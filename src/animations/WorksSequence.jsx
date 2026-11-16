@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { WorksRibbonRenderer } from './WorksRibbonRenderer'
 import { interval, smooth, projectFocus } from './WorksRibbonMotion'
@@ -192,7 +193,7 @@ export default function WorksSequence({ progress, items }) {
             <span className="work-detail-full-description">{project.description}</span>
             <span className="work-detail-summary">{project.summary}</span>
           </p>
-          <Link className="work-detail-link" to={project.path}>View project <span aria-hidden="true">↗</span></Link>
+          <Link className="work-detail-link" to={project.path}>View project <ArrowUpRight size={18} aria-hidden="true" /></Link>
           <p className="work-detail-count">
             <span>{String(activeIndex + 1).padStart(2, '0')}</span>
             <span className="work-detail-line" />

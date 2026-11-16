@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { siteRequest, useSiteSettings } from '../lib/siteApi.js'
 import RouteSkeleton from '../components/RouteSkeleton'
@@ -126,7 +127,7 @@ export default function LetsTalk() {
           </form>}
         </section>
       </section>
-      <a className="contact-map-link" href={directions} target="_blank" rel="noreferrer">Bengaluru directions <span aria-hidden="true">↗</span></a>
+      <a className="contact-map-link" href={directions} target="_blank" rel="noreferrer">Bengaluru directions <ArrowUpRight size={17} aria-hidden="true" /></a>
       <a className="contact-map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
     </main>
   )

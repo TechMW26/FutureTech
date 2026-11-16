@@ -16,6 +16,7 @@
 .site-page__cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 225px), 1fr)); gap: 14px; padding: 0; list-style: none; }
 .site-page__cards li { padding: 20px; border: 1px solid #dde6ee; border-radius: 14px; background: #f6f9fb; }
 .site-page__cards h2 { font-size: 1.25rem; }
+.site-page__cards h3 > svg { vertical-align: -0.125em; }
 .site-page__cards p { margin: .65em 0 0; }
 .site-page__cards a, .site-page__prose a, .summit-page__form a:not(.site-button), .site-page a:not(.site-button):hover { color: #07528a; }
 .site-page__prose { max-width: 70ch; }

@@ -29,7 +29,7 @@
 .contact-steps button:disabled { opacity: .5; cursor: default; }
 .contact-form-meta p { margin: 0; font-size: 8px; color: #a0aaa1; }
 .contact-map-link { position: absolute; bottom: 105px; right: 6%; display: inline-flex; align-items: center; gap: 25px; padding: 12px 0; font-size: 10px; color: #66776e; border-bottom: 1px solid #bbc6bb; }
-.contact-map-link span { color: #00427e; font-size: 17px; }
+.contact-map-link svg { flex-shrink: 0; color: #00427e; }
 .contact-footer { position: absolute; bottom: 28px; left: 4%; right: 4%; display: flex; justify-content: space-between; font-size: 9px; color: #9ba39b; gap: 20px; pointer-events: none; }
 .contact-footer a { pointer-events: auto; color: #727d75; }
 .contact-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }

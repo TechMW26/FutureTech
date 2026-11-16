@@ -26,6 +26,10 @@
   overflow-wrap: anywhere;
   pointer-events: auto;
 }
+.summit-banner a > svg {
+  flex-shrink: 0;
+}
+
 .summit-banner a:hover, .summit-banner a:focus-visible {
   background: #164c7c;
 }

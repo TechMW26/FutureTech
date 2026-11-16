@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { ArrowUpRight } from 'lucide-react'
 import { GROUP_URL } from '../data/siteSettings.js'
 import { useSiteSettings } from '../lib/siteApi.js'
 import './Footer.css'
@@ -101,7 +102,7 @@ export default function Footer() {
             className="site-footer__headline-cta"
             aria-label="Start a project with MW Futuretech"
           >
-            <span aria-hidden="true">{'\u2197'}</span>
+            <ArrowUpRight aria-hidden="true" />
           </Link>
         </div>
 
