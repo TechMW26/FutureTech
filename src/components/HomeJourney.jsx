@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { workProjects } from '../animations/workProjects'
 import Globe from './Globe'
@@ -61,15 +62,6 @@ const getRailUpperNormal = (ratio) => {
     normalX: tangentY / length,
     normalY: -tangentX / length,
   }
-}
-
-const getJourneyTextPoint = (ratio) => {
-  const clampedRatio = clampProgress(ratio)
-  const coordinateX = -80 + ratio * 1360
-  const endpointDrop = ratio < 0 ? Math.abs(ratio) * 96 : Math.max(ratio - 1, 0) * 96
-  const coordinateY = 184 - Math.sin(Math.PI * clampedRatio) * 92 + endpointDrop
-
-  return { coordinateX, coordinateY }
 }
 
 const railTicks = Array.from({ length: TICK_COUNT }, (unusedValue, index) => {
@@ -207,9 +199,9 @@ export default function HomeJourney() {
               const offset = index - trackPosition
               const distance = Math.abs(offset)
               const isActive = index === activeIndex
-              const arcPoint = getJourneyTextPoint(0.5 + offset * JOURNEY_ARC_STEP)
-              const scale = Math.max(0.64, 1 - distance * 0.13)
-              const opacity = Math.max(0.16, 1 - distance * 0.44)
+              const arcPoint = getRailPoint(0.5 + offset * JOURNEY_ARC_STEP)
+              const scale = Math.max(0.84, 1 - distance * 0.08)
+              const opacity = 1 - smoothProgress((distance - 1.12) / 0.47)
 
               return (
                 <article
@@ -218,22 +210,26 @@ export default function HomeJourney() {
                   className={`home-journey__card${isActive ? ' is-active' : ''}`}
                   aria-label={project.title}
                   aria-current={isActive ? 'step' : undefined}
+                  inert={opacity === 0}
                   style={{
-                    left: `${(arcPoint.coordinateX / RAIL_VIEWBOX_WIDTH) * 100}%`,
-                    top: `${(arcPoint.coordinateY / RAIL_VIEWBOX_HEIGHT) * 100}%`,
+                    '--journey-card-x': `${(arcPoint.coordinateX / RAIL_VIEWBOX_WIDTH) * 100}%`,
+                    '--journey-card-y': `${((arcPoint.coordinateY - LONG_TICK_LENGTH) / RAIL_VIEWBOX_HEIGHT) * 100}%`,
+                    '--journey-card-scale': scale,
                     zIndex: Math.round(20 - distance * 4),
                     opacity,
-                    transform: `translate3d(-50%, calc(-100% - var(--journey-text-lift)), 0) scale(${scale})`,
                   }}
                 >
-                  <img className="home-journey__image" src={project.src} alt="" loading="lazy" decoding="async" />
-                  <span className="home-journey__kicker">{project.category.split(' · ')[0]}</span>
-                  <strong>
-                    <Link className="home-journey__link" to={project.path} tabIndex={isActive ? undefined : -1}>
-                      {project.title}
-                    </Link>
-                  </strong>
-                  <span className="home-journey__body">{project.summary}</span>
+                  <Link className="home-journey__link" to={project.path} aria-label={project.title} tabIndex={isActive ? undefined : -1}>
+                    <img className="home-journey__image" src={project.src} alt="" loading="lazy" decoding="async" />
+                    <div className="home-journey__card-copy">
+                      <span className="home-journey__kicker">{project.category.split(' · ')[0]}</span>
+                      <strong className="home-journey__card-title">
+                        {project.title}
+                        <ArrowUpRight size={17} aria-hidden="true" />
+                      </strong>
+                      <span className="home-journey__body">{project.summary}</span>
+                    </div>
+                  </Link>
                 </article>
               )
             })}
