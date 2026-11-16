@@ -4,10 +4,20 @@
 import { useEffect, useId, useRef } from 'react';
 import { BrainCircuit, CalendarRange, ChartNoAxesCombined, ShieldCheck, UsersRound, WalletCards } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { workProjects } from '../../animations/workProjects';
+import { projects } from '../../data/workProjects';
+import algae from '../../assets/brand-logos/algae.webp';
+import canact from '../../assets/brand-logos/canact.webp';
+import dtps from '../../assets/brand-logos/dtps.webp';
+import mayalogy from '../../assets/brand-logos/mayalogy.webp';
+import mira from '../../assets/brand-logos/mira.webp';
+import talio from '../../assets/brand-logos/talio.webp';
 import DataRain from './ui/data-rain';
 
-const featuredProjects = workProjects.filter(({ id }) => id === 'mira' || id === 'algae');
+const brandLogos = { dtps, algae, talio, canact, mayalogy, mira };
+const portfolio = Object.entries(brandLogos).map(([brandId, logo]) => ({
+ ...projects.find(({ id }) => id === brandId),
+ logo,
+}));
 const integrations = [
  { label: 'Planning', color: '#2769b1', Icon: CalendarRange },
  { label: 'Finance', color: '#117b57', Icon: WalletCards },
@@ -172,16 +182,13 @@ export default function Connections() {
     <span className="reveal-line"><span className="reveal-word">Extraordinary</span> <span className="reveal-word accent-word">possibilities.</span></span>
    </h3>
    <div className="rain-story__details" inert>
-    <p className="rain-story__lead">We connect data, software and the physical world. Here’s what that looks like in practice.</p>
-    <ul className="rain-story__projects" aria-label="Selected projects">
-     {featuredProjects.map(({ id, path, src, title, summary }) => (
+    <p className="rain-story__lead">From nutrition and HR to AI and cleaner air.</p>
+    <ul className="rain-story__brands" aria-label="Brands in our portfolio">
+     {portfolio.map(({ id, path, logo, title }) => (
       <li key={id}>
-       <Link className="rain-story__project" to={path}>
-        <img src={src} alt="" loading="lazy" decoding="async" />
-        <div>
-         <h4>{title}</h4>
-         <p>{summary}</p>
-        </div>
+       <Link className="rain-story__brand" to={path}>
+        <img src={logo} alt="" width="40" height="40" loading="lazy" decoding="async" />
+        <span>{title}</span>
        </Link>
       </li>
      ))}
