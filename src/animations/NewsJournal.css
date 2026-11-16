@@ -25,11 +25,17 @@
 .organisation-read-label { display: inline-flex; justify-content: center; align-items: center; gap: 16px; margin-top: auto; padding-bottom: 7px; border-bottom: 1px solid #d5dde4; color: #00427e; font-size: 11px; }
 .organisation-read-label > span { font-size: 16px; }
 .organisation-card-link { position: absolute; z-index: 2; inset: 0; width: 100%; padding: 0; border: 0; background: transparent; border-radius: inherit; cursor: pointer; }
-.organisation-event-cover { position: relative; display: flex; flex-direction: column; justify-content: space-between; width: 100%; height: 100%; overflow: hidden; padding: 22px 24px 19px; background: #eef3f7; color: #17476d; }
+.organisation-event-cover { position: relative; display: flex; flex-direction: column; justify-content: space-between; width: 100%; height: 100%; overflow: visible; padding: 22px 24px 19px; background: #eef3f7; color: #17476d; }
+/* Photo covers show their print beneath the copy panel's translucent glass.
+   The event cover clips its own overflow, so let it extend into that 23px
+   band instead, and lift the footer line above the panel's top edge. */
+.organisation-news-cover:has(.organisation-event-cover) { overflow: visible; clip-path: inset(0 0 -23px 0 round 25px); }
+.organisation-event-cover { height: calc(100% + 23px); }
+.organisation-event-cover::after { content: ''; position: absolute; z-index: -1; top: 0; right: 0; bottom: 0; left: 0; background: inherit; }
 .organisation-event-brand { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 7px; letter-spacing: .08em; }
 .organisation-event-brand img { width: 19px; height: 19px; }
 .organisation-event-word { font-size: clamp(33px, 3.3vw, 49px); line-height: .9; letter-spacing: -.065em; font-weight: 500; }
-.organisation-event-bottom { display: flex; justify-content: space-between; gap: 10px; font-size: 7px; letter-spacing: .06em; }
+.organisation-event-bottom { display: flex; justify-content: space-between; gap: 10px; font-size: 7px; letter-spacing: .06em; margin-bottom: calc(23px + 10px); }
 .organisation-sample-note { margin: 27px 0 0; text-align: center; color: #b0b5bb; font-size: 9px; line-height: 1.6; }
 .organisation-news-footer { display: flex; justify-content: space-between; align-items: center; gap: 30px; margin-top: 65px; padding: 24px 0; border-top: 1px solid #edf0f2; color: #9ca3ab; font-size: 10px; }
 .organisation-news-footer a:last-child { display: inline-flex; gap: 16px; }
