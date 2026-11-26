@@ -304,6 +304,7 @@ function ProceduralEnv() {
  * Props:
  *  - title, tagline, eyebrow: overlay copy.
  *  - modelUrl: optional override (defaults to the cached homepage model).
+ *  - environmentMapUrl: HDR image for reflections on the full-quality path.
  *  - introStartRef: optional ref carrying the intro start timestamp.
  *      When omitted (inner pages), the model snaps to its rest pose.
  *  - baseRotation: [x, y, z] in radians — per-model rest pose. Defaults
@@ -343,6 +344,7 @@ export default function HeroScene({
   tagline,
   eyebrow,
   modelUrl: modelUrlProp,
+  environmentMapUrl = '/hdri/studio_small_03_1k.hdr',
   introStartRef,
   baseRotation,
   scaleMultiplier,
@@ -713,7 +715,7 @@ export default function HeroScene({
                 materialEmissive={materialEmissive}
                 materialEmissiveIntensity={materialEmissiveIntensity}
               />
-              {deviceProfile.lowPower ? null : <Environment files="/hdri/studio_small_03_1k.hdr" />}
+              {deviceProfile.lowPower ? null : <Environment files={environmentMapUrl} />}
               {deviceProfile.lowPower && <ProceduralEnv />}
             </Suspense>
           </Canvas>

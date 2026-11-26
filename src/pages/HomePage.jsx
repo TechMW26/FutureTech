@@ -18,6 +18,7 @@ export default function HomePage({ introStartRef }) {
         introStartRef={introStartRef}
         cloudExitViewports={CLOUD_OPENING_VIEWPORTS}
         backgroundImage="/images/hero-backgrounds/hero-bg-home.webp"
+        environmentMapUrl="/hdri/studio_small_03_512.hdr"
         {...SILVER_MODEL_LIGHTING_PROPS}
       />
       <HeroJourney />

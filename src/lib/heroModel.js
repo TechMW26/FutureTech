@@ -1,6 +1,7 @@
 import { registerModel } from './modelCache'
 
-export const HERO_MODEL_URL = '/models/mwft-hero-optimized.glb'
+// The version gives the simplified mesh a new Cache Storage key.
+export const HERO_MODEL_URL = '/models/mwft-hero-optimized.glb?v=2'
 
 const entry = registerModel(HERO_MODEL_URL)
 
