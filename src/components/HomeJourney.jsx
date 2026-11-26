@@ -1,44 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { workProjects } from '../animations/workProjects'
 import Globe from './Globe'
 import './HomeJourney.css'
-
-const JOURNEY_MILESTONES = [
-  {
-    kicker: 'Discovery',
-    title: 'Signal Mapping',
-    body: 'We start by reading the live data patterns, operational gaps, and decision moments that shape the business.',
-    phase: '01',
-    icon: 'SM',
-  },
-  {
-    kicker: 'Intelligence',
-    title: 'Context Layer',
-    body: 'Streams become clean events, memory, and model-ready context that every interface can understand.',
-    phase: '02',
-    icon: 'CL',
-  },
-  {
-    kicker: 'Interface',
-    title: 'Adaptive Screens',
-    body: 'Workspaces adjust to role, intent, and urgency so teams see what matters before the queue gets noisy.',
-    phase: '03',
-    icon: 'UI',
-  },
-  {
-    kicker: 'Automation',
-    title: 'Workflow Agents',
-    body: 'AI-assisted agents route approvals, follow-ups, and escalations across people, APIs, and products.',
-    phase: '04',
-    icon: 'AI',
-  },
-  {
-    kicker: 'Operations',
-    title: 'Decision Mesh',
-    body: 'Every launch keeps learning from outcomes, closing the loop between live signals and better decisions.',
-    phase: '05',
-    icon: 'DM',
-  },
-]
 
 const TICK_COUNT = 92
 const TICK_LENGTH = 22
@@ -99,15 +64,6 @@ const getRailUpperNormal = (ratio) => {
   }
 }
 
-const getJourneyTextPoint = (ratio) => {
-  const clampedRatio = clampProgress(ratio)
-  const coordinateX = -80 + ratio * 1360
-  const endpointDrop = ratio < 0 ? Math.abs(ratio) * 96 : Math.max(ratio - 1, 0) * 96
-  const coordinateY = 184 - Math.sin(Math.PI * clampedRatio) * 92 + endpointDrop
-
-  return { coordinateX, coordinateY }
-}
-
 const railTicks = Array.from({ length: TICK_COUNT }, (unusedValue, index) => {
   void unusedValue
   const ratio = index / (TICK_COUNT - 1)
@@ -133,9 +89,9 @@ function useSectionProgress(sectionRef) {
       const section = sectionRef.current
       if (!section) return
 
-      const sectionTop = section.getBoundingClientRect().top + window.scrollY
-      const scrollRange = Math.max(section.offsetHeight - window.innerHeight, 1)
-      setProgress(clampProgress((window.scrollY - sectionTop) / scrollRange))
+      const { top, height } = section.getBoundingClientRect()
+      const scrollRange = Math.max(height - window.innerHeight, 1)
+      setProgress(clampProgress(-top / scrollRange))
     }
 
     const scheduleUpdate = () => {
@@ -163,11 +119,14 @@ function useSectionProgress(sectionRef) {
 export default function HomeJourney() {
   const sectionRef = useRef(null)
   const progress = useSectionProgress(sectionRef)
-  const trackPosition = progress * (JOURNEY_MILESTONES.length - 1)
-  const activeIndex = Math.min(JOURNEY_MILESTONES.length - 1, Math.max(0, Math.round(trackPosition)))
+  const lastProjectIndex = workProjects.length - 1
+  const trackPosition = progress * lastProjectIndex
+  const activeIndex = Math.round(trackPosition)
   const beadPoint = getRailPoint(progress)
-  const finalCardStartProgress = (JOURNEY_MILESTONES.length - 1.5) / (JOURNEY_MILESTONES.length - 1)
-  const bottomFadeOpacity = smoothProgress((progress - finalCardStartProgress) / 0.12)
+  const finalCardStartProgress = 1 - 0.5 / Math.max(lastProjectIndex, 1)
+  const bottomFadeOpacity = smoothProgress(
+    (progress - finalCardStartProgress) / (1 - finalCardStartProgress),
+  )
   const globePhi = progress * GLOBE_SCROLL_ROTATION - 2.2
 
   return (
@@ -179,7 +138,7 @@ export default function HomeJourney() {
     >
       <div className="home-journey__sticky">
         <div className="home-journey__header">
-          <p className="home-journey__eyebrow">Built in motion</p>
+          <p className="home-journey__eyebrow">Selected projects</p>
           <h2 id="home-journey-title" className="home-journey__title"><span>Our journey</span> so far</h2>
         </div>
 
@@ -202,14 +161,14 @@ export default function HomeJourney() {
               ))}
             </g>
             <g className="home-journey__rail-checkpoints">
-              {JOURNEY_MILESTONES.map((milestone, index) => {
-                const ratio = index / (JOURNEY_MILESTONES.length - 1)
+              {workProjects.map((project, index) => {
+                const ratio = index / Math.max(lastProjectIndex, 1)
                 const point = getRailPoint(ratio)
                 const isActive = index === activeIndex
 
                 return (
                   <circle
-                    key={milestone.phase}
+                    key={project.id}
                     className={`home-journey__rail-checkpoint${isActive ? ' is-active' : ''}`}
                     cx={point.coordinateX}
                     cy={point.coordinateY}
@@ -235,34 +194,42 @@ export default function HomeJourney() {
             </g>
           </svg>
 
-          <div className="home-journey__cards" role="list" aria-label="MW Futuretech journey milestones">
-            {JOURNEY_MILESTONES.map((milestone, index) => {
+          <div className="home-journey__cards" role="list" aria-label="MW Futuretech projects">
+            {workProjects.map((project, index) => {
               const offset = index - trackPosition
               const distance = Math.abs(offset)
               const isActive = index === activeIndex
-              const arcPoint = getJourneyTextPoint(0.5 + offset * JOURNEY_ARC_STEP)
-              const scale = Math.max(0.64, 1 - distance * 0.13)
-              const opacity = Math.max(0.16, 1 - distance * 0.44)
+              const arcPoint = getRailPoint(0.5 + offset * JOURNEY_ARC_STEP)
+              const scale = Math.max(0.84, 1 - distance * 0.08)
+              const opacity = 1 - smoothProgress((distance - 1.12) / 0.47)
 
               return (
                 <article
-                  key={milestone.phase}
+                  key={project.id}
                   role="listitem"
                   className={`home-journey__card${isActive ? ' is-active' : ''}`}
-                  aria-label={milestone.title}
+                  aria-label={project.title}
                   aria-current={isActive ? 'step' : undefined}
+                  inert={opacity === 0}
                   style={{
-                    left: `${(arcPoint.coordinateX / RAIL_VIEWBOX_WIDTH) * 100}%`,
-                    top: `${(arcPoint.coordinateY / RAIL_VIEWBOX_HEIGHT) * 100}%`,
+                    '--journey-card-x': `${(arcPoint.coordinateX / RAIL_VIEWBOX_WIDTH) * 100}%`,
+                    '--journey-card-y': `${((arcPoint.coordinateY - LONG_TICK_LENGTH) / RAIL_VIEWBOX_HEIGHT) * 100}%`,
+                    '--journey-card-scale': scale,
                     zIndex: Math.round(20 - distance * 4),
                     opacity,
-                    transform: `translate3d(-50%, calc(-100% - var(--journey-text-lift)), 0) scale(${scale})`,
                   }}
                 >
-                  <span className="home-journey__icon" aria-hidden="true">{milestone.icon}</span>
-                  <span className="home-journey__kicker">{milestone.kicker}</span>
-                  <strong>{milestone.title}</strong>
-                  <span className="home-journey__body">{milestone.body}</span>
+                  <Link className="home-journey__link" to={project.path} aria-label={project.title} tabIndex={isActive ? undefined : -1}>
+                    <img className="home-journey__image" src={project.src} alt="" loading="lazy" decoding="async" />
+                    <div className="home-journey__card-copy">
+                      <span className="home-journey__kicker">{project.category.split(' · ')[0]}</span>
+                      <strong className="home-journey__card-title">
+                        {project.title}
+                        <ArrowUpRight size={17} aria-hidden="true" />
+                      </strong>
+                      <span className="home-journey__body">{project.summary}</span>
+                    </div>
+                  </Link>
                 </article>
               )
             })}

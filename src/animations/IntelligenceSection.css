@@ -1,4 +1,4 @@
-.intelligence-scroll { position: absolute; z-index: 2; inset: 0; height: 100%; background: transparent; transform: translate3d(0, var(--scene-y, 0px), 0); opacity: var(--scene-opacity, 0); visibility: hidden; will-change: opacity; pointer-events: none; }
+.intelligence-scroll { position: absolute; z-index: 2; inset: 0; height: 100%; background: transparent; opacity: var(--scene-opacity, 0); visibility: hidden; will-change: opacity; pointer-events: none; }
 .intelligence-sticky { position: absolute; inset: 0; height: 100%; padding: 0; }
 .intelligence-panel { --panel-in: 0; --opening-opacity: 1; --logo-scale: 1; --logo-turn: 146deg; --logo-tilt: 12deg; --ring-opacity: 0; --ring-scale: 1; --intro-opacity: 0; --intro-y: 0px; --statement-opacity: 0; --badge-opacity: 0; --badge-y: 0svh; --applications-opacity: 0; --applications-y: 38svh; --bubble-opacity: 0; --cursor-opacity: 0; --progress: 0; --sky: #89b5ce; --sand: #89b5ce; position: relative; width: 100%; height: 100%; margin: 0; overflow: hidden; isolation: isolate; border: 0; border-radius: 0; color: white; background: transparent; }
 .sequence-background { position: absolute; inset: var(--panel-gutter, 0px); border-radius: var(--panel-radius, 0px); background: linear-gradient(180deg, var(--sky) 0%, var(--sky) 8%, var(--sand) 100%); opacity: var(--panel-in); }
@@ -49,6 +49,16 @@
   .intelligence-intro { width: 88%; font-size: clamp(19px, 4.6vw, 30px); }
   .intelligence-statement { width: 82%; font-size: clamp(20px, 4.5vw, 30px); }
   .intelligence-statement br { display: none; }
+  /* Let the copy reflow as one balanced paragraph on phones instead of
+     keeping the desktop's hard line splits, which wrap into ragged orphans. */
+  .intelligence-intro .sequence-line,
+  .intelligence-statement .sequence-line {
+    display: inline;
+  }
+  .intelligence-intro,
+  .intelligence-statement {
+    text-wrap: balance;
+  }
   .sequence-applications article { width: 68%; }
   .sequence-applications h3 { margin-bottom: 14px; }
   .sequence-applications p { font-size: 18px; }

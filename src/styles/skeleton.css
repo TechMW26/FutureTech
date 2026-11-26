@@ -1,0 +1,166 @@
+.skeleton-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skeleton-block {
+  display: block;
+  border-radius: 8px;
+  background: #e9edf0;
+  animation: skeleton-pulse 1.6s ease-in-out infinite alternate;
+}
+
+@keyframes skeleton-pulse {
+  to { background-color: #f1f3f5; }
+}
+
+.skeleton-stack { display: grid; justify-items: start; gap: 12px; }
+.skeleton-label { width: min(28%, 8rem); height: .75rem; border-radius: 999px; }
+.skeleton-title { width: 100%; height: clamp(2rem, 6vw, 4.6rem); }
+.skeleton-title--short { width: 74%; }
+.skeleton-line { width: 94%; height: .875rem; border-radius: 999px; }
+.skeleton-line--short { width: 68%; }
+.skeleton-button { width: min(42%, 9rem); height: 44px; margin-top: 8px; border-radius: 999px; }
+.skeleton-field { width: 100%; height: 44px; }
+.skeleton-form { width: min(100%, 26rem); }
+
+.route-skeleton {
+  position: relative;
+  min-height: 100svh;
+  padding: clamp(122px, 13vw, 176px) clamp(20px, 6vw, 74px) 48px;
+  background: #fafaf9;
+}
+
+.route-skeleton__inner {
+  width: min(100%, 75rem);
+  margin-inline: auto;
+}
+
+.route-skeleton__copy { width: min(100%, 36rem); }
+.route-skeleton__media { margin-top: clamp(20px, 4vw, 48px); aspect-ratio: 16 / 9; }
+.site-boot { position: fixed; inset: 0; box-sizing: border-box; overflow: hidden; }
+
+.route-skeleton--home {
+  height: 100vh;
+  padding: 0 24px clamp(32px, 5vh, 48px);
+  overflow: hidden;
+  background: #fdfcf8;
+}
+
+.route-skeleton--home .route-skeleton__copy {
+  position: absolute;
+  inset: auto 0 clamp(32px, 5vh, 48px);
+  width: min(calc(100% - 48px), 38rem);
+  margin-inline: auto;
+  justify-items: center;
+}
+
+.route-skeleton--home .skeleton-title { width: 72%; height: clamp(1.6rem, 3.8vw, 3rem); }
+.route-skeleton--home .skeleton-title--short { width: 56%; }
+.route-skeleton--home :is(.skeleton-label, .skeleton-button) { display: none; }
+
+.route-skeleton--home .route-skeleton__media,
+.hero-model-skeleton {
+  position: absolute;
+  inset: 39% auto auto 50%;
+  width: min(52vw, 46vh, 420px);
+  margin: 0;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.route-skeleton--work,
+.route-skeleton--news,
+.route-skeleton--about { height: 100svh; overflow: hidden; }
+.route-skeleton--work { background: #f7f7f7; }
+.route-skeleton--about { background: #f8f9fb; }
+.route-skeleton--news { background: #fff; }
+
+.route-skeleton--work .route-skeleton__copy {
+  position: absolute;
+  inset: 25% 7% 23%;
+  width: auto;
+  align-content: space-between;
+}
+
+.route-skeleton--work :is(.skeleton-label, .skeleton-line, .skeleton-button) { display: none; }
+.route-skeleton--work .skeleton-title { width: min(48%, 34rem); }
+.route-skeleton--work .skeleton-title--short { justify-self: end; width: min(54%, 39rem); }
+.route-skeleton--work .route-skeleton__media,
+.works-ribbon-skeleton {
+  position: absolute;
+  inset: 47% auto auto 50%;
+  width: min(48vw, 550px);
+  margin: 0;
+  aspect-ratio: 2.65;
+  border-radius: 36% / 25%;
+  transform: translate(-50%, -50%) rotate(-7deg);
+  pointer-events: none;
+}
+
+.route-skeleton--news .route-skeleton__copy,
+.route-skeleton--about .route-skeleton__copy {
+  position: absolute;
+  inset: 49% 0 auto;
+  width: min(calc(100% - 48px), 44rem);
+  margin-inline: auto;
+  transform: translateY(-50%);
+  justify-items: center;
+}
+
+.route-skeleton--news :is(.skeleton-label, .skeleton-button, .route-skeleton__media),
+.route-skeleton--about .route-skeleton__media { display: none; }
+
+.route-skeleton--contact {
+  padding-top: clamp(150px, 21vh, 225px);
+  background: linear-gradient(100deg, #f8f8f5 36%, #edf0e9);
+}
+.route-skeleton--contact .route-skeleton__inner { display: grid; grid-template-columns: 1fr 1fr; gap: 8vw; }
+.route-skeleton--contact .route-skeleton__media { margin: 0; min-height: 280px; }
+.route-skeleton--contact .skeleton-title--short { display: none; }
+.route-skeleton--contact .skeleton-button { margin-top: clamp(28px, 6vw, 80px); width: 100%; border-radius: 8px; }
+
+.route-skeleton--project { background: #f7f7f7; }
+.route-skeleton--project :is(.skeleton-title--short, .skeleton-button) { display: none; }
+.route-skeleton--document .route-skeleton__inner,
+.route-skeleton--summit .route-skeleton__inner,
+.route-skeleton--admin .route-skeleton__inner { width: min(100%, 58rem); }
+.route-skeleton--document :is(.skeleton-title--short, .skeleton-button, .route-skeleton__media) { display: none; }
+.route-skeleton--summit .route-skeleton__media { max-height: 10rem; }
+.route-skeleton--admin { padding-top: clamp(28px, 6vw, 72px); }
+.route-skeleton--admin .route-skeleton__copy { width: min(100%, 26rem); }
+.route-skeleton--admin .skeleton-title { height: clamp(2rem, 4vw, 3rem); }
+.route-skeleton--admin :is(.skeleton-title--short, .skeleton-line--short, .route-skeleton__media) { display: none; }
+.route-skeleton--director .route-skeleton__inner { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 5vw; }
+.route-skeleton--director .route-skeleton__media { width: min(100%, 26rem); aspect-ratio: 3 / 4; margin-top: 0; }
+
+@media (max-width: 1024px) {
+  .route-skeleton--work .route-skeleton__copy { inset: max(88px, 14%) 5% auto; justify-items: center; }
+  .route-skeleton--work .skeleton-title { width: min(76%, 34rem); }
+  .route-skeleton--work .skeleton-title--short { justify-self: center; width: min(88%, 39rem); }
+  .route-skeleton--work .route-skeleton__media, .works-ribbon-skeleton { top: 57.5%; width: min(77vw, 56svh); }
+}
+
+@media (max-width: 700px) {
+  .route-skeleton--contact .route-skeleton__inner { display: block; }
+  .route-skeleton--contact .route-skeleton__media { display: none; }
+  .route-skeleton--director .route-skeleton__inner { grid-template-columns: 1fr; }
+  .route-skeleton--director .route-skeleton__media { width: min(80%, 22rem); margin-inline: auto; }
+}
+
+@media (max-width: 1024px) and (max-height: 620px) and (orientation: landscape) {
+  .route-skeleton--work .route-skeleton__copy { inset: 76px 51% 8px 5%; align-content: center; }
+  .route-skeleton--work .skeleton-title { height: clamp(22px, 9svh, 48px); }
+  .route-skeleton--work .route-skeleton__media, .works-ribbon-skeleton { left: 72%; width: min(44vw, 82svh); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block { animation: none; }
+}

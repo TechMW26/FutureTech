@@ -23,7 +23,7 @@
 .organisation-news-copy h3 { margin: 15px 0 0; font-size: clamp(21px, 1.8vw, 27px); font-weight: 500; letter-spacing: -.035em; line-height: 1.3; }
 .organisation-news-copy > p { color: #7a858f; font-size: 12px; line-height: 1.85; margin: 16px 0 23px; }
 .organisation-read-label { display: inline-flex; justify-content: center; align-items: center; gap: 16px; margin-top: auto; padding-bottom: 7px; border-bottom: 1px solid #d5dde4; color: #00427e; font-size: 11px; }
-.organisation-read-label > span { font-size: 16px; }
+.organisation-read-label > svg { flex-shrink: 0; }
 .organisation-card-link { position: absolute; z-index: 2; inset: 0; width: 100%; padding: 0; border: 0; background: transparent; border-radius: inherit; cursor: pointer; }
 .organisation-event-cover { position: relative; display: flex; flex-direction: column; justify-content: space-between; width: 100%; height: 100%; overflow: hidden; padding: 22px 24px 19px; background: #eef3f7; color: #17476d; }
 .organisation-event-brand { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 7px; letter-spacing: .08em; }

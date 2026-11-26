@@ -1,14 +1,17 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, useGLTF } from '@react-three/drei'
 import { Box3, Color, PMREMGenerator, Vector3 } from 'three'
 import { heroModelPromise, getHeroModelReady, getHeroModelUrl } from '../lib/heroModel'
+import { SILVER_MODEL_LIGHTING_PROPS } from './heroSceneLighting'
 
 const REST_Z = 0
 const END_X_ROTATION = -0.18
 const START_Y_ROTATION = 0.92
 const REST_Y_ROTATION = -0.75
 const TOP_OFFSET_RATIO = 0.15
+const MODEL_INTRO_ARM_DELAY = 500
 const INTRO_ROTATE_SECONDS = 2.4
 const INTRO_ACTIVE_RENDER_MS = 5200
 const STATIC_ACTIVE_RENDER_MS = 1800
@@ -24,22 +27,8 @@ const SUBTLE_TILT_Y = 0.04
 const SUBTLE_TILT_Z = 0.05
 
 // Shared silver lighting profile for all page-level GLB models.
-// eslint-disable-next-line react-refresh/only-export-components
-export const SILVER_MODEL_LIGHTING_PROPS = {
-  frontLight: true,
-  ambientIntensity: 1.65,
-  keyLightIntensity: 3.4,
-  fillLightIntensity: 2.1,
-  frontLightIntensity: 3.1,
-  rimLightIntensity: 1.6,
-  materialColor: '#dbe3ec',
-  materialMetalness: 0.82,
-  materialRoughness: 0.34,
-  materialEnvMapIntensity: 2.4,
-  materialEmissive: '#c9d2dc',
-  materialEmissiveIntensity: 0.08,
-  toneMappingExposure: 1.18,
-}
+// Re-exported from the light module so existing imports keep working.
+export { SILVER_MODEL_LIGHTING_PROPS }
 
 const isTouchDevice = () =>
   typeof window !== 'undefined' &&
@@ -58,6 +47,22 @@ const isLowPowerDevice = () => {
 const getTopOffsetRatio = () => {
   if (typeof window === 'undefined') return TOP_OFFSET_RATIO
   return window.innerWidth <= 480 ? 0.08 : window.innerWidth <= 768 ? 0.10 : TOP_OFFSET_RATIO
+}
+
+class HeroCanvasBoundary extends Component {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  componentDidCatch() {
+    this.props.onFailure()
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children
+  }
 }
 
 function HeroModel({
@@ -316,6 +321,7 @@ function ProceduralEnv() {
  * Props:
  *  - title, tagline, eyebrow: overlay copy.
  *  - modelUrl: optional override (defaults to the cached homepage model).
+ *  - environmentMapUrl: HDR image for reflections on the full-quality path.
  *  - introStartRef: optional ref carrying the intro start timestamp.
  *      When omitted (inner pages), the model snaps to its rest pose.
  *  - baseRotation: [x, y, z] in radians — per-model rest pose. Defaults
@@ -355,7 +361,9 @@ export default function HeroScene({
   tagline,
   eyebrow,
   modelUrl: modelUrlProp,
-  introStartRef,
+  environmentMapUrl = '/hdri/studio_small_03_1k.hdr',
+  introStartRef: externalIntroStartRef,
+  playIntro = false,
   baseRotation,
   scaleMultiplier,
   mobileOnlyScale,
@@ -381,8 +389,11 @@ export default function HeroScene({
   introAxis,
   introStartOffset,
   backgroundImage,
+  cloudExitViewports = 0,
 }) {
-  const enableIntro = Boolean(introStartRef)
+  const localIntroStartRef = useRef(null)
+  const introStartRef = externalIntroStartRef ?? (playIntro ? localIntroStartRef : null)
+  const enableIntro = (playIntro || externalIntroStartRef != null) && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
   // If the cached blob URL is already resolved (true on every navigation
   // after the homepage), seed state synchronously so the Canvas mounts on
   // the very first render with a valid URL — no microtask round-trip,
@@ -390,7 +401,7 @@ export default function HeroScene({
   const [modelUrl, setModelUrl] = useState(
     modelUrlProp || (getHeroModelReady() ? getHeroModelUrl() : null),
   )
-  const [, setIsSceneReady] = useState(false)
+  const [isSceneReady, setIsSceneReady] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [isRenderActive, setIsRenderActive] = useState(true)
   const renderActiveRef = useRef(true)
@@ -401,6 +412,7 @@ export default function HeroScene({
   const pointerRef = useRef({ active: false, lastX: 0 })
   const pointerTiltRef = useRef({ x: 0, y: 0 })
   const heroSectionRef = useRef(null)
+  const cloudRef = useRef(null)
 
   const deviceProfile = useMemo(
     () => ({
@@ -431,6 +443,16 @@ export default function HeroScene({
     }
     scheduleRenderIdle(duration)
   }, [scheduleRenderIdle])
+
+  const handleModelLoaded = useCallback(() => {
+    if (playIntro && localIntroStartRef.current === null) {
+      localIntroStartRef.current = performance.now() + MODEL_INTRO_ARM_DELAY
+    }
+    setIsSceneReady(true)
+    activateRenderLoop(enableIntro ? INTRO_ACTIVE_RENDER_MS : STATIC_ACTIVE_RENDER_MS)
+  }, [activateRenderLoop, enableIntro, playIntro])
+
+  const finishModelLoading = useCallback(() => setIsSceneReady(true), [])
 
   useEffect(() => () => {
     window.clearTimeout(renderIdleTimerRef.current)
@@ -500,6 +522,62 @@ export default function HeroScene({
       if (frameId) window.cancelAnimationFrame(frameId)
     }
   }, [activateRenderLoop])
+
+  // Keep the original cloud banks across the homepage's handoff to the journey.
+  useEffect(() => {
+    const node = heroSectionRef.current
+    const layer = cloudRef.current
+    if (!node || !layer) return undefined
+
+    let frameId = 0
+    const clamp = (value) => Math.min(1, Math.max(0, value))
+    const smooth = (value) => {
+      const progress = clamp(value)
+      return progress * progress * (3 - 2 * progress)
+    }
+
+    const applyFor = (fraction) => {
+      const reducedMotion = cloudExitViewports > 0 && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      const exitStart = cloudExitViewports && !reducedMotion ? 1 : 0.75
+      const exitEnd = exitStart === 1 ? 1 + cloudExitViewports : 1
+      const entrance = smooth((fraction - 0.5) / 0.25)
+      const exit = smooth((fraction - exitStart) / (exitEnd - exitStart))
+      const progress = entrance * (1 - exit)
+      const opacity = exitStart === 1 ? (0.2 + entrance * 0.8) * (1 - exit) : 0.2 + progress * 0.8
+
+      layer.style.setProperty('--cloud-progress', progress.toFixed(4))
+      layer.style.setProperty('--cloud-opacity', opacity.toFixed(4))
+      layer.classList.toggle('is-active', fraction > 0.001 && fraction < exitEnd)
+    }
+
+    const track = () => {
+      const height = node.offsetHeight || window.innerHeight || 1
+      return -node.getBoundingClientRect().top / height
+    }
+
+    const measure = () => {
+      frameId = 0
+      applyFor(track())
+    }
+
+    const onScroll = () => {
+      if (!frameId) frameId = window.requestAnimationFrame(measure)
+    }
+
+    const observer = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(measure) : null
+    observer?.observe(node)
+
+    applyFor(track())
+    window.addEventListener('scroll', onScroll, { passive: true })
+    window.addEventListener('resize', onScroll)
+
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
+      observer?.disconnect()
+      if (frameId) window.cancelAnimationFrame(frameId)
+    }
+  }, [cloudExitViewports])
 
   // Resolve cached model URL (for the homepage hand-off path) and
   // pre-warm drei's GLTF cache for that exact URL so subsequent mounts
@@ -595,7 +673,8 @@ export default function HeroScene({
         onPointerCancel={handlePointerUp}
         onPointerLeave={handlePointerLeave}
       >
-        {modelUrl && (
+        {!isSceneReady && <div className="skeleton-block hero-model-skeleton" aria-hidden="true" />}
+        {modelUrl && <HeroCanvasBoundary onFailure={finishModelLoading}>
           <Canvas
             camera={{ fov: 10, position: [0, 0.95, 18] }}
             dpr={deviceProfile.lowPower ? [0.75, 1] : [1, 1.15]}
@@ -646,10 +725,7 @@ export default function HeroScene({
                 introStartRef={introStartRef}
                 pointerTiltRef={pointerTiltRef}
                 enableIntro={enableIntro}
-                onLoaded={() => {
-                  setIsSceneReady(true)
-                  activateRenderLoop(enableIntro ? INTRO_ACTIVE_RENDER_MS : STATIC_ACTIVE_RENDER_MS)
-                }}
+                onLoaded={handleModelLoaded}
                 baseRotation={baseRotation}
                 scaleMultiplier={scaleMultiplier}
                 mobileOnlyScale={mobileOnlyScale}
@@ -667,11 +743,11 @@ export default function HeroScene({
                 materialEmissive={materialEmissive}
                 materialEmissiveIntensity={materialEmissiveIntensity}
               />
-              {deviceProfile.lowPower ? null : <Environment preset="studio" />}
+              {deviceProfile.lowPower ? null : <Environment files={environmentMapUrl} />}
               {deviceProfile.lowPower && <ProceduralEnv />}
             </Suspense>
           </Canvas>
-        )}
+        </HeroCanvasBoundary>}
       </div>
 
       <div className="hero-overlay">
@@ -679,6 +755,21 @@ export default function HeroScene({
         <h1>{title}</h1>
         {tagline && <p className="tagline">{tagline}</p>}
       </div>
+
+      {/* Scroll-driven clouds live in a document-level portal so the hero's
+          `isolation` stacking context cannot clip them. Two wide banks slide in
+          from opposite sides; they overlap to cover the whole viewport. */}
+      {typeof document !== 'undefined' && createPortal(
+        <div ref={cloudRef} className="hero-clouds" aria-hidden="true">
+          <span className="hero-cloud hero-cloud--bank-l" />
+          <span className="hero-cloud hero-cloud--bank-r" />
+          <span className="hero-cloud hero-cloud--wisp hero-cloud--wisp-l1" />
+          <span className="hero-cloud hero-cloud--wisp hero-cloud--wisp-r1" />
+          <span className="hero-cloud hero-cloud--wisp hero-cloud--wisp-l2" />
+          <span className="hero-cloud hero-cloud--wisp hero-cloud--wisp-r2" />
+        </div>,
+        document.body,
+      )}
     </section>
   )
 }

@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // Load .env so that server-side variables like GROQ_API_KEY are available
+  // Load .env so that server-side variables like DEEPSEEK_API_KEY are available
   // to the dev middleware that proxies /api/ai-search during `npm run dev`.
   // (In production these are provided by Vercel's environment.)
   const env = loadEnv(mode, process.cwd(), '')
@@ -48,35 +48,26 @@ export default defineConfig(({ mode }) => {
 })
 
 function devApiPlugin() {
-  let cachedHandler
-
-  async function loadHandler() {
-    if (cachedHandler) return cachedHandler
-    const handlerPath = path.resolve(process.cwd(), 'api/ai-search.js')
-    const mod = await import(pathToFileURL(handlerPath).href)
-    cachedHandler = mod.default
-    return cachedHandler
-  }
-
+  const endpoints = new Set(['/api/ai-search', '/api/enquiries', '/api/admin', '/api/site-settings'])
   return {
     name: 'mwft-dev-api',
     configureServer(server) {
-      server.middlewares.use('/api/ai-search', async (req, res, next) => {
-        if (req.method !== 'POST' && req.method !== 'OPTIONS') return next()
-        if (req.method === 'OPTIONS') {
-          res.statusCode = 204
-          return res.end()
-        }
+      server.middlewares.use(async (req, res, next) => {
+        const endpoint = req.url?.split('?')[0]
+        if (!endpoints.has(endpoint)) return next()
         try {
-          const handler = await loadHandler()
+          const handlerPath = path.resolve(process.cwd(), `.${endpoint}.js`)
+          const { default: handler } = await import(pathToFileURL(handlerPath).href)
           await handler(req, res)
         } catch (error) {
-          console.error('[dev /api/ai-search] failed', error)
+          console.error('[dev site API]', error.name)
           if (!res.headersSent) {
             res.statusCode = 500
             res.setHeader('Content-Type', 'application/json')
+            res.end(JSON.stringify({ error: 'Dev API failure' }))
+          } else if (!res.writableEnded) {
+            res.end()
           }
-          res.end(JSON.stringify({ error: 'Dev API failure' }))
         }
       })
     },

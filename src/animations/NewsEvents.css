@@ -22,7 +22,16 @@ a:focus-visible, button:focus-visible { outline: 2px solid #738565; outline-offs
   .news-hero { min-height: 700px; }
   .news-type { padding-bottom: 50px; }
   .news-type h1 { font-size: clamp(52px, 10.3vw, 78px); }
-  .news-video, .news-hands { width: 150%; max-width: none; left: -25%; height: 100%; }
+  /* Keep the hands centred instead of upscaling them: the 150% / -25% trick
+     pushed the artwork across the whole headline on narrow screens. */
+  .news-video, .news-hands { width: 100%; max-width: 100%; left: 0; height: 100%; }
+}
+/* Narrow phones: give the copy its own space above the artwork. */
+@media (max-width: 520px) {
+  .news-type { justify-content: flex-start; padding-top: clamp(96px, 26vh, 190px); padding-bottom: 0; }
+  .news-type h1 { font-size: clamp(40px, 12.2vw, 56px); }
+  .news-tagline { margin-top: 18px; font-size: 10.5px; letter-spacing: .1em; }
+  .news-video, .news-hands { height: 62%; top: auto; bottom: 0; }
 }
 @media (max-width: 420px) {
   .site-nav { gap: 8px; }

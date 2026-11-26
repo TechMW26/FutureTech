@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 import { filterJournal, journalStories } from './NewsJournalData'
 import './NewsJournal.css'
 import useNewsDeck from './useNewsDeck'
@@ -128,7 +129,7 @@ export default function NewsJournal() {
                         <h3 id={`organisation-${story.id}`}>{story.title}</h3>
                         <p>{story.summary}</p>
                         <span className="organisation-read-label" aria-hidden="true">
-                          {story.category === 'Events' ? 'View event' : 'Read update'}<span>↗</span>
+                          {story.category === 'Events' ? 'View event' : 'Read update'}<ArrowUpRight size={16} aria-hidden="true" />
                         </span>
                       </div>
                       <button
@@ -160,7 +161,7 @@ export default function NewsJournal() {
               <p className="organisation-dialog-category">{selected.label} · <time dateTime={selected.date}>{selected.dateLabel}</time></p>
               <h2 id="organisation-story-title">{selected.title}</h2>
               {selected.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}
-              <a href={selected.link}>{selected.action}<span aria-hidden="true">↗</span></a>
+              <a href={selected.link}>{selected.action}<ArrowUpRight size={16} aria-hidden="true" /></a>
               <small>Sample content for MW Futuretech.</small>
             </div>
           </>

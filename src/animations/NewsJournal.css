@@ -23,13 +23,19 @@
 .organisation-news-copy h3 { margin: 15px 0 0; font-size: clamp(21px, 1.8vw, 27px); font-weight: 500; letter-spacing: -.035em; line-height: 1.3; }
 .organisation-news-copy > p { color: #7a858f; font-size: 12px; line-height: 1.85; margin: 16px 0 23px; }
 .organisation-read-label { display: inline-flex; justify-content: center; align-items: center; gap: 16px; margin-top: auto; padding-bottom: 7px; border-bottom: 1px solid #d5dde4; color: #00427e; font-size: 11px; }
-.organisation-read-label > span { font-size: 16px; }
+.organisation-read-label > svg { flex-shrink: 0; }
 .organisation-card-link { position: absolute; z-index: 2; inset: 0; width: 100%; padding: 0; border: 0; background: transparent; border-radius: inherit; cursor: pointer; }
-.organisation-event-cover { position: relative; display: flex; flex-direction: column; justify-content: space-between; width: 100%; height: 100%; overflow: hidden; padding: 22px 24px 19px; background: #eef3f7; color: #17476d; }
+.organisation-event-cover { position: relative; display: flex; flex-direction: column; justify-content: space-between; width: 100%; height: 100%; overflow: visible; padding: 22px 24px 19px; background: #eef3f7; color: #17476d; }
+/* Photo covers show their print beneath the copy panel's translucent glass.
+   The event cover clips its own overflow, so let it extend into that 23px
+   band instead, and lift the footer line above the panel's top edge. */
+.organisation-news-cover:has(.organisation-event-cover) { overflow: visible; clip-path: inset(0 0 -23px 0 round 25px); }
+.organisation-event-cover { height: calc(100% + 23px); }
+.organisation-event-cover::after { content: ''; position: absolute; z-index: -1; top: 0; right: 0; bottom: 0; left: 0; background: inherit; }
 .organisation-event-brand { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 7px; letter-spacing: .08em; }
 .organisation-event-brand img { width: 19px; height: 19px; }
 .organisation-event-word { font-size: clamp(33px, 3.3vw, 49px); line-height: .9; letter-spacing: -.065em; font-weight: 500; }
-.organisation-event-bottom { display: flex; justify-content: space-between; gap: 10px; font-size: 7px; letter-spacing: .06em; }
+.organisation-event-bottom { display: flex; justify-content: space-between; gap: 10px; font-size: 7px; letter-spacing: .06em; margin-bottom: calc(23px + 10px); }
 .organisation-sample-note { margin: 27px 0 0; text-align: center; color: #b0b5bb; font-size: 9px; line-height: 1.6; }
 .organisation-news-footer { display: flex; justify-content: space-between; align-items: center; gap: 30px; margin-top: 65px; padding: 24px 0; border-top: 1px solid #edf0f2; color: #9ca3ab; font-size: 10px; }
 .organisation-news-footer a:last-child { display: inline-flex; gap: 16px; }
@@ -50,6 +56,14 @@
 @media (max-width: 1000px) { .organisation-news { padding-right: 5%; padding-left: 5%; } .organisation-news-grid { gap: 18px; } .organisation-news-card { flex-basis: calc((100% - 36px) / 3); } .organisation-news-copy { padding: 23px 18px; } .organisation-news-copy h3 { font-size: 22px; } .organisation-event-cover { padding: 18px; } .organisation-event-word { font-size: 35px; } }
 @media (max-width: 760px) { .organisation-news { padding: 65px 7% 0; } .organisation-news-intro { font-size: 13px; } .organisation-desktop-break { display: none; } .organisation-news-filters { margin-top: 28px; } .organisation-news-filters button { min-width: 85px; padding: 10px 13px; font-size: 10px; } .organisation-news-grid { gap: 25px; margin-top: 34px; } .organisation-news-card { flex-basis: 100%; width: 100%; max-width: 460px; } .organisation-news-cover { aspect-ratio: 1.65; } .organisation-news-copy { padding: 24px 25px 27px; } .organisation-news-copy h3 { max-width: 320px; font-size: 25px; } .organisation-news-copy > p { max-width: 350px; } .organisation-event-word { font-size: 50px; } .organisation-news-footer { margin-top: 45px; } .organisation-dialog-cover { height: 230px; } .organisation-dialog-copy { padding: 30px 8% 35px; } .organisation-dialog-copy > p { font-size: 13px; } .organisation-dialog-cover .organisation-event-word { font-size: 65px; } }
 @media (max-width: 370px) { .organisation-news-filters { gap: 0; padding: 4px; } .organisation-news-filters button { min-width: 74px; padding: 10px; gap: 7px; } .organisation-news-copy { padding-right: 20px; padding-left: 20px; } .organisation-event-word { font-size: 43px; } }
+
+/* Card art is poster-style with text baked into the top and bottom edges; a wide
+   cover crop slices those lines off on narrow screens, so show the full frame. */
+@media (max-width: 760px) {
+  .organisation-news-cover { aspect-ratio: 1.45; background: #eef2f5; }
+  .organisation-cover-image { object-fit: contain; }
+  .organisation-news-card:hover .organisation-cover-image { transform: none; }
+}
 
 /* Glass sits over a restrained light wash; the section itself stays white. */
 .organisation-news-card::before { content: ''; position: absolute; z-index: 0; inset: 18% 4% 4%; border-radius: 35px; background: linear-gradient(140deg, #dce9f3, #eef0e5 60%, #e3edf5); filter: blur(24px); opacity: .52; pointer-events: none; }

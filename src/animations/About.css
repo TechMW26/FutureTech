@@ -1,4 +1,4 @@
-@font-face{font-family:Manrope;src:url('/fonts/Manrope.ttf') format('truetype');font-style:normal;font-weight:200 800;font-display:swap}
+@font-face{font-family:Manrope;src:url('/fonts/Manrope.ttf') format('truetype');font-style:normal;font-weight:200 800;font-display:optional}
 .about-page{background:#f8f9fb;color:#132333;font-family:Manrope,Arial,sans-serif;overflow:clip}
 .about-page h1,.about-page h2,.about-page h3,.about-page p{margin:0}
 .about-page a:focus-visible{outline:3px solid #236ba9;outline-offset:7px}
@@ -48,7 +48,7 @@
 .about-director-cards img{display:block;width:100%;height:auto;transition:transform .6s cubic-bezier(.2,.7,.2,1),filter .6s;filter:drop-shadow(0 15px 13px #192b4010)}
 .about-director-cards>a:hover img{transform:translateY(-10px) rotateY(-3deg);filter:drop-shadow(8px 25px 20px #192b4020)}
 .director-card-caption{display:flex;justify-content:space-between;margin:18px 20px 0;font-size:12px;font-weight:650;text-align:left}
-.director-card-caption>span{color:#7e8a94;font-size:10px;font-weight:400}
+.director-card-caption>span{display:inline-flex;align-items:center;gap:4px;color:#7e8a94;font-size:10px;font-weight:400}
 .director-story{height:240svh;position:relative;background:#edf1f5;scroll-margin-top:0;--portrait-scale:1;--side-shift:0px;--side-opacity:1;--portrait-radius:180px}
 .director-sticky{position:sticky;top:0;height:100svh;min-height:640px;display:grid;grid-template-columns:1fr min(31vw,440px) 1fr;align-items:center;gap:4vw;padding:110px 6vw 85px;isolation:isolate;overflow:hidden}
 .director-portrait{height:min(62svh,650px);width:100%;border-radius:var(--portrait-radius);overflow:hidden;transform:scale(var(--portrait-scale));transform-origin:center 45%;will-change:transform;z-index:1;background:#fff;box-shadow:0 20px 80px #324e6412}
@@ -62,7 +62,7 @@
 .director-side h3{font-size:clamp(30px,3.2vw,52px);line-height:1.15;font-weight:550;letter-spacing:-.05em;margin:24px 0}
 .director-side p{font-size:12px;line-height:1.9;max-width:240px;color:#6c7c88}
 .about-text-link{display:inline-flex;align-items:center;gap:32px;border-bottom:1px solid #8d9eac;padding:15px 0;font-size:12px;margin-top:20px}
-.about-text-link span{font-size:20px;transition:transform .25s}.about-text-link:hover span{transform:translate(3px,-3px)}
+.about-text-link>svg{flex-shrink:0;transition:transform .25s}.about-text-link:hover>svg{transform:translate(3px,-3px)}
 .director-signature{position:absolute;z-index:3;bottom:28px;left:0;right:0;text-align:center;letter-spacing:.17em;font-size:11px}
 .director-signature span{display:block;margin-top:7px;font-size:8px;color:#6e7f8e}
 .director-story--card .director-portrait{border-radius:24px;background:transparent;box-shadow:none}.director-story--card img{object-fit:contain}
@@ -140,3 +140,6 @@
 .about-silk{position:absolute;left:-15%;width:130%;height:32%;bottom:-15%;border-radius:50%;background:linear-gradient(180deg,#fff,#c1d1e681 12%,#eff4fb 63%);box-shadow:0 -2px 2px #fff;transform:rotate(-9deg);z-index:0}
 .about-silk--two{bottom:-25%;left:-30%;transform:rotate(14deg);background:linear-gradient(180deg,#fff,#c8d7e8aa 35%,#eef3f9)}
 @media(max-width:700px){.about-opening h1{font-size:clamp(39px,9vw,64px)}.about-opening .about-kicker{font-size:8px;margin-bottom:28px}.about-opening .about-intro{max-width:300px;font-size:13px;margin-top:26px!important}.about-opening .about-round-link{margin-top:25px}.about-shared-backdrop .metal-ribbon{width:155%;left:-27.5%}.about-silk{height:24%}.about-continuous .about-opening-copy{padding-top:80px}}
+
+.about-group-link { margin: 14px 0 0; font-size: 14px; color: #244966; }
+.about-group-link a { text-decoration: underline; }

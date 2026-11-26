@@ -1,4 +1,23 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Montserrat:wght@700;800&family=Raleway:wght@400;500;600;700;800;900&display=swap');
+@font-face {
+  font-family: Raleway;
+  src: url('/fonts/Raleway-Latin.woff2') format('woff2');
+  font-weight: 400 900;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: Inter;
+  src: url('/fonts/Inter-Latin.woff2') format('woff2');
+  font-weight: 300 900;
+  font-display: optional;
+}
+
+@font-face {
+  font-family: Montserrat;
+  src: url('/fonts/Montserrat-Latin.woff2') format('woff2');
+  font-weight: 600 800;
+  font-display: optional;
+}
 
 :root {
   --site-font-family: 'Raleway', sans-serif;
@@ -131,6 +150,7 @@ html {
      so the rendered layout stays at its design pixel size at any browser zoom level. */
   font-size: var(--font-size, 100%);
   font-family: var(--site-font-family);
+  background: var(--bg);
 }
 
 html.lenis,
@@ -184,7 +204,6 @@ body::-webkit-scrollbar,
 }
 
 body {
-  background: var(--bg);
   color: var(--text);
   font-family: var(--site-font-family);
   text-rendering: optimizeLegibility;

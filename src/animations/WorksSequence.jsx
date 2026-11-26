@@ -1,19 +1,23 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ArrowUpRight } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import { WorksRibbonRenderer } from './WorksRibbonRenderer'
 import { interval, smooth, projectFocus } from './WorksRibbonMotion'
 import { MAX_PROJECTS } from './workProjects'
+import MicroSlats from '../components/MicroSlats'
 import './WorksSequence.css'
 
 const MAX_CARDS = MAX_PROJECTS
 
 /** Scroll-orchestrated ribbon of project cards that resolves into a focused carousel. */
-export default function WorksSequence({ progress, items, onSelect }) {
+export default function WorksSequence({ progress, items }) {
+  const navigate = useNavigate()
   const cards = Math.min(MAX_CARDS, items.length)
   const host = useRef(null)
   const canvas = useRef(null)
-  const first = useRef(null)
-  const second = useRef(null)
+  const title = useRef(null)
   const details = useRef(null)
+  const projectFrame = useRef(null)
   const detailContent = useRef(null)
   const renderer = useRef(null)
   const target = useRef(progress)
@@ -23,6 +27,7 @@ export default function WorksSequence({ progress, items, onSelect }) {
   const down = useRef({ x: 0, y: 0 })
   const fallbackRef = useRef(false)
   const [fallback, setFallback] = useState(false)
+  const [ribbonReady, setRibbonReady] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const project = items[activeIndex] ?? items[0]
 
@@ -30,8 +35,9 @@ export default function WorksSequence({ progress, items, onSelect }) {
     const root = host.current, surface = canvas.current
     if (!root || !surface) return
     let width = root.clientWidth, height = root.clientHeight
+    let focusFrame = null
     let frame = 0, last = 0, current = target.current, miniSpin = 0
-    let running = true, visible = true, retry = 0
+    let running = true, visible = true, retry = 0, texturesPainted = false
     const motion = window.matchMedia('(prefers-reduced-motion: reduce)')
     const measure = () => {
       width = root.clientWidth || window.innerWidth
@@ -40,6 +46,14 @@ export default function WorksSequence({ progress, items, onSelect }) {
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
       width = Math.max(1, Math.round(width * dpr) / dpr)
       height = Math.max(1, Math.round(height * dpr) / dpr)
+      const frameBounds = projectFrame.current.getBoundingClientRect()
+      const rootBounds = root.getBoundingClientRect()
+      focusFrame = frameBounds.width ? {
+        x: frameBounds.left - rootBounds.left + frameBounds.width / 2,
+        y: frameBounds.top - rootBounds.top + frameBounds.height / 2,
+        width: frameBounds.width,
+        height: frameBounds.height,
+      } : null
     }
     measure()
     const render = (time) => {
@@ -54,18 +68,22 @@ export default function WorksSequence({ progress, items, onSelect }) {
       if (Math.abs(target.current - current) < .00001) current = target.current
       const p = current
       if (!motion.matches && p < .16) miniSpin += dt * .055
-      renderer.current?.render(p, width, height, focused.current, miniSpin)
+      renderer.current?.render(p, width, height, focused.current, miniSpin, focusFrame)
+      if (!texturesPainted && renderer.current?.readyCount === cards) {
+        texturesPainted = true
+        setRibbonReady(true)
+      }
       const intro = Math.min(.54, p / .36 * .54)
-      const moveText = smooth(interval(intro, .16, .54))
-      if (first.current) first.current.style.transform = `translate3d(${moveText * width * .67}px, ${-moveText * height * .13}px, 0)`
-      if (second.current) second.current.style.transform = `translate3d(${-moveText * width * .67}px, ${moveText * height * .13}px, 0)`
+      const titleExit = smooth(interval(intro, .16, .54))
+      title.current?.style.setProperty('--works-title-exit', String(titleExit))
       const focus = projectFocus(p, Math.min(MAX_CARDS, items.length))
+      const detailReveal = focusFrame ? smooth(interval(p, .46, .50)) : focus.reveal
       if (focus.index !== active.current) { active.current = focus.index; setActiveIndex(focus.index) }
       if (details.current) {
-        details.current.style.opacity = String(focus.reveal)
-        details.current.style.transform = `translate3d(${(1 - focus.reveal) * 24}px, -50%, 0)`
-        details.current.inert = focus.reveal < .8
-        details.current.setAttribute('aria-hidden', String(focus.reveal < .8))
+        details.current.style.opacity = String(detailReveal)
+        details.current.style.setProperty('--work-detail-offset', `${(1 - detailReveal) * 24}px`)
+        details.current.inert = detailReveal < .8
+        details.current.setAttribute('aria-hidden', String(detailReveal < .8))
       }
       if (detailContent.current) {
         detailContent.current.style.opacity = String(focus.textOpacity)
@@ -96,6 +114,8 @@ export default function WorksSequence({ progress, items, onSelect }) {
     create()
     const resize = new ResizeObserver(() => { measure(); schedule() })
     resize.observe(root)
+    resize.observe(projectFrame.current)
+    resize.observe(detailContent.current)
     const observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; if (visible) schedule() })
     observer.observe(root)
     const contextLost = (event) => { event.preventDefault(); fail() }
@@ -113,7 +133,7 @@ export default function WorksSequence({ progress, items, onSelect }) {
       document.removeEventListener('visibilitychange', schedule)
       window.removeEventListener('orientationchange', schedule)
     }
-  }, [items])
+  }, [cards, items])
 
   useLayoutEffect(() => {
     target.current = progress
@@ -122,11 +142,21 @@ export default function WorksSequence({ progress, items, onSelect }) {
 
   return (
     <div ref={host} className={`works-sequence${fallback ? ' works-sequence-fallback' : ''}`} id="project-carousel">
-      <h1 className="works-motion-title" aria-label="Our Works">
-        <span ref={first}><span>OUR</span></span>
-        <span ref={second}><span>WORKS</span></span>
+      {progress < 0.15 && (
+        <div
+          className="works-sequence__background"
+          style={{ opacity: 1 - progress / 0.15 }}
+          aria-hidden="true"
+        >
+          <MicroSlats color="#242424" glintColor="#ffffff" backgroundColor="transparent" />
+        </div>
+      )}
+      <h1 ref={title} className="works-motion-title">
+        <span><span>Products That</span></span>
+        {' '}
+        <span><span>Make a Difference</span></span>
       </h1>
-      <p className="works-motion-note">Human imagination.<br />Extraordinary digital experiences.</p>
+      {!ribbonReady && !fallback && progress < .54 && <div className="skeleton-block works-ribbon-skeleton" aria-hidden="true" />}
       <canvas
         ref={canvas}
         className="works-ribbon-canvas"
@@ -140,22 +170,29 @@ export default function WorksSequence({ progress, items, onSelect }) {
           if (Math.hypot(event.clientX - down.current.x, event.clientY - down.current.y) > 8) return
           const rect = event.currentTarget.getBoundingClientRect()
           const index = renderer.current?.pick(event.clientX - rect.left, event.clientY - rect.top) ?? -1
-          if (index >= 0 && items[index]) onSelect(items[index])
+          if (index >= 0 && items[index]) navigate(items[index].path)
         }}
       />
       {fallback && (
         <div className="works-fallback-project" role="group" aria-label="Project previews">
           {items.slice(0, cards).map(item => (
-            <img key={item.id ?? item.src} src={item.src} alt={item.alt} onClick={() => onSelect(item)} />
+            <Link key={item.id} to={item.path} aria-label={`View ${item.title}`}>
+              <img src={item.src} alt={item.alt} />
+              <span>{item.title}</span>
+            </Link>
           ))}
         </div>
       )}
       <section ref={details} className="work-detail" aria-labelledby="work-detail-title" aria-hidden="true">
+        <div ref={projectFrame} className="work-detail-frame" aria-hidden="true" />
         <div ref={detailContent} className="work-detail-content" aria-live="polite">
           <p className="work-detail-category">{project.category}</p>
           <h2 id="work-detail-title">{project.title}</h2>
-          <p className="work-detail-description">{project.description}</p>
-          <button className="work-detail-link" onClick={() => onSelect(project)}>View project <span aria-hidden="true">↗</span></button>
+          <p className="work-detail-description">
+            <span className="work-detail-full-description">{project.description}</span>
+            <span className="work-detail-summary">{project.summary}</span>
+          </p>
+          <Link className="work-detail-link" to={project.path}>View project <ArrowUpRight size={18} aria-hidden="true" /></Link>
           <p className="work-detail-count">
             <span>{String(activeIndex + 1).padStart(2, '0')}</span>
             <span className="work-detail-line" />
@@ -163,18 +200,18 @@ export default function WorksSequence({ progress, items, onSelect }) {
           </p>
         </div>
       </section>
-      <div className="works-accessible-projects" aria-label="Projects">
+      {!fallback && <nav className="works-accessible-projects" aria-label="Projects">
         {items.slice(0, cards).map((item, index) => (
-          <button
-            key={item.id ?? item.src}
-            onClick={() => onSelect(item)}
+          <Link
+            key={item.id}
+            to={item.path}
             onFocus={() => { focused.current = index; wake.current() }}
             onBlur={() => { focused.current = -1; wake.current() }}
           >
             View {item.title}
-          </button>
+          </Link>
         ))}
-      </div>
+      </nav>}
     </div>
   )
 }

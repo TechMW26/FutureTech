@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from 'react';
+import ArrowUpRight from './ArrowUpRight';
 import { filterJournal, journalStories, type JournalCategory, type JournalStory } from './NewsJournalData';
 import './NewsJournal.css';
 import useNewsDeck from './useNewsDeck';
@@ -83,7 +84,7 @@ export default function NewsJournal() {
             <time dateTime={story.date}>{story.dateLabel}</time>
             <h3 id={`organisation-${story.id}`}>{story.title}</h3>
             <p>{story.summary}</p>
-            <span className="organisation-read-label" aria-hidden="true">{story.category === 'Events' ? 'View event' : 'Read update'}<span>↗</span></span>
+            <span className="organisation-read-label" aria-hidden="true">{story.category === 'Events' ? 'View event' : 'Read update'}<ArrowUpRight size={16} /></span>
           </div>
           <button className="organisation-card-link" aria-labelledby={`organisation-${story.id}`} aria-haspopup="dialog" onClick={event => { opener.current = event.currentTarget; setSelected(story); }} />
           </div>
@@ -95,7 +96,7 @@ export default function NewsJournal() {
     </div>
     <dialog ref={dialog} className="organisation-news-dialog" aria-labelledby="organisation-story-title" onClose={() => { setSelected(null); opener.current?.focus(); }} onClick={event => { if (event.target === event.currentTarget) close(); }}>
       <button className="organisation-dialog-close" onClick={close} aria-label="Close article">×</button>
-      {selected && <><div className="organisation-dialog-cover"><StoryCover story={selected} /></div><div className="organisation-dialog-copy"><p className="organisation-dialog-category">{selected.label} · <time dateTime={selected.date}>{selected.dateLabel}</time></p><h2 id="organisation-story-title">{selected.title}</h2>{selected.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}<a href={selected.link}>{selected.action}<span aria-hidden="true">↗</span></a><small>Sample content for MW Futuretech.</small></div></>}
+      {selected && <><div className="organisation-dialog-cover"><StoryCover story={selected} /></div><div className="organisation-dialog-copy"><p className="organisation-dialog-category">{selected.label} · <time dateTime={selected.date}>{selected.dateLabel}</time></p><h2 id="organisation-story-title">{selected.title}</h2>{selected.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}<a href={selected.link}>{selected.action}<ArrowUpRight size={16} /></a><small>Sample content for MW Futuretech.</small></div></>}
     </dialog>
   </section>;
 }
