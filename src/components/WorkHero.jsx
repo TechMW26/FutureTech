@@ -1,4 +1,3 @@
-import React from "react";
 import "./WorkHero.css";
 
 import logo1 from "../assets/work-hero/image 4.png";

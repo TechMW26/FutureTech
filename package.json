@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "eslint src api server scripts \"*.config.js\"",
     "preview": "vite preview",
     "optimize:images": "node scripts/optimize-images.mjs"
   },

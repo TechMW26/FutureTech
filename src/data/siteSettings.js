@@ -19,5 +19,5 @@ export const defaultSiteSettings = {
   summitIntro: 'We build software, AI systems, and connected products that solve problems in the real world.',
   stallProducts: ['algae', 'talio', 'mira'],
   photos: {},
-  acceptingEnquiries: null,
+  acceptingEnquiries: false,
 }

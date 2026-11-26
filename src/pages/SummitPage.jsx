@@ -70,7 +70,9 @@ export default function SummitPage() {
           {email && <a href={`mailto:${email}`}>{email}</a>}
         </div>
         {acceptingEnquiries === false ? (
-          <p>Get in touch by email and tell us what you’d like to discuss.</p>
+          <p>{email
+            ? 'Get in touch by email and tell us what you’d like to discuss.'
+            : 'The enquiry form is currently unavailable.'}</p>
         ) : <form onSubmit={submit} onChange={() => { requestId.current = null }} className="site-form">
           {submission.sent ? <p role="status">{submission.message}</p> : <>
             <fieldset disabled={submission.pending}>
