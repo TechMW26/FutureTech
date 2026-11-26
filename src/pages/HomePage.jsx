@@ -13,15 +13,17 @@ const HeroScene = lazy(() => import('../components/HeroScene'))
 export default function HomePage() {
   return (
     <div className="home-page">
-      <HeroScene
-        title="Engineering Tomorrow, In Real Time."
-        tagline="Intelligent systems, adaptive design, and next-generation technology built to move business forward."
-        introStartRef={introStartRef}
-        cloudExitViewports={CLOUD_OPENING_VIEWPORTS}
-        backgroundImage="/images/hero-backgrounds/hero-bg-home.webp"
-        environmentMapUrl="/hdri/studio_small_03_512.hdr"
-        {...SILVER_MODEL_LIGHTING_PROPS}
-      />
+      <Suspense fallback={<RouteSkeleton />}>
+        <HeroScene
+          title="Engineering Tomorrow, In Real Time."
+          tagline="Intelligent systems, adaptive design, and next-generation technology built to move business forward."
+          playIntro
+          cloudExitViewports={CLOUD_OPENING_VIEWPORTS}
+          backgroundImage="/images/hero-backgrounds/hero-bg-home.webp"
+          environmentMapUrl="/hdri/studio_small_03_512.hdr"
+          {...SILVER_MODEL_LIGHTING_PROPS}
+        />
+      </Suspense>
       <HeroJourney />
       <FuturetechSections />
       <HomeJourney />
