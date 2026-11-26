@@ -1,5 +1,5 @@
 import { ribbonPoint } from './ribbon';
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 
 // Adapted from React Bits DotGrid. See public/futuretech-sections/react-bits-license.txt.
 
@@ -177,7 +177,9 @@ const DotGrid = ({
     dpr
   };
   const settingsRef = useRef(settings);
-  settingsRef.current = settings;
+  useLayoutEffect(() => {
+    settingsRef.current = settings;
+  });
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -725,7 +727,7 @@ const DotGrid = ({
       gl.deleteProgram(program);
       engineRef.current = null;
     };
-  }, []);
+  }, [stage]);
 
   useEffect(() => {
     engineRef.current?.rebuild();

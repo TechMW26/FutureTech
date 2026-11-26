@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import {useRef} from 'react';
 import './style.css';
 import Signals from './Signals';
 import DotGrid from './DotGrid';

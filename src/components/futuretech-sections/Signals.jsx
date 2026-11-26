@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import {useState} from 'react';
 
 const signals = [
   ['Model health','Uptime 99.8%'], ['Intake pipeline','12K/min','Signals normalized'],

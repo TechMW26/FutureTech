@@ -6,7 +6,7 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   // Load .env so that server-side variables like DEEPSEEK_API_KEY are available
-  // to the dev middleware that proxies /api/ai-search during `npm run dev`.
+  // to the API handlers during local development and preview.
   // (In production these are provided by Vercel's environment.)
   const env = loadEnv(mode, process.cwd(), '')
   for (const key of Object.keys(env)) {
@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
   }
 
   return {
-    plugins: [react(), devApiPlugin()],
+    plugins: [react(), localApiPlugin()],
     optimizeDeps: {
       // lottie-react imports lottie-web as a default import, but lottie-web's
       // ESM has no default export. Force-bundle both so Vite/esbuild produces
@@ -47,29 +47,32 @@ export default defineConfig(({ mode }) => {
   }
 })
 
-function devApiPlugin() {
+function localApiPlugin() {
   const endpoints = new Set(['/api/ai-search', '/api/enquiries', '/api/admin', '/api/site-settings'])
-  return {
-    name: 'mwft-dev-api',
-    configureServer(server) {
-      server.middlewares.use(async (req, res, next) => {
-        const endpoint = req.url?.split('?')[0]
-        if (!endpoints.has(endpoint)) return next()
-        try {
-          const handlerPath = path.resolve(process.cwd(), `.${endpoint}.js`)
-          const { default: handler } = await import(pathToFileURL(handlerPath).href)
-          await handler(req, res)
-        } catch (error) {
-          console.error('[dev site API]', error.name)
-          if (!res.headersSent) {
-            res.statusCode = 500
-            res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify({ error: 'Dev API failure' }))
-          } else if (!res.writableEnded) {
-            res.end()
-          }
+  function configure(server) {
+    server.middlewares.use(async (req, res, next) => {
+      const endpoint = req.url?.split('?')[0]
+      if (!endpoints.has(endpoint)) return next()
+      try {
+        const handlerPath = path.resolve(server.config.root, `.${endpoint}.js`)
+        const { default: handler } = await import(pathToFileURL(handlerPath).href)
+        await handler(req, res)
+      } catch (error) {
+        console.error('[local site API]', endpoint, error.code ?? error.name)
+        if (!res.headersSent) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: 'The request could not be completed. Please try again.' }))
+        } else if (!res.writableEnded) {
+          res.end()
         }
-      })
-    },
+      }
+    })
+  }
+
+  return {
+    name: 'mwft-local-api',
+    configureServer: configure,
+    configurePreviewServer: configure,
   }
 }

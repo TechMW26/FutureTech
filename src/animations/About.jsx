@@ -141,7 +141,7 @@ export default function About() {
   }, [profile])
 
   return (
-    <main className="about-page" ref={root}>
+    <div className="about-page" ref={root}>
       {profile ? (
         !shakeel ? <DirectorExperience /> : (
           <>
@@ -195,6 +195,6 @@ export default function About() {
         <h2>Let’s shape it.<br /><span>Together.</span></h2>
         <Link className="about-text-link" to="/contact">Let’s talk <ArrowUpRight size={20} aria-hidden="true" /></Link>
       </section>
-    </main>
+    </div>
   )
 }

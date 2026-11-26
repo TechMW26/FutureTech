@@ -72,7 +72,7 @@ export default function LetsTalk() {
   if (isSettingsLoading) return <RouteSkeleton pathname="/contact" />
 
   return (
-    <main className="contact-page">
+    <div className="contact-page">
       <div className="contact-map">
         {!mapReady && <div className="skeleton-block contact-map__skeleton" aria-hidden="true" />}
         <iframe title="Hustlehub Tech Park, Bengaluru" src="https://www.openstreetmap.org/export/embed.html?bbox=77.626%2C12.888%2C77.676%2C12.914&layer=mapnik&marker=12.901158%2C77.651153" loading="lazy" referrerPolicy="no-referrer" onLoad={() => setMapReady(true)} />
@@ -90,7 +90,9 @@ export default function LetsTalk() {
         <section className="contact-form-area" aria-labelledby="contact-form-title">
           <h2 id="contact-form-title">Get in touch</h2>
           {acceptingEnquiries === false ? (
-            <p className="contact-feedback">For enquiries, email <a href={`mailto:${email}`}>{email}</a>.</p>
+            <p className="contact-feedback">{email
+              ? <>For enquiries, email <a href={`mailto:${email}`}>{email}</a>.</>
+              : 'The enquiry form is currently unavailable.'}</p>
           ) : <form onSubmit={next}>
             <fieldset disabled={submit.pending || submit.sent}>
             <div className="contact-entry">
@@ -129,6 +131,6 @@ export default function LetsTalk() {
       </section>
       <a className="contact-map-link" href={directions} target="_blank" rel="noreferrer">Bengaluru directions <ArrowUpRight size={17} aria-hidden="true" /></a>
       <a className="contact-map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
-    </main>
+    </div>
   )
 }

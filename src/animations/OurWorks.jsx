@@ -30,7 +30,7 @@ export default function OurWorks() {
   }, [])
 
   return (
-    <main className="home-screen" id="works">
+    <div className="home-screen" id="works">
       <section
         ref={scrollTrack}
         className="carousel-scroll"
@@ -52,6 +52,6 @@ export default function OurWorks() {
           <IntelligenceSection scrollTrack={scrollTrack} />
         </div>
       </section>
-    </main>
+    </div>
   )
 }

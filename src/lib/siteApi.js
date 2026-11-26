@@ -13,10 +13,10 @@ export async function siteRequest(path, data, options = {}) {
       body: JSON.stringify(data),
     }),
   })
-  const result = await response.json().catch(() => ({}))
-  if (!response.ok) {
-    const error = new Error(result.error || 'The request could not be completed. Please try again.')
-    error.status = response.status
+  const result = await response.json().catch(() => null)
+  if (!response.ok || !result || typeof result !== 'object' || Array.isArray(result)) {
+    const error = new Error(result?.error || 'The request could not be completed. Please try again.')
+    error.status = response.ok ? 502 : response.status
     throw error
   }
   return result
