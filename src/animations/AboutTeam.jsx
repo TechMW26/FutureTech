@@ -1,3 +1,4 @@
+import { useSiteSettings } from '../lib/siteApi.js'
 import { useState } from 'react'
 import { TEAM } from '../data/team'
 import './AboutTeam.css'
@@ -14,6 +15,7 @@ const members = TEAM.map((member) => ({
 
 export default function AboutTeam() {
   const [active, setActive] = useState(null)
+  const { photos } = useSiteSettings()
   function tilt(event) {
     if (event.pointerType !== 'mouse' || matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const rect = event.currentTarget.getBoundingClientRect()
@@ -48,7 +50,7 @@ export default function AboutTeam() {
               event.currentTarget.style.setProperty('--team-y', '0deg')
             }}
           >
-            <span className="team-card-photo" aria-hidden="true"><img src={member.img} alt="" width="420" height="630" decoding="async" /></span>
+            <span className="team-card-photo" aria-hidden="true"><img src={photos[member.name] || member.img} alt="" width="420" height="630" loading="lazy" decoding="async" /></span>
             <span className="team-card-gloss" aria-hidden="true" />
             <span className="team-card-top">
               <span>MW / {String(index + 1).padStart(2, '0')}</span>

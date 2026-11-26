@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef } from 'react';
+import ArrowUpRight from './ArrowUpRight';
 import { CONNECTION_FRAME_COUNT, connectionMotion, coverFrame } from './ConnectionFooterMotion';
 import './ConnectionFooter.css';
 
@@ -94,9 +95,9 @@ export default function ConnectionFooter({ connectHref = '/lets-talk' }: { conne
       <div ref={invitation} className="connection-invitation">
         <p>A LITTLE HELLO. A NEW POSSIBILITY.</p>
         <h2>Good things start<br />with a <em>hello.</em></h2>
-        <a className="connection-link" href={connectHref}><span>Let’s connect</span><span className="connection-arrow" aria-hidden="true">↗</span></a>
+        <a className="connection-link" href={connectHref}><span>Let’s connect</span><span className="connection-arrow" aria-hidden="true"><ArrowUpRight size={19} /></span></a>
       </div>
-      <div className="connection-bottom"><span>Human imagination. Future possibilities.</span><a href={connectHref}>Start a conversation <span aria-hidden="true">↗</span></a></div>
+      <div className="connection-bottom"><span>Human imagination. Future possibilities.</span><a href={connectHref}>Start a conversation <ArrowUpRight size={13} /></a></div>
     </div>
   </footer>;
 }

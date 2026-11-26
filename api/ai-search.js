@@ -4,6 +4,8 @@
 //
 // Holds the DEEPSEEK_API_KEY server-side so it never reaches the browser bundle.
 
+import process from 'node:process'
+import { siteFaqAnswer } from '../server/faq-answer.js'
 import { buildSiteContext } from './site-context.js'
 import { getFaqRetryAfter } from '../server/faq-rate-limit.js'
 
@@ -57,13 +59,6 @@ export default async function handler(req, res) {
     return res.end(JSON.stringify({ error: 'Method not allowed' }))
   }
 
-  const apiKey = process.env.DEEPSEEK_API_KEY
-  if (!apiKey) {
-    res.statusCode = 500
-    res.setHeader('Content-Type', 'application/json')
-    return res.end(JSON.stringify({ error: 'AI service is not configured.' }))
-  }
-
   const body = await readJsonBody(req)
   const rawQuery = typeof body?.query === 'string' ? body.query.trim() : ''
 
@@ -79,17 +74,32 @@ export default async function handler(req, res) {
     return res.end(JSON.stringify({ error: `Question is too long (max ${MAX_QUERY_LENGTH} characters).` }))
   }
 
-  try {
-    const retryAfter = await getFaqRetryAfter(req, res, apiKey)
-    if (retryAfter) {
-      res.statusCode = 429
-      res.setHeader('Retry-After', String(retryAfter))
-      res.setHeader('Content-Type', 'application/json')
-      return res.end(JSON.stringify({
-        error: `You’ve used 10 questions for now. Try again in about ${Math.ceil(retryAfter / 60)} min.`,
-      }))
-    }
+  const apiKey = process.env.DEEPSEEK_API_KEY
+  const sendAnswer = (answer, source) => {
+    res.statusCode = 200
+    res.setHeader('Content-Type', 'application/json')
+    return res.end(JSON.stringify({ answer, source }))
+  }
+  const fallback = () => sendAnswer(siteFaqAnswer(rawQuery), 'site')
+  if (!apiKey) return fallback()
 
+  let retryAfter
+  try {
+    retryAfter = await getFaqRetryAfter(req, res, apiKey)
+  } catch (error) {
+    console.error('FAQ quota unavailable', error.name)
+    return fallback()
+  }
+  if (retryAfter) {
+    res.statusCode = 429
+    res.setHeader('Retry-After', String(retryAfter))
+    res.setHeader('Content-Type', 'application/json')
+    return res.end(JSON.stringify({
+      error: `You’ve used 10 questions for now. Try again in about ${Math.ceil(retryAfter / 60)} min.`,
+    }))
+  }
+
+  try {
     const deepseekResponse = await fetch(DEEPSEEK_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -111,27 +121,14 @@ export default async function handler(req, res) {
 
     if (!deepseekResponse.ok) {
       console.error('DeepSeek request failed', deepseekResponse.status)
-      res.statusCode = 502
-      res.setHeader('Content-Type', 'application/json')
-      return res.end(JSON.stringify({ error: 'AI service is temporarily unavailable.' }))
+      return fallback()
     }
 
     const data = await deepseekResponse.json()
     const answer = data?.choices?.[0]?.message?.content?.trim()
-
-    if (!answer) {
-      res.statusCode = 502
-      res.setHeader('Content-Type', 'application/json')
-      return res.end(JSON.stringify({ error: 'No answer was returned.' }))
-    }
-
-    res.statusCode = 200
-    res.setHeader('Content-Type', 'application/json')
-    return res.end(JSON.stringify({ answer }))
+    return answer ? sendAnswer(answer, 'ai') : fallback()
   } catch (error) {
-    console.error('Futuretech FAQ failed', error.name)
-    res.statusCode = 500
-    res.setHeader('Content-Type', 'application/json')
-    return res.end(JSON.stringify({ error: 'Something went wrong while contacting the AI service.' }))
+    console.error('Futuretech FAQ provider failed', error.name)
+    return fallback()
   }
 }

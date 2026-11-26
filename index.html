@@ -5,21 +5,23 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MW Futuretech</title>
-    <!-- Preload every hero background during HTML parse so route
-         navigations never trigger a layout shift while the image loads. -->
-    <link rel="preload" as="image" href="/images/hero-backgrounds/hero-bg-home.webp" fetchpriority="high" />
-    <link rel="preload" as="image" href="/images/hero-backgrounds/hero-bg-services.webp" />
-    <link rel="preload" as="image" href="/images/hero-backgrounds/hero-bg-about.webp" />
-    <!-- Footer typography -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;800&display=swap"
-    />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Raleway-Latin.woff2" crossorigin />
+    <link rel="stylesheet" href="/src/styles/skeleton.css" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="site-boot route-skeleton">
+        <span class="skeleton-status" role="status">Loading MW Futuretech…</span>
+        <div class="route-skeleton__inner" aria-hidden="true">
+          <div class="route-skeleton__copy skeleton-stack">
+            <span class="skeleton-block skeleton-label"></span>
+            <span class="skeleton-block skeleton-title"></span>
+            <span class="skeleton-block skeleton-title skeleton-title--short"></span>
+            <span class="skeleton-block skeleton-line"></span>
+          </div>
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

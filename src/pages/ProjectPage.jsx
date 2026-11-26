@@ -1,10 +1,11 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { projects } from '../animations/workProjects'
 import './ProjectPage.css'
 
 export default function ProjectPage() {
+  const [coverReady, setCoverReady] = useState(false)
   const { projectSlug } = useParams()
   const index = projects.findIndex(({ path }) => path === `/work/${projectSlug}`)
   const project = projects[index]
@@ -35,7 +36,14 @@ export default function ProjectPage() {
           <p className="project-page__summary">{project.summary}</p>
         </header>
 
-        <img className="project-page__cover" src={project.src} alt={project.alt} fetchPriority="high" />
+        <img
+          className={`project-page__cover${coverReady ? '' : ' skeleton-block'}`}
+          src={project.src}
+          alt={project.alt}
+          fetchPriority="high"
+          onLoad={() => setCoverReady(true)}
+          onError={() => setCoverReady(true)}
+        />
 
         <section className="project-page__overview" aria-labelledby="project-overview-title">
           <div>

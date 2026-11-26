@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { ArrowUpRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import './DirectorExperience.css'
 import DirectorOrbits from './DirectorOrbits'
@@ -76,14 +77,14 @@ export default function DirectorExperience({ embedded = false }) {
         <div className="director-experience-note">
           <span className="director-note-rule" />
           <p>People at the centre.<br />Possibility ahead.</p>
-          <Link to="/lets-talk">Let’s connect <span aria-hidden="true">↗</span></Link>
+          <Link to="/contact">Let’s connect <ArrowUpRight size={20} aria-hidden="true" /></Link>
         </div>
         <article className="director-biography">
           <span className="director-role">ABOUT AVIRAJ / DIRECTOR</span>
           <h2>A human perspective.<br /><span>A forward vision.</span></h2>
           <p>Aviraj Sharma is a director at MW Futuretech. At the heart of the organisation’s vision are people, ideas, technology and impact.</p>
           <p>Building a brighter tomorrow starts with the conversations we have today.</p>
-          <Link className="about-text-link" to="/lets-talk">Start a conversation <span aria-hidden="true">↗</span></Link>
+          <Link className="about-text-link" to="/contact">Start a conversation <ArrowUpRight size={20} aria-hidden="true" /></Link>
         </article>
         <div className="director-experience-bottom"><span>HUMAN IMAGINATION. FORWARD VISION.</span><span>MW / 01</span></div>
       </div>

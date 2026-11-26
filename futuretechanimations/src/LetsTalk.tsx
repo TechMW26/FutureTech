@@ -1,4 +1,5 @@
 ﻿import { useEffect, useRef, useState, type FormEvent } from 'react';
+import ArrowUpRight from './ArrowUpRight';
 import SiteHeader from './SiteHeader';
 import './LetsTalk.css';
 
@@ -58,7 +59,7 @@ export default function LetsTalk() {
           </form>
         </section>
       </section>
-      <a className="contact-map-link" href="https://www.openstreetmap.org/?mlat=23.241&mlon=77.401#map=15/23.241/77.401" target="_blank" rel="noreferrer">Explore the map <span aria-hidden="true">↗</span></a>
+      <a className="contact-map-link" href="https://www.openstreetmap.org/?mlat=23.241&mlon=77.401#map=15/23.241/77.401" target="_blank" rel="noreferrer">Explore the map <ArrowUpRight size={17} /></a>
       <a className="contact-map-credit" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a>
     </main>
   );

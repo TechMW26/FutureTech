@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import ArrowUpRight from './ArrowUpRight';
 import SiteHeader from './SiteHeader';
 import './About.css';
 import DirectorExperience from './DirectorExperience';
@@ -36,7 +37,7 @@ function DirectorPortrait({ shakeel = false }: { shakeel?: boolean }) {
     <div className="director-sticky">
       <div className="director-side director-side--left"><span className="about-kicker">THE PEOPLE BEHIND THE VISION</span><h2>People.<br />Purpose.<br /><em>Possibility.</em></h2></div>
       <div className="director-portrait"><img src={shakeel ? '/images/about/shakeel-card.png' : '/images/about/aviraj-sharma.jpeg'} alt={shakeel ? 'Shakeel Jamadar, Director' : 'Aviraj Sharma, Director of MW Futuretech'} width={shakeel ? 884 : 1081} height={shakeel ? 1316 : 1455} loading="lazy" /></div>
-      <div className="director-side director-side--right"><span className="about-kicker">DIRECTOR / MW FUTURETECH</span><h3 id="director-name">{shakeel ? <>Shakeel<br />Jamadar</> : <>Aviraj<br />Sharma</>}</h3><p>People, ideas, technology and impact. Building a brighter tomorrow, together.</p><a className="about-text-link" href="/lets-talk">Start a conversation <span>↗</span></a></div>
+      <div className="director-side director-side--right"><span className="about-kicker">DIRECTOR / MW FUTURETECH</span><h3 id="director-name">{shakeel ? <>Shakeel<br />Jamadar</> : <>Aviraj<br />Sharma</>}</h3><p>People, ideas, technology and impact. Building a brighter tomorrow, together.</p><a className="about-text-link" href="/lets-talk">Start a conversation <ArrowUpRight size={20} /></a></div>
       <div className="director-signature" aria-hidden="true">{shakeel ? 'SHAKEEL JAMADAR' : 'AVIRAJ SHARMA'}<span>VISIONARY DIRECTOR</span></div>
     </div>
   </section>;
@@ -88,13 +89,13 @@ export default function About() {
 
       <section className="about-directors" id="directors" aria-label="Our directors">
         <div className="about-director-cards">
-          <a href="/about/shakeel-jamadar" data-about-reveal aria-label="Visit Shakeel Jamadar’s director profile"><img src="/images/about/shakeel-card.png" alt="Shakeel Jamadar — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" /><span className="director-card-caption">Shakeel Jamadar <span>View profile ↗</span></span></a>
-          <a href="/about/aviraj-sharma" data-about-reveal aria-label="Visit Aviraj Sharma’s director profile"><img src="/images/about/aviraj-card.png" alt="Aviraj Sharma — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" /><span className="director-card-caption">Aviraj Sharma <span>View profile ↗</span></span></a>
+          <a href="/about/shakeel-jamadar" data-about-reveal aria-label="Visit Shakeel Jamadar’s director profile"><img src="/images/about/shakeel-card.png" alt="Shakeel Jamadar — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" /><span className="director-card-caption">Shakeel Jamadar <span>View profile <ArrowUpRight size={12} /></span></span></a>
+          <a href="/about/aviraj-sharma" data-about-reveal aria-label="Visit Aviraj Sharma’s director profile"><img src="/images/about/aviraj-card.png" alt="Aviraj Sharma — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" /><span className="director-card-caption">Aviraj Sharma <span>View profile <ArrowUpRight size={12} /></span></span></a>
         </div>
       </section>
       <AboutTeam />
       </div>
     </>}
-    <section className="about-outro" data-about-reveal><span className="about-kicker">THE NEXT CHAPTER</span><h2>Let’s shape it.<br /><span>Together.</span></h2><a className="about-text-link" href="/lets-talk">Let’s talk <span>↗</span></a></section>
+    <section className="about-outro" data-about-reveal><span className="about-kicker">THE NEXT CHAPTER</span><h2>Let’s shape it.<br /><span>Together.</span></h2><a className="about-text-link" href="/lets-talk">Let’s talk <ArrowUpRight size={20} /></a></section>
   </main>;
 }

@@ -163,6 +163,11 @@
     transition: background 180ms ease, transform 180ms ease;
 }
 
+.site-footer__headline-cta > svg {
+    width: 62%;
+    height: 62%;
+}
+
 .site-footer__headline-cta:hover,
 .site-footer__headline-cta:focus-visible {
     background: #07558b;
@@ -339,3 +344,5 @@
         padding: 0.3rem 0;
     }
 }
+
+.site-footer__description a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }

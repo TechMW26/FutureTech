@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import ArrowUpRight from './ArrowUpRight';
 import './DirectorExperience.css';
 import DirectorOrbits from './DirectorOrbits';
 
@@ -61,8 +62,8 @@ export default function DirectorExperience({ embedded = false }: { embedded?: bo
         <div className="director-experience-photo"><img src="/images/about/aviraj-cutout.png" alt="Aviraj Sharma, Director of MW Futuretech" width="1081" height="1455" loading={embedded ? 'lazy' : 'eager'} fetchPriority={embedded ? 'auto' : 'high'} /></div>
         <DirectorOrbits front />
       </div>
-      <div className="director-experience-note"><span className="director-note-rule" /><p>People at the centre.<br />Possibility ahead.</p><a href="/lets-talk">Let’s connect <span aria-hidden="true">↗</span></a></div>
-      <article className="director-biography"><span className="director-role">ABOUT AVIRAJ / DIRECTOR</span><h2>A human perspective.<br /><span>A forward vision.</span></h2><p>Aviraj Sharma is a director at MW Futuretech. At the heart of the organisation’s vision are people, ideas, technology and impact.</p><p>Building a brighter tomorrow starts with the conversations we have today.</p><a className="about-text-link" href="/lets-talk">Start a conversation <span aria-hidden="true">↗</span></a></article>
+      <div className="director-experience-note"><span className="director-note-rule" /><p>People at the centre.<br />Possibility ahead.</p><a href="/lets-talk">Let’s connect <ArrowUpRight size={20} /></a></div>
+      <article className="director-biography"><span className="director-role">ABOUT AVIRAJ / DIRECTOR</span><h2>A human perspective.<br /><span>A forward vision.</span></h2><p>Aviraj Sharma is a director at MW Futuretech. At the heart of the organisation’s vision are people, ideas, technology and impact.</p><p>Building a brighter tomorrow starts with the conversations we have today.</p><a className="about-text-link" href="/lets-talk">Start a conversation <ArrowUpRight size={20} /></a></article>
       <div className="director-experience-bottom"><span>HUMAN IMAGINATION. FORWARD VISION.</span><span>MW / 01</span></div>
     </div>
   </section>;

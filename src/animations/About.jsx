@@ -1,3 +1,6 @@
+import { useSiteSettings } from '../lib/siteApi.js'
+import { ArrowUpRight } from 'lucide-react'
+import { GROUP_URL } from '../data/siteSettings.js'
 import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import './About.css'
@@ -56,7 +59,7 @@ function DirectorPortrait({ shakeel = false }) {
           <span className="about-kicker">DIRECTOR / MW FUTURETECH</span>
           <h3 id="director-name">{shakeel ? <>Shakeel<br />Jamadar</> : <>Aviraj<br />Sharma</>}</h3>
           <p>People, ideas, technology and impact. Building a brighter tomorrow, together.</p>
-          <Link className="about-text-link" to="/lets-talk">Start a conversation <span>↗</span></Link>
+          <Link className="about-text-link" to="/contact">Start a conversation <ArrowUpRight size={20} aria-hidden="true" /></Link>
         </div>
         <div className="director-signature" aria-hidden="true">
           {shakeel ? 'SHAKEEL JAMADAR' : 'AVIRAJ SHARMA'}
@@ -69,6 +72,7 @@ function DirectorPortrait({ shakeel = false }) {
 
 export default function About() {
   const root = useRef(null)
+  const { photos } = useSiteSettings()
   const { pathname } = useLocation()
   const path = pathname.replace(/\/$/, '')
   const profile = path === '/about/aviraj-sharma' || path === '/about/shakeel-jamadar'
@@ -165,6 +169,7 @@ export default function About() {
                 <p className="about-kicker">MW FUTURETECH / WHO WE ARE</p>
                 <h1 id="about-title"><span>Human at heart.</span><span>Future in mind.</span></h1>
                 <p className="about-intro">We bring people, design and technology together<br className="desktop-break" /> to turn what’s next into something real.</p>
+                <p className="about-group-link"><a href={GROUP_URL}>A Mushroom World Group company</a></p>
                 <a className="about-round-link" href="#directors" aria-label="Meet the people behind MW Futuretech">↓</a>
               </div>
             </div>
@@ -173,12 +178,12 @@ export default function About() {
           <section className="about-directors" id="directors" aria-label="Our directors">
             <div className="about-director-cards">
               <Link to="/director/aviraj-sharma" data-about-reveal aria-label="Visit Aviraj Sharma’s director profile">
-                <img src="/images/about/aviraj-card.webp" alt="Aviraj Sharma — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" />
-                <span className="director-card-caption">Aviraj Sharma <span>View profile ↗</span></span>
+                <img src={photos['Aviraj Sharma'] || '/images/about/aviraj-card.webp'} alt="Aviraj Sharma — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" />
+                <span className="director-card-caption">Aviraj Sharma <span>View profile <ArrowUpRight size={12} aria-hidden="true" /></span></span>
               </Link>
               <Link to="/director/shakeel-jamadar" data-about-reveal aria-label="Visit Shakeel Jamadar’s director profile">
-                <img src="/images/about/shakeel-card.webp" alt="Shakeel Jamadar — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" />
-                <span className="director-card-caption">Shakeel Jamadar <span>View profile ↗</span></span>
+                <img src={photos['Shakeel Jamadar'] || '/images/about/shakeel-card.webp'} alt="Shakeel Jamadar — Director. People, ideas, technology, impact. Visit page." width="884" height="1316" loading="lazy" />
+                <span className="director-card-caption">Shakeel Jamadar <span>View profile <ArrowUpRight size={12} aria-hidden="true" /></span></span>
               </Link>
             </div>
           </section>
@@ -188,7 +193,7 @@ export default function About() {
       <section className="about-outro" data-about-reveal>
         <span className="about-kicker">THE NEXT CHAPTER</span>
         <h2>Let’s shape it.<br /><span>Together.</span></h2>
-        <Link className="about-text-link" to="/lets-talk">Let’s talk <span>↗</span></Link>
+        <Link className="about-text-link" to="/contact">Let’s talk <ArrowUpRight size={20} aria-hidden="true" /></Link>
       </section>
     </main>
   )

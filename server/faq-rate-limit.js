@@ -2,6 +2,8 @@ import { Buffer } from 'node:buffer'
 import process from 'node:process'
 import { createHmac, randomUUID, timingSafeEqual } from 'node:crypto'
 
+import { siteDbConfigured, siteDb, takeQuota } from './site-db.js'
+
 const COOKIE_NAME = 'mwft_faq_session'
 const WINDOW_SECONDS = 10 * 60
 const SESSION_LIMIT = 10
@@ -66,6 +68,11 @@ export async function getFaqRetryAfter(req, res, secret) {
   const id = getSession(req, res, secret)
   const { UPSTASH_REDIS_REST_URL: url, UPSTASH_REDIS_REST_TOKEN: token } = process.env
   if (Boolean(url) !== Boolean(token)) throw new Error('Incomplete FAQ rate limit configuration')
+
+  if (!url && siteDbConfigured()) {
+    return takeQuota(await siteDb(), `faq:${id}`, WINDOW_SECONDS, SESSION_LIMIT)
+  }
+  if (!url && process.env.VERCEL) throw new Error('FAQ needs a shared quota store')
 
   const [count, ttl] = url
     ? await countWithRedis(id, url, token)

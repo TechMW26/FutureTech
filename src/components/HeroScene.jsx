@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Component, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Environment, useGLTF } from '@react-three/drei'
@@ -11,6 +11,7 @@ const END_X_ROTATION = -0.18
 const START_Y_ROTATION = 0.92
 const REST_Y_ROTATION = -0.75
 const TOP_OFFSET_RATIO = 0.15
+const MODEL_INTRO_ARM_DELAY = 500
 const INTRO_ROTATE_SECONDS = 2.4
 const INTRO_ACTIVE_RENDER_MS = 5200
 const STATIC_ACTIVE_RENDER_MS = 1800
@@ -46,6 +47,22 @@ const isLowPowerDevice = () => {
 const getTopOffsetRatio = () => {
   if (typeof window === 'undefined') return TOP_OFFSET_RATIO
   return window.innerWidth <= 480 ? 0.08 : window.innerWidth <= 768 ? 0.10 : TOP_OFFSET_RATIO
+}
+
+class HeroCanvasBoundary extends Component {
+  state = { failed: false }
+
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+
+  componentDidCatch() {
+    this.props.onFailure()
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children
+  }
 }
 
 function HeroModel({
@@ -345,7 +362,8 @@ export default function HeroScene({
   eyebrow,
   modelUrl: modelUrlProp,
   environmentMapUrl = '/hdri/studio_small_03_1k.hdr',
-  introStartRef,
+  introStartRef: externalIntroStartRef,
+  playIntro = false,
   baseRotation,
   scaleMultiplier,
   mobileOnlyScale,
@@ -373,7 +391,9 @@ export default function HeroScene({
   backgroundImage,
   cloudExitViewports = 0,
 }) {
-  const enableIntro = Boolean(introStartRef)
+  const localIntroStartRef = useRef(null)
+  const introStartRef = externalIntroStartRef ?? (playIntro ? localIntroStartRef : null)
+  const enableIntro = (playIntro || externalIntroStartRef != null) && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
   // If the cached blob URL is already resolved (true on every navigation
   // after the homepage), seed state synchronously so the Canvas mounts on
   // the very first render with a valid URL — no microtask round-trip,
@@ -381,7 +401,7 @@ export default function HeroScene({
   const [modelUrl, setModelUrl] = useState(
     modelUrlProp || (getHeroModelReady() ? getHeroModelUrl() : null),
   )
-  const [, setIsSceneReady] = useState(false)
+  const [isSceneReady, setIsSceneReady] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [isRenderActive, setIsRenderActive] = useState(true)
   const renderActiveRef = useRef(true)
@@ -423,6 +443,16 @@ export default function HeroScene({
     }
     scheduleRenderIdle(duration)
   }, [scheduleRenderIdle])
+
+  const handleModelLoaded = useCallback(() => {
+    if (playIntro && localIntroStartRef.current === null) {
+      localIntroStartRef.current = performance.now() + MODEL_INTRO_ARM_DELAY
+    }
+    setIsSceneReady(true)
+    activateRenderLoop(enableIntro ? INTRO_ACTIVE_RENDER_MS : STATIC_ACTIVE_RENDER_MS)
+  }, [activateRenderLoop, enableIntro, playIntro])
+
+  const finishModelLoading = useCallback(() => setIsSceneReady(true), [])
 
   useEffect(() => () => {
     window.clearTimeout(renderIdleTimerRef.current)
@@ -643,7 +673,8 @@ export default function HeroScene({
         onPointerCancel={handlePointerUp}
         onPointerLeave={handlePointerLeave}
       >
-        {modelUrl && (
+        {!isSceneReady && <div className="skeleton-block hero-model-skeleton" aria-hidden="true" />}
+        {modelUrl && <HeroCanvasBoundary onFailure={finishModelLoading}>
           <Canvas
             camera={{ fov: 10, position: [0, 0.95, 18] }}
             dpr={deviceProfile.lowPower ? [0.75, 1] : [1, 1.15]}
@@ -694,10 +725,7 @@ export default function HeroScene({
                 introStartRef={introStartRef}
                 pointerTiltRef={pointerTiltRef}
                 enableIntro={enableIntro}
-                onLoaded={() => {
-                  setIsSceneReady(true)
-                  activateRenderLoop(enableIntro ? INTRO_ACTIVE_RENDER_MS : STATIC_ACTIVE_RENDER_MS)
-                }}
+                onLoaded={handleModelLoaded}
                 baseRotation={baseRotation}
                 scaleMultiplier={scaleMultiplier}
                 mobileOnlyScale={mobileOnlyScale}
@@ -719,7 +747,7 @@ export default function HeroScene({
               {deviceProfile.lowPower && <ProceduralEnv />}
             </Suspense>
           </Canvas>
-        )}
+        </HeroCanvasBoundary>}
       </div>
 
       <div className="hero-overlay">

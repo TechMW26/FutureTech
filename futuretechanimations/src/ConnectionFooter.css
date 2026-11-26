@@ -14,7 +14,7 @@
 .connection-invitation h2 { margin: 0; font-size: clamp(45px, 5.6vw, 86px); line-height: 1.02; font-weight: 400; letter-spacing: -.065em; text-shadow: 0 2px 20px #0000001c; }
 .connection-invitation h2 em { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; color: #c6cec0; }
 .connection-link { display: inline-flex; align-items: center; gap: 30px; margin-top: 30px; padding: 6px 7px 6px 23px; border: 1px solid #dfe4d742; border-radius: 999px; background: #ffffff0b; backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); color: #e9ece4; font-size: 12px; transition: background .25s, border-color .25s; }
-.connection-arrow { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #e9ede0; color: #263128; font-size: 20px; transition: transform .25s; }
+.connection-arrow { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; background: #e9ede0; color: #263128; transition: transform .25s; }
 .connection-link:hover { background: #ffffff16; border-color: #dfe4d77a; }
 .connection-link:hover .connection-arrow { transform: rotate(45deg); }
 .connection-bottom { position: absolute; right: 5%; bottom: 29px; left: 5%; display: flex; align-items: center; justify-content: space-between; gap: 25px; font-size: 9px; color: #91998f; }
