@@ -502,10 +502,6 @@
   );
 }
 
-.home-page > .future-scroll-reveal {
-  --future-reveal-bg: #fff;
-}
-
 .home-page > .home-journey {
   background: linear-gradient(to bottom, #fff, var(--bg) var(--home-section-fade));
 }
