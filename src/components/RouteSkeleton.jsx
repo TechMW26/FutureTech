@@ -43,7 +43,7 @@ export default function RouteSkeleton({ pathname = '/' }) {
           <span className="skeleton-block skeleton-line skeleton-line--short" />
           <span className="skeleton-block skeleton-button" />
         </div>
-        <div className="skeleton-block route-skeleton__media" />
+        {layout !== 'home' && <div className="skeleton-block route-skeleton__media" />}
       </div>
     </div>
   )

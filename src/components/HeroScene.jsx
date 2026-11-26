@@ -56,10 +56,6 @@ class HeroCanvasBoundary extends Component {
     return { failed: true }
   }
 
-  componentDidCatch() {
-    this.props.onFailure()
-  }
-
   render() {
     return this.state.failed ? null : this.props.children
   }
@@ -401,7 +397,6 @@ export default function HeroScene({
   const [modelUrl, setModelUrl] = useState(
     modelUrlProp || (getHeroModelReady() ? getHeroModelUrl() : null),
   )
-  const [isSceneReady, setIsSceneReady] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [isRenderActive, setIsRenderActive] = useState(true)
   const renderActiveRef = useRef(true)
@@ -448,11 +443,8 @@ export default function HeroScene({
     if (playIntro && localIntroStartRef.current === null) {
       localIntroStartRef.current = performance.now() + MODEL_INTRO_ARM_DELAY
     }
-    setIsSceneReady(true)
     activateRenderLoop(enableIntro ? INTRO_ACTIVE_RENDER_MS : STATIC_ACTIVE_RENDER_MS)
   }, [activateRenderLoop, enableIntro, playIntro])
-
-  const finishModelLoading = useCallback(() => setIsSceneReady(true), [])
 
   useEffect(() => () => {
     window.clearTimeout(renderIdleTimerRef.current)
@@ -673,8 +665,7 @@ export default function HeroScene({
         onPointerCancel={handlePointerUp}
         onPointerLeave={handlePointerLeave}
       >
-        {!isSceneReady && <div className="skeleton-block hero-model-skeleton" aria-hidden="true" />}
-        {modelUrl && <HeroCanvasBoundary onFailure={finishModelLoading}>
+        {modelUrl && <HeroCanvasBoundary>
           <Canvas
             camera={{ fov: 10, position: [0, 0.95, 18] }}
             dpr={deviceProfile.lowPower ? [0.75, 1] : [1, 1.15]}

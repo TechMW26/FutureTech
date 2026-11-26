@@ -6,9 +6,13 @@ import FuturetechSections from '../components/futuretech-sections/FuturetechSect
 import HomeJourney from '../components/HomeJourney'
 import HomeMagicSearch from '../components/HomeMagicSearch'
 import RouteSkeleton from '../components/RouteSkeleton'
+import { heroModelPromise } from '../lib/heroModel'
 
-// The 3D hero pulls in three/drei; load it after the page shell so first paint isn't blocked.
-const HeroScene = lazy(() => import('../components/HeroScene'))
+const HeroScene = lazy(() => {
+  // Start the cached model request alongside the lazy renderer.
+  void Promise.resolve(heroModelPromise)
+  return import('../components/HeroScene')
+})
 
 export default function HomePage() {
   return (
